@@ -9,6 +9,8 @@ import {
     MenuItem,
     Paper,
     Stack,
+    Tab,
+    Tabs,
     Toolbar,
     Typography,
 } from "@mui/material";
@@ -31,6 +33,12 @@ const Playground: React.FC<PlaygroundProps> = () => {
     const [language, setLanguage] = useState("java");
     const [value, setValue] = useState(CODE_SNIPPETS[language]);
 
+    const [tab, setTab] = React.useState("test_case");
+
+    const handleTabChange = (event: React.SyntheticEvent, newTab: string) => {
+        setTab(newTab);
+    };
+
     const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -44,8 +52,8 @@ const Playground: React.FC<PlaygroundProps> = () => {
     };
 
     return (
-        <Box className="h-screen">
-            <Stack direction="column" bgcolor="#1e1e1e">
+        <Box className="h-screen" bgcolor="#1e1e1e">
+            <Stack direction="column">
                 <AppBar position="relative">
                     <Toolbar
                         variant="dense"
@@ -82,6 +90,7 @@ const Playground: React.FC<PlaygroundProps> = () => {
                         </Menu>
                     </Toolbar>
                 </AppBar>
+                
                 <Split
                     className="h-[calc(100vh-94px)]"
                     direction="vertical"
@@ -98,40 +107,67 @@ const Playground: React.FC<PlaygroundProps> = () => {
                         />
                     </Box>
 
-                    <Stack direction="column" spacing={2} p={2} overflow="auto">
-                        <Stack direction="row" spacing={2}>
-                            {testCases.map((testCase) => (
-                                <Button
-                                    key={testCase.id}
-                                    color="inherit"
-                                    variant={
-                                        selectedTestCase.id === testCase.id
-                                            ? "contained"
-                                            : "text"
-                                    }
-                                    onClick={() =>
-                                        setSelectedTestCase(testCase)
-                                    }
-                                >
-                                    Case {testCase.id}
-                                </Button>
-                            ))}
-                        </Stack>
-                        <Stack spacing={2}>
-                            <Typography variant="subtitle1" gutterBottom>
-                                Input
-                            </Typography>
-                            <Paper sx={{ backgroundColor: "#484444" }}>
-                                <Box p={2}>{selectedTestCase.input}</Box>
-                            </Paper>
-                            <Typography variant="subtitle1" gutterBottom>
-                                Output
-                            </Typography>
-                            <Paper sx={{ backgroundColor: "#484444" }}>
-                                <Box p={2}>{selectedTestCase.output}</Box>
-                            </Paper>
-                        </Stack>
-                    </Stack>
+                    <Box overflow="auto">
+                        <Tabs
+                            value={tab}
+                            onChange={handleTabChange}
+                            textColor="inherit"
+                            indicatorColor="primary"
+                            aria-label="test case tabs"
+                            sx={{ backgroundColor: "#2d2d2d" }}
+                        >
+                            <Tab value="test_case" label="Testcase" />
+                            <Tab value="test_result" label="Test Result" />
+                        </Tabs>
+
+                        {tab === "test_case" && (
+                            <Stack direction="column" spacing={2} p={2}>
+                                <Stack direction="row" spacing={2}>
+                                    {testCases.map((testCase) => (
+                                        <Button
+                                            key={testCase.id}
+                                            color="inherit"
+                                            variant={
+                                                selectedTestCase.id ===
+                                                testCase.id
+                                                    ? "contained"
+                                                    : "text"
+                                            }
+                                            onClick={() =>
+                                                setSelectedTestCase(testCase)
+                                            }
+                                        >
+                                            Case {testCase.id}
+                                        </Button>
+                                    ))}
+                                </Stack>
+                                <Stack spacing={2}>
+                                    <Typography
+                                        variant="subtitle1"
+                                        gutterBottom
+                                    >
+                                        Input
+                                    </Typography>
+                                    <Paper sx={{ backgroundColor: "#484444" }}>
+                                        <Box p={2}>
+                                            {selectedTestCase.input}
+                                        </Box>
+                                    </Paper>
+                                    <Typography
+                                        variant="subtitle1"
+                                        gutterBottom
+                                    >
+                                        Output
+                                    </Typography>
+                                    <Paper sx={{ backgroundColor: "#484444" }}>
+                                        <Box p={2}>
+                                            {selectedTestCase.output}
+                                        </Box>
+                                    </Paper>
+                                </Stack>
+                            </Stack>
+                        )}
+                    </Box>
                 </Split>
 
                 <Box display="flex" p={2} gap={2}>
