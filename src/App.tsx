@@ -1,5 +1,7 @@
+import Workspace from "./components/Workspace/Workspace";
+
 function App() {
-    return <div>App</div>;
+    return <Workspace />;
 }
 
 export default App;
