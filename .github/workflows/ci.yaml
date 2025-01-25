@@ -34,4 +34,4 @@ jobs:
     - name: Push Docker image
       run: |
           docker tag web-grader:latest ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/webgrader-service:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
