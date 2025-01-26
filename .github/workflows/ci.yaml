@@ -45,7 +45,7 @@ jobs:
         # สร้างเวอร์ชันใหม่
         NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
         echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "version=$NEW_VERSION" >> $GITHUB_ENV
 
     - name: Create and Push Tag
       env:
@@ -55,9 +55,12 @@ jobs:
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git tag ${{ env.NEW_VERSION }}
         git push origin ${{ env.NEW_VERSION }}
-    
+
     - name: Output version
       run: echo "New version is ${{ env.NEW_VERSION }}"
+
+    outputs:
+      version: ${{ env.NEW_VERSION }}   # เพิ่ม outputs ที่นี่
 
   docker-build:
     needs: semantic-versioning
