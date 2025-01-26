@@ -77,7 +77,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
     
     - name: Output version
-      run: echo "New version is ${{ env.NEW_VERSION }}"
+      run: echo "New version is ${{ needs.semantic-versioning.outputs.version }}"
     
     - name: Push Docker image
       run: |
