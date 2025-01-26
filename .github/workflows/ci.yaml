@@ -60,7 +60,7 @@ jobs:
       run: echo "New version is ${{ env.NEW_VERSION }}"
 
     outputs:
-      version: ${{ env.NEW_VERSION }}   # เพิ่ม outputs ที่นี่
+      version: ${{ env.NEW_VERSION }}  # เพิ่ม outputs ที่นี่
 
   docker-build:
     needs: semantic-versioning
