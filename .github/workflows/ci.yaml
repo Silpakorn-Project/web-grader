@@ -45,7 +45,7 @@ jobs:
         # สร้างเวอร์ชันใหม่
         NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
         echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-        echo "::set-output name=version::$NEW_VERSION"
+        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
     - name: Create and Push Tag
       env:
@@ -82,10 +82,9 @@ jobs:
     - name: Push Docker image
       run: |
           # สร้าง Docker Image พร้อมเวอร์ชัน
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ env.NEW_VERSION }} .
-          docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ env.NEW_VERSION }}
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }}
 
           # อัปเดต Tag เป็น `latest`
-          docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ env.NEW_VERSION }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
-
