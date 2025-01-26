@@ -55,6 +55,9 @@ jobs:
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git tag ${{ env.NEW_VERSION }}
         git push origin ${{ env.NEW_VERSION }}
+    
+    - name: Output version
+      run: echo "New version is ${{ env.NEW_VERSION }}"
 
   docker-build:
     needs: semantic-versioning
