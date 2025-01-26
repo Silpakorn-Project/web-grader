@@ -81,6 +81,9 @@ jobs:
     
     - name: Push Docker image
       run: |
+          # ตรวจสอบว่า version ถูกต้อง
+          echo "Version to tag: ${{ needs.semantic-versioning.outputs.version }}"
+
           # สร้าง Docker Image พร้อมเวอร์ชัน
           docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }}
