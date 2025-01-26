@@ -73,6 +73,9 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     
+    - name: Output version
+      run: echo "New version is ${{ env.NEW_VERSION }}"
+    
     - name: Push Docker image
       run: |
           # สร้าง Docker Image พร้อมเวอร์ชัน
