@@ -42,11 +42,11 @@ jobs:
         MINOR=$(echo $VERSION | cut -d. -f2)
         PATCH=$(echo $VERSION | cut -d. -f3)
 
-        if git log -1 --pretty=%B | grep -q '\[major\]' || [[ "$LABELS" == *"major"* ]]; then
+        if git log -1 --pretty=%B | grep -q '\[major\]' || [[ "${{ env.labels }}" == *"major"* ]]; then
           MAJOR=$((MAJOR + 1))
           MINOR=0
           PATCH=0
-        elif git log -1 --pretty=%B | grep -q '\[minor\]' || [[ "$LABELS" == *"minor"* ]]; then
+        elif git log -1 --pretty=%B | grep -q '\[minor\]' || [[ "${{ env.labels }}" == *"minor"* ]]; then
           MINOR=$((MINOR + 1))
           PATCH=0
         else
