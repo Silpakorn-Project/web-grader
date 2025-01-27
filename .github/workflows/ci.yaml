@@ -103,8 +103,9 @@ jobs:
       if: failure() || steps.build-docker.outcome == 'failure'
       run: |
         echo "Build failed, deleting tag..."
-        git tag -d ${{ needs.semantic-versioning.outputs.version }}
-        git push --delete origin ${{ needs.semantic-versioning.outputs.version }}
+        git fetch --tags # ดึงข้อมูล tag ล่าสุดจาก remote
+        git tag -d ${{ needs.semantic-versioning.outputs.version }} || echo "Tag not found locally, skipping deletion..."
+        git push --delete origin ${{ needs.semantic-versioning.outputs.version }} || echo "Tag not found on remote, skipping deletion..."
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
