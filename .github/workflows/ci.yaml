@@ -6,7 +6,12 @@ on:
       - dev-ky 
   pull_request:
     branches:
-      - dev-ky 
+      - dev-ky
+
+# รองรับการอ่านเขียนที่เกี่ยวข้อง และอนุญาตให้เข้าถึง PR และเนื้อหา Label ของ PR
+permissions:
+  contents: write
+  pull-requests: read
 
 jobs:
   semantic-versioning:
