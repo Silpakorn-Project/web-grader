@@ -20,14 +20,14 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    
+
     - name: Install GitHub CLI
       run: sudo apt-get install gh
 
-    - name: Get Labels from PR
+    - name: Get Labels from PR (only for PR)
       id: get-labels
+      if: github.event_name == 'pull_request'
       run: |
-        # ดึง Labels ทั้งหมดจาก PR
         LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels --jq '.labels[].name')
         echo "Labels: $LABELS"
         echo "labels=$LABELS" >> $GITHUB_ENV
@@ -37,30 +37,29 @@ jobs:
     - name: Set up versioning
       id: versioning
       run: |
-        # อ่านเวอร์ชันล่าสุดจาก Git Tag
         git fetch --tags
         LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) || echo "v0.0.0")
         echo "Latest tag: $LATEST_TAG"
 
-        # แปลง tag เป็น Major.Minor.Patch
         VERSION=$(echo $LATEST_TAG | sed 's/v//')
         MAJOR=$(echo $VERSION | cut -d. -f1)
         MINOR=$(echo $VERSION | cut -d. -f2)
         PATCH=$(echo $VERSION | cut -d. -f3)
 
-        # ตรวจสอบการเปลี่ยนแปลง (เช่น จาก commit message หรือ label)
-        if git log -1 --pretty=%B | grep -q '\[major\]' || [[ "${{ env.labels }}" == *"major"* ]]; then
+        if [[ "${{ github.event_name }}" == "push" ]]; then
+          # สำหรับ push
+          PATCH=$((PATCH + 1))
+        elif [[ "${{ github.event_name }}" == "pull_request" && "${{ env.labels }}" == *"major"* ]]; then
+          # ถ้า PR มี label major
           MAJOR=$((MAJOR + 1))
           MINOR=0
           PATCH=0
-        elif git log -1 --pretty=%B | grep -q '\[minor\]' || [[ "${{ env.labels }}" == *"minor"* ]]; then
+        elif [[ "${{ github.event_name }}" == "pull_request" && "${{ env.labels }}" == *"minor"* ]]; then
+          # ถ้า PR มี label minor
           MINOR=$((MINOR + 1))
           PATCH=0
-        else
-          PATCH=$((PATCH + 1))
         fi
 
-        # สร้างเวอร์ชันใหม่
         NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
         echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
         echo "version=$NEW_VERSION" >> $GITHUB_ENV
@@ -78,7 +77,7 @@ jobs:
       run: echo "New version is ${{ env.NEW_VERSION }}"
 
     outputs:
-      version: ${{ env.NEW_VERSION }}  # เพิ่ม outputs ที่นี่
+      version: ${{ env.NEW_VERSION }}
 
   docker-build:
     needs: semantic-versioning
@@ -87,7 +86,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -99,16 +98,15 @@ jobs:
     
     - name: Output version
       run: echo "New version is ${{ needs.semantic-versioning.outputs.version }}"
-    
+
     - name: Push Docker image
       run: |
-          # ตรวจสอบว่า version ถูกต้อง
-          echo "Version to tag: ${{ needs.semantic-versioning.outputs.version }}"
-
-          # สร้าง Docker Image พร้อมเวอร์ชัน
+          # Push Docker Image with version tag
           docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }}
-
-          # อัปเดต Tag เป็น `latest`
-          docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
+          
+          # Only tag the latest version if this is a push event (not PR)
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
+            docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
+          fi
