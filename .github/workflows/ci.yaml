@@ -20,20 +20,20 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+    
+    - name: Install GitHub CLI
+      run: sudo apt-get install gh
 
-    - name: Fetch Pull Request Labels
-      id: fetch_labels
+    - name: Get Labels from PR
+      id: get-labels
+      run: |
+        # ดึง Labels ทั้งหมดจาก PR
+        LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels --jq '.labels[].name')
+        echo "Labels: $LABELS"
+        echo "labels=$LABELS" >> $GITHUB_ENV
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        PR_NUMBER=${{ github.event.pull_request.number }}
-        OWNER=${{ github.repository_owner }}
-        REPO=$(echo ${{ github.repository }} | cut -d'/' -f2)
-        PR_LABELS=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/$OWNER/$REPO/issues/$PR_NUMBER | jq -r '.labels[].name')
-        echo "PR_LABELS=$PR_LABELS" >> $GITHUB_ENV
-
+    
     - name: Set up versioning
       id: versioning
       run: |
@@ -49,13 +49,11 @@ jobs:
         PATCH=$(echo $VERSION | cut -d. -f3)
 
         # ตรวจสอบการเปลี่ยนแปลง (เช่น จาก commit message หรือ label)
-        PR_LABELS="${{ github.event.pull_request.labels }}"
-    
-        if git log -1 --pretty=%B | grep -q '\[major\]' || [[ "$PR_LABELS" == *"major"* ]]; then
+        if git log -1 --pretty=%B | grep -q '\[major\]' || [[ "$LABELS" == *"major"* ]]; then
           MAJOR=$((MAJOR + 1))
           MINOR=0
           PATCH=0
-        elif git log -1 --pretty=%B | grep -q '\[minor\]' || [[ "$PR_LABELS" == *"minor"* ]]; then
+        elif git log -1 --pretty=%B | grep -q '\[minor\]' || [[ "$LABELS" == *"minor"* ]]; then
           MINOR=$((MINOR + 1))
           PATCH=0
         else
