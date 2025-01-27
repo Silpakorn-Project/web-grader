@@ -100,8 +100,9 @@ jobs:
       continue-on-error: true
     
     - name: Remove Tag if Build Fails
-      if: failure() && steps.build-docker.outcome == 'failure'
+      if: failure() || steps.build-docker.outcome == 'failure'
       run: |
+        echo "Build failed, deleting tag..."
         git tag -d ${{ needs.semantic-versioning.outputs.version }}
         git push --delete origin ${{ needs.semantic-versioning.outputs.version }}
       env:
