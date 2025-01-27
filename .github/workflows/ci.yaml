@@ -1,9 +1,9 @@
 name: CI
  
 on:
-  push:
-    branches:
-      - dev-ky 
+#   push:
+#     branches:
+#       - dev-ky 
   pull_request:
     branches:
       - dev-ky
@@ -26,7 +26,6 @@ jobs:
 
     - name: Get Labels from PR (only for PR)
       id: get-labels
-      if: github.event_name == 'pull_request'
       run: |
         LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels --jq '.labels[].name')
         echo "Labels: $LABELS"
@@ -46,18 +45,15 @@ jobs:
         MINOR=$(echo $VERSION | cut -d. -f2)
         PATCH=$(echo $VERSION | cut -d. -f3)
 
-        if [[ "${{ github.event_name }}" == "push" ]]; then
-          # สำหรับ push
-          PATCH=$((PATCH + 1))
-        elif [[ "${{ github.event_name }}" == "pull_request" && "${{ env.labels }}" == *"major"* ]]; then
-          # ถ้า PR มี label major
+        if git log -1 --pretty=%B | grep -q '\[major\]' || "${{ env.labels }}" == *"major"* ]]; then
           MAJOR=$((MAJOR + 1))
           MINOR=0
           PATCH=0
-        elif [[ "${{ github.event_name }}" == "pull_request" && "${{ env.labels }}" == *"minor"* ]]; then
-          # ถ้า PR มี label minor
+        elif git log -1 --pretty=%B | grep -q '\[minor\]' || "${{ env.labels }}" == *"minor"* ]]; then
           MINOR=$((MINOR + 1))
           PATCH=0
+        else
+          PATCH=$((PATCH + 1))
         fi
 
         NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
@@ -105,8 +101,5 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }}
           
-          # Only tag the latest version if this is a push event (not PR)
-          if [[ "${{ github.event_name }}" == "push" ]]; then
-            docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
-            docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
-          fi
+          docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
