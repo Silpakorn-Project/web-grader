@@ -31,11 +31,13 @@ jobs:
         PATCH=$(echo $VERSION | cut -d. -f3)
 
         # ตรวจสอบการเปลี่ยนแปลง (เช่น จาก commit message หรือ label)
-        if git log -1 --pretty=%B | grep -q '\[major\]'; || [[ ${{ github.event.pull_request.labels }} == *"major"* ]]; then
+        PR_LABELS="${{ github.event.pull_request.labels }}"
+    
+        if git log -1 --pretty=%B | grep -q '\[major\]' || [[ "$PR_LABELS" == *"major"* ]]; then
           MAJOR=$((MAJOR + 1))
           MINOR=0
           PATCH=0
-        elif git log -1 --pretty=%B | grep -q '\[minor\]'; || [[ ${{ github.event.pull_request.labels }} == *"minor"* ]]; then
+        elif git log -1 --pretty=%B | grep -q '\[minor\]' || [[ "$PR_LABELS" == *"minor"* ]]; then
           MINOR=$((MINOR + 1))
           PATCH=0
         else
