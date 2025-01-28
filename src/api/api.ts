@@ -8,7 +8,7 @@ export interface TestCase {
     input: string;
     expected_output: string;
 }
-//test
+
 export interface SubmitCodeRequest {
     source_code: string;
     test_cases: TestCase[];
