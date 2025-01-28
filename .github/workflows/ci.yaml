@@ -109,9 +109,21 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push Docker image
+      id: push-docker
       run: |
         # Push Docker Image with version tag
 
         docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }}
         docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
         docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
+      continue-on-error: true
+
+    - name: Remove Tag if Push Fails
+      if: failure() || steps.push-docker.outcome == 'failure'
+      run: |
+        echo "Push failed, deleting tag..."
+        git fetch --tags # ดึงข้อมูล tag ล่าสุดจาก remote
+        git tag -d ${{ needs.semantic-versioning.outputs.version }} || echo "Tag not found locally, skipping deletion..."
+        git push --delete origin ${{ needs.semantic-versioning.outputs.version }} || echo "Tag not found on remote, skipping deletion..."
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
