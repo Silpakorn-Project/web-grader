@@ -95,8 +95,7 @@ jobs:
     - name: Build Docker image
       id: build-docker
       run: |
-        # docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} .
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} ./nonexistent-directory
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} .
       continue-on-error: true
     
     - name: Remove Tag if Build Fails
