@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
     branches:
-      - dev-ky 
+      - main 
 
 # รองรับการอ่านเขียนที่เกี่ยวข้อง และอนุญาตให้เข้าถึง PR และเนื้อหา Label ของ PR
 permissions:
