@@ -1,0 +1,64 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+# Permissions for accessing PR labels and contents
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  semantic-versioning:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install GitHub CLI
+      run: sudo apt-get install gh
+
+    - name: Get Labels from PR (only for PR)
+      id: get-labels
+      run: |
+        LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels --jq '.labels[].name')
+        echo "Labels: $LABELS"
+        echo "labels=$LABELS" >> $GITHUB_ENV
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up versioning
+      id: versioning
+      run: |
+        git fetch --tags
+        LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) || echo "v0.0.0")
+        echo "Latest tag: $LATEST_TAG"
+
+        VERSION=$(echo $LATEST_TAG | sed 's/v//')
+        MAJOR=$(echo $VERSION | cut -d. -f1)
+        MINOR=$(echo $VERSION | cut -d. -f2)
+        PATCH=$(echo $VERSION | cut -d. -f3)
+
+        if git log -1 --pretty=%B | grep -q '\[major\]' || [[ "${{ env.labels }}" == *"major"* ]]; then
+          MAJOR=$((MAJOR + 1))
+          MINOR=0
+          PATCH=0
+        elif git log -1 --pretty=%B | grep -q '\[minor\]' || [[ "${{ env.labels }}" == *"minor"* ]]; then
+          MINOR=$((MINOR + 1))
+          PATCH=0
+        else
+          PATCH=$((PATCH + 1))
+        fi
+
+        NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
+        echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+        echo "version=$NEW_VERSION" >> $GITHUB_ENV
+
+    - name: Output version
+      run: echo "New version is ${{ env.NEW_VERSION }}"
+
+    outputs:
+      version: ${{ env.NEW_VERSION }}

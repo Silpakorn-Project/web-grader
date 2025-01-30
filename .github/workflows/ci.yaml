@@ -1,119 +1,119 @@
-name: CI
+# name: CI
  
-on:
-  pull_request:
-    branches:
-      - main 
+# on:
+#   pull_request:
+#     branches:
+#       - main 
 
-# รองรับการอ่านเขียนที่เกี่ยวข้อง และอนุญาตให้เข้าถึง PR และเนื้อหา Label ของ PR 
-permissions:
-  contents: write
-  pull-requests: read
+# # รองรับการอ่านเขียนที่เกี่ยวข้อง และอนุญาตให้เข้าถึง PR และเนื้อหา Label ของ PR 
+# permissions:
+#   contents: write
+#   pull-requests: read
 
-jobs:
-  semantic-versioning:
-    runs-on: ubuntu-latest
+# jobs:
+#   semantic-versioning:
+#     runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v3
 
-    - name: Install GitHub CLI
-      run: sudo apt-get install gh
+#     - name: Install GitHub CLI
+#       run: sudo apt-get install gh
 
-    - name: Get Labels from PR (only for PR)
-      id: get-labels
-      run: |
-        LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels --jq '.labels[].name')
-        echo "Labels: $LABELS"
-        echo "labels=$LABELS" >> $GITHUB_ENV
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#     - name: Get Labels from PR (only for PR)
+#       id: get-labels
+#       run: |
+#         LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels --jq '.labels[].name')
+#         echo "Labels: $LABELS"
+#         echo "labels=$LABELS" >> $GITHUB_ENV
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Set up versioning
-      id: versioning
-      run: |
-        git fetch --tags
-        LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) || echo "v0.0.0")
-        echo "Latest tag: $LATEST_TAG"
+#     - name: Set up versioning
+#       id: versioning
+#       run: |
+#         git fetch --tags
+#         LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) || echo "v0.0.0")
+#         echo "Latest tag: $LATEST_TAG"
 
-        VERSION=$(echo $LATEST_TAG | sed 's/v//')
-        MAJOR=$(echo $VERSION | cut -d. -f1)
-        MINOR=$(echo $VERSION | cut -d. -f2)
-        PATCH=$(echo $VERSION | cut -d. -f3)
+#         VERSION=$(echo $LATEST_TAG | sed 's/v//')
+#         MAJOR=$(echo $VERSION | cut -d. -f1)
+#         MINOR=$(echo $VERSION | cut -d. -f2)
+#         PATCH=$(echo $VERSION | cut -d. -f3)
 
-        if git log -1 --pretty=%B | grep -q '\[major\]' || [[ "${{ env.labels }}" == *"major"* ]]; then
-          MAJOR=$((MAJOR + 1))
-          MINOR=0
-          PATCH=0
-        elif git log -1 --pretty=%B | grep -q '\[minor\]' || [[ "${{ env.labels }}" == *"minor"* ]]; then
-          MINOR=$((MINOR + 1))
-          PATCH=0
-        else
-          PATCH=$((PATCH + 1))
-        fi
+#         if git log -1 --pretty=%B | grep -q '\[major\]' || [[ "${{ env.labels }}" == *"major"* ]]; then
+#           MAJOR=$((MAJOR + 1))
+#           MINOR=0
+#           PATCH=0
+#         elif git log -1 --pretty=%B | grep -q '\[minor\]' || [[ "${{ env.labels }}" == *"minor"* ]]; then
+#           MINOR=$((MINOR + 1))
+#           PATCH=0
+#         else
+#           PATCH=$((PATCH + 1))
+#         fi
 
-        NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
-        echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-        echo "version=$NEW_VERSION" >> $GITHUB_ENV
+#         NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
+#         echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+#         echo "version=$NEW_VERSION" >> $GITHUB_ENV
 
-    - name: Create and Push Tag
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git tag ${{ env.NEW_VERSION }}
-        git push origin ${{ env.NEW_VERSION }}
+#     - name: Create and Push Tag
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#       run: |
+#         git config --global user.name "github-actions[bot]"
+#         git config --global user.email "github-actions[bot]@users.noreply.github.com"
+#         git tag ${{ env.NEW_VERSION }}
+#         git push origin ${{ env.NEW_VERSION }}
 
-    - name: Output version
-      run: echo "New version is ${{ env.NEW_VERSION }}"
+#     - name: Output version
+#       run: echo "New version is ${{ env.NEW_VERSION }}"
 
-    outputs:
-      version: ${{ env.NEW_VERSION }}
+#     outputs:
+#       version: ${{ env.NEW_VERSION }}
 
-  docker-build:
-    needs: semantic-versioning
-    runs-on: ubuntu-latest
+#   docker-build:
+#     needs: semantic-versioning
+#     runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+#     - name: Set up Docker Buildx
+#       uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+#     - name: Log in to Docker Hub
+#       uses: docker/login-action@v2
+#       with:
+#         username: ${{ secrets.DOCKER_USERNAME }}
+#         password: ${{ secrets.DOCKER_PASSWORD }}
     
-    - name: Output version
-      run: echo "New version is ${{ needs.semantic-versioning.outputs.version }}"
+#     - name: Output version
+#       run: echo "New version is ${{ needs.semantic-versioning.outputs.version }}"
 
-    - name: Build Docker image
-      id: build-docker
-      run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} .
-      continue-on-error: true
+#     - name: Build Docker image
+#       id: build-docker
+#       run: |
+#         docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} .
+#       continue-on-error: true
     
-    - name: Push Docker image
-      id: push-docker
-      run: |
-        # Push Docker Image with version tag
+#     - name: Push Docker image
+#       id: push-docker
+#       run: |
+#         # Push Docker Image with version tag
 
-        docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }}
-        docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
-        docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
-      continue-on-error: true
+#         docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }}
+#         docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ needs.semantic-versioning.outputs.version }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
+#         docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
+#       continue-on-error: true
 
-    - name: Remove Tag if Push Fails
-      if: failure() || steps.push-docker.outcome == 'failure' || steps.build-docker.outcome == 'failure'
-      run: |
-        echo "Push failed, deleting tag..."
-        git fetch --tags # ดึงข้อมูล tag ล่าสุดจาก remote
-        git tag -d ${{ needs.semantic-versioning.outputs.version }} || echo "Tag not found locally, skipping deletion..."
-        git push --delete origin ${{ needs.semantic-versioning.outputs.version }} || echo "Tag not found on remote, skipping deletion..."
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#     - name: Remove Tag if Push Fails
+#       if: failure() || steps.push-docker.outcome == 'failure' || steps.build-docker.outcome == 'failure'
+#       run: |
+#         echo "Push failed, deleting tag..."
+#         git fetch --tags # ดึงข้อมูล tag ล่าสุดจาก remote
+#         git tag -d ${{ needs.semantic-versioning.outputs.version }} || echo "Tag not found locally, skipping deletion..."
+#         git push --delete origin ${{ needs.semantic-versioning.outputs.version }} || echo "Tag not found on remote, skipping deletion..."
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
