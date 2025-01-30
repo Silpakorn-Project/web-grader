@@ -18,7 +18,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install GitHub CLI
+    - name: Install GitHub CLI 
       run: sudo apt-get install gh
 
     - name: Get Labels from PR (only for PR)
