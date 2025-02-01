@@ -28,10 +28,13 @@ jobs:
       run: |
         docker build -t web-grader -f Dockerfile.local .
         docker run -d -p 3000:3000 web-grader
-        sleep 20
-        curl -sSf http://localhost:3000
-        docker stop $(docker ps -q)
-        docker rm $(docker ps -a -q)
+        sleep 5
+
+        # Wait until the server is ready
+        until curl -sSf http://localhost:8080; do
+            echo "Waiting for the server to start..." 
+            sleep 2
+        done
 
     - name: Get Labels from PR (only for PR)
       id: get-labels
