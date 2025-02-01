@@ -35,7 +35,7 @@ jobs:
         RETRIES=0
         until curl -sSf http://localhost:8080 || [ $RETRIES -ge $MAX_RETRIES ]; do
             echo "Round ($((RETRIES+1))/$MAX_RETRIES)"
-            sleep 2
+            sleep 5 
             RETRIES=$((RETRIES + 1))
         done
 
