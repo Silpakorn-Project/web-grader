@@ -28,7 +28,7 @@ jobs:
       run: |
         docker build -t web-grader -f Dockerfile.local .
         docker run -d -p 3000:3000 web-grader
-        sleep 5
+        sleep 20
         curl -sSf http://localhost:3000
         docker stop $(docker ps -q)
         docker rm $(docker ps -a -q)
