@@ -30,11 +30,23 @@ jobs:
         docker run -d -p 3000:3000 web-grader
         sleep 5
 
-        # Wait until the server is ready
-        until curl -sSf http://localhost:8080; do
-            echo "Waiting for the server to start..." 
+        # Define the maximum number of retries 
+        MAX_RETRIES=5
+        RETRIES=0
+        until curl -sSf http://localhost:8080 || [ $RETRIES -ge $MAX_RETRIES ]; do
+            echo "Round ($((RETRIES+1))/$MAX_RETRIES)"
             sleep 2
+            RETRIES=$((RETRIES + 1))
         done
+
+        # if the maximum number of retries is reached, stop the container and exit 
+        if [ $RETRIES -ge $MAX_RETRIES ]; then
+            echo "Failed to start the container"
+            exit 1
+        fi
+
+        docker stop $(docker ps -q)
+        docker rm $(docker ps -a -q)
 
     - name: Get Labels from PR (only for PR)
       id: get-labels
