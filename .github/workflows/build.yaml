@@ -27,9 +27,9 @@ jobs:
     - name: Docker Build and Test
       run: |
         docker build -t web-grader -f Dockerfile.local .
-        docker run -d -p 8080:8080 web-grader
+        docker run -d -p 3000:3000 web-grader
         sleep 5
-        curl -sSf http://localhost:8080
+        curl -sSf http://localhost:3000
         docker stop $(docker ps -q)
         docker rm $(docker ps -a -q)
 
