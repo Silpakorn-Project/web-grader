@@ -21,6 +21,15 @@ jobs:
     - name: Install GitHub CLI 
       run: sudo apt-get install gh
 
+    - name: Docker Build and Test
+        run: |
+            docker build -t web-grader -f Dockerfile.local .
+            docker run -d -p 8080:8080 web-grader
+            sleep 5
+            curl -sSf http://localhost:8080
+            docker stop $(docker ps -q)
+            docker rm $(docker ps -a -q)
+
     - name: Get Labels from PR (only for PR)
       id: get-labels
       run: |
