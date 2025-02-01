@@ -28,12 +28,12 @@ jobs:
       run: |
         docker build -t web-grader -f Dockerfile.local .
         docker run -d -p 3000:3000 web-grader
-        sleep 20
+        sleep 5 
 
         # Define the maximum number of retries 
         MAX_RETRIES=5
         RETRIES=0
-        until curl -sSf http://localhost:8080 || [ $RETRIES -ge $MAX_RETRIES ]; do
+        until curl -sSf http://localhost:3000 || [ $RETRIES -ge $MAX_RETRIES ]; do
             echo "Round ($((RETRIES+1))/$MAX_RETRIES)"
             sleep 5 
             RETRIES=$((RETRIES + 1))
