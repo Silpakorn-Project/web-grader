@@ -54,37 +54,52 @@ jobs:
         fi
 
         NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
-        echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-        echo "version=$NEW_VERSION" >> $GITHUB_ENV
-
-    - name: Output version
-      run: echo "New version is ${{ env.NEW_VERSION }}"
-
-    outputs:
-      version: ${{ env.NEW_VERSION }}
-
-  create-artifac:
+        echo $NEW_VERSION > version.txt
+        echo "New version: $NEW_VERSION"
+    
+    - name: Upload version as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: version-artifact
+        path: version.txt
+    
+  use-version:
+    needs: semantic-versioning
     runs-on: ubuntu-latest
-    steps:
-      - name: สร้างไฟล์สำหรับ Artifact
-        run: echo "MY_VARIABLE=HelloWorld" > artifact.env
-      
-      - name: อัปโหลด Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: my-artifact
-          path: artifact.env
 
-  use-artifact:
-    runs-on: ubuntu-latest
-    needs: create-artifac
     steps:
-      - name: ดาวน์โหลด Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: my-artifact
+    - name: Download version artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: version-artifact
+
+    - name: Read version from artifact
+      run: |
+        VERSION=$(cat version.txt)
+        echo "Version from artifact is: $VERSION"
+
+#   create-artifac:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: สร้างไฟล์สำหรับ Artifact
+#         run: echo "MY_VARIABLE=HelloWorld" > artifact.env
       
-      - name: โหลดตัวแปรจาก Artifact
-        run: |
-          source artifact.env
-          echo "ตัวแปรที่โหลดคือ: $MY_VARIABLE"
+#       - name: อัปโหลด Artifact
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: my-artifact
+#           path: artifact.env
+
+#   use-artifact:
+#     runs-on: ubuntu-latest
+#     needs: create-artifac
+#     steps:
+#       - name: ดาวน์โหลด Artifact
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: my-artifact
+      
+#       - name: โหลดตัวแปรจาก Artifact
+#         run: |
+#           source artifact.env
+#           echo "ตัวแปรที่โหลดคือ: $MY_VARIABLE"
