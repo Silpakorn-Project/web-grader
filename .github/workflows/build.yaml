@@ -62,3 +62,28 @@ jobs:
 
     outputs:
       version: ${{ env.NEW_VERSION }}
+
+  create-artifac:
+    runs-on: ubuntu-latest
+    steps:
+      - name: สร้างไฟล์สำหรับ Artifact
+        run: echo "MY_VARIABLE=HelloWorld" > artifact.env
+      
+      - name: อัปโหลด Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: artifact.env
+
+  use-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ดาวน์โหลด Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: my-artifact
+      
+      - name: โหลดตัวแปรจาก Artifact
+        run: |
+          source artifact.env
+          echo "ตัวแปรที่โหลดคือ: $MY_VARIABLE"
