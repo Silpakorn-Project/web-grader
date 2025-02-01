@@ -8,7 +8,7 @@ on:
 # Permissions for accessing PR labels and contents
 permissions:
   contents: write
-  pull-requests: read
+  pull-requests: read 
 
 jobs:
   semantic-versioning:
