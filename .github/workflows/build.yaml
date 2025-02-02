@@ -113,13 +113,10 @@ jobs:
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         
-        if ! git diff --quiet version.txt; then
-          echo "version.txt has changed. Committing..."
-          git add version.txt
-          git commit -m "Set version from pull request #${{ github.event.pull_request.number }}"
-          git push origin ${{ github.event.pull_request.head.ref }}
-        else
-          echo "No changes in version.txt. Skipping commit."
-        fi
+        echo "version.txt has changed. Committing..."
+        git add version.txt
+        git commit -m "Set version from pull request #${{ github.event.pull_request.number }}"
+        git push origin ${{ github.event.pull_request.head.ref }}
+        echo "No changes in version.txt. Skipping commit."
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
