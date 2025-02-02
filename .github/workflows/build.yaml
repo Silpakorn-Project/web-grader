@@ -85,7 +85,7 @@ jobs:
         echo "New version: $NEW_VERSION"
     
     - name: Checkout PR branch
-      run: git checkout ${{ github.head_ref }}
+      run: git checkout main 
     
     - name: Commit Version
       run: |
@@ -93,7 +93,7 @@ jobs:
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add version.txt
         git commit -m "Set version from pull request #${{ github.event.pull_request.number }}"
-        git push origin ${{ github.head_ref }}
+        git push origin main 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
