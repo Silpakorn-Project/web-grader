@@ -1,18 +1,12 @@
 name: Push Tag and Docker Image
 
 on:
-  workflow_run:
-    workflows:
-      - Build and Test
-    types:
-      - completed
   push:
     branches:
       - main
 
 jobs:
   docker-build:
-    needs: semantic-versioning
     runs-on: ubuntu-latest 
 
     steps:
@@ -21,6 +15,11 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
+    
+    - name: Read Version File
+      run: |
+        VERSION=$(cat version.txt)
+        echo "Version from file: $VERSION"
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
