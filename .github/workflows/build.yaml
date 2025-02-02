@@ -23,12 +23,6 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-    
-    - name: Delete version.txt if it exists
-      run: |
-        if [ -f version.txt ]; then
-          rm version.txt
-        fi
 
     - name: Docker Build and Test
       run: |
@@ -62,6 +56,15 @@ jobs:
         echo "labels=$LABELS" >> $GITHUB_ENV
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Delete version.txt if it exists
+      run: |
+        if [ -f version.txt ]; then
+          echo "version.txt exists. Deleting..."
+          rm version.txt
+        else
+          echo "version.txt does not exist. Proceeding..."
+        fi
     
     - name: Set up versioning
       id: versioning
