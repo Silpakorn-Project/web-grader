@@ -72,8 +72,8 @@ jobs:
         else
             echo "version.txt does not exist. Proceeding..."
         fi
-     env:
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Set up versioning
       id: versioning
