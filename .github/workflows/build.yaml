@@ -84,49 +84,14 @@ jobs:
         echo $NEW_VERSION > version.txt
         echo "New version: $NEW_VERSION"
     
-    - name: Upload version as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: version-artifact
-        path: version.txt
-    
-  use-version:
-    needs: semantic-versioning
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Download version artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: version-artifact
-
-    - name: Read version from artifact
+    - name: Commit Version
       run: |
-        VERSION=$(cat version.txt)
-        echo "Version from artifact is: $VERSION"
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add version.txt
+        git commit -m "Set version from pull request #${{ github.event.pull_request.number }}"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-#   create-artifac:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: สร้างไฟล์สำหรับ Artifact
-#         run: echo "MY_VARIABLE=HelloWorld" > artifact.env
-      
-#       - name: อัปโหลด Artifact
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: my-artifact
-#           path: artifact.env
 
-#   use-artifact:
-#     runs-on: ubuntu-latest
-#     needs: create-artifac
-#     steps:
-#       - name: ดาวน์โหลด Artifact
-#         uses: actions/download-artifact@v4
-#         with:
-#           name: my-artifact
-      
-#       - name: โหลดตัวแปรจาก Artifact
-#         run: |
-#           source artifact.env
-#           echo "ตัวแปรที่โหลดคือ: $MY_VARIABLE"
