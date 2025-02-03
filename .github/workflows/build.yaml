@@ -118,8 +118,10 @@ jobs:
         git commit -m "Set version from pull request #${{ github.event.pull_request.number }}"
         git push origin ${{ github.event.pull_request.head.ref }}
 
-        VERSION=$(cat version.txt)
-        echo "Version from file: $VERSION"
-
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Output version
+      run: |
+        VERSION=$(cat version.txt)
+        echo "New version is $VERSION"
