@@ -2,8 +2,6 @@ name: Push Workflow
 
 on:
   push:
-    branch:
-      - main
     tags:
       - 'v*' # ใช้ pattern ของ tag
 
