@@ -6,29 +6,24 @@ on:
       - main
 
 jobs:
-  docker-build-check:
+  test-and-tag:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build Docker image
-        run: docker build . -t my-image:pr-check
-
-  create-tag:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Create Tag
+      - name: Run tests
         run: |
-          VERSION=v1.$(date +'%Y%m%d%H%M')
+          echo "Running tests..."
+          # ใส่คำสั่งรัน test ของคุณ
+
+      - name: Create tag
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="v1.0.$(date +%s)" # หรือดึง version จากไฟล์
           git tag $VERSION
           git push origin $VERSION
+          echo "::set-output name=tag::$VERSION"
