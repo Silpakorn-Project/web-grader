@@ -3,7 +3,7 @@ name: Push Workflow
 on:
   push:
     tags:
-      - 'v*' # ใช้ pattern ของ tag
+      - '*' # ใช้ pattern ของ tag
 
 jobs:
   deploy:
