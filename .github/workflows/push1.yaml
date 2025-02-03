@@ -16,4 +16,4 @@ jobs:
       - name: Deploy code
         run: |
           echo "Deploying version $GITHUB_REF_NAME"
-          # ใส่คำสั่ง deploy ของคุณ
+          # ใส่คำสั่ง deploy ของคุณ 
