@@ -2,10 +2,8 @@ name: Push Workflow
 
 on:
   push:
-    branch:
-      - main
     tags:
-      - 'v*' # ใช้ pattern ของ tag
+      - 'v*' # Match tags starting with 'v'
 
 jobs:
   deploy:
@@ -18,4 +16,4 @@ jobs:
       - name: Deploy code
         run: |
           echo "Deploying version $GITHUB_REF_NAME"
-          # ใส่คำสั่ง deploy ของคุณ 
+          # Add your deployment commands here
