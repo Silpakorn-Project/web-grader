@@ -117,6 +117,9 @@ jobs:
         git add version.txt
         git commit -m "Set version from pull request #${{ github.event.pull_request.number }}"
         git push origin ${{ github.event.pull_request.head.ref }}
-        echo "No changes in version.txt. Skipping commit."
+
+        VERSION=$(cat version.txt)
+        echo "Version from file: $VERSION"
+
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
