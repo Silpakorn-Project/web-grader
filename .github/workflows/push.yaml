@@ -28,19 +28,19 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
     
     - name: Output version
-      run: echo "New version is ${{ github.event.workflow_run.outputs.version }}"
+      run: echo "New version is ${{ VERSION }}"
 
     - name: Build Docker image
       id: build-docker
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ github.event.workflow_run.outputs.version }} .
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ VERSION }} .
       continue-on-error: true
 
     - name: Push Docker image
       id: push-docker
       run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ github.event.workflow_run.outputs.version }}
-        docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ github.event.workflow_run.outputs.version }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ VERSION }}
+        docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ VERSION }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
         docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
       continue-on-error: true
 
@@ -49,8 +49,8 @@ jobs:
       run: |
         echo "Push failed, deleting tag..."
         git fetch --tags
-        git tag -d ${{ github.event.workflow_run.outputs.version }} || echo "Tag not found locally, skipping deletion..."
-        git push --delete origin ${{ github.event.workflow_run.outputs.version }} || echo "Tag not found on remote, skipping deletion..."
+        git tag -d ${{ VERSION }} || echo "Tag not found locally, skipping deletion..."
+        git push --delete origin ${{ VERSION }} || echo "Tag not found on remote, skipping deletion..."
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
