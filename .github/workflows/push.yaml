@@ -1,66 +1,66 @@
-# name: Push Tag and Docker Image
+name: Push Tag and Docker Image
 
-# on:
-#   push:
-#     branches:
-#       - main
+on:
+  push:
+    branches:
+      - main
 
-# jobs:
-#   docker-build:
-#     runs-on: ubuntu-latest 
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest 
 
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v3
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-#     - name: Set up Docker Buildx
-#       uses: docker/setup-buildx-action@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
     
-#     - name: Read Version File
-#       id: read-version
-#       run: |
-#         VERSION=$(cat version.txt)
-#         echo "Version from file: $VERSION"
-#         echo "VERSION=$VERSION" >> $GITHUB_ENV
+    - name: Read Version File
+      id: read-version
+      run: |
+        VERSION=$(cat version.txt)
+        echo "Version from file: $VERSION"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-#     - name: Log in to Docker Hub
-#       uses: docker/login-action@v2
-#       with:
-#         username: ${{ secrets.DOCKER_USERNAME }}
-#         password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
     
-#     - name: Output version
-#       run: echo "New version is ${{ env.VERSION }}"
+    - name: Output version
+      run: echo "New version is ${{ env.VERSION }}"
 
-#     - name: Build Docker image
-#       id: build-docker
-#       run: |
-#         docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ env.VERSION }} .
-#       continue-on-error: true
+    - name: Build Docker image
+      id: build-docker
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ env.VERSION }} .
+      continue-on-error: true
 
-#     - name: Push Docker image
-#       id: push-docker
-#       run: |
-#         docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ env.VERSION }}
-#         docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ env.VERSION }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
-#         docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
-#       continue-on-error: true
+    - name: Push Docker image
+      id: push-docker
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ env.VERSION }}
+        docker tag ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ env.VERSION }} ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
+      continue-on-error: true
 
-#     - name: Remove Tag if Push Fails
-#       if: failure() || steps.push-docker.outcome == 'failure' || steps.build-docker.outcome == 'failure'
-#       run: |
-#         echo "Push failed, deleting tag..."
-#         git fetch --tags
-#         git tag -d ${{ env.VERSION }} || echo "Tag not found locally, skipping deletion..."
-#         git push --delete origin ${{ env.VERSION }} || echo "Tag not found on remote, skipping deletion..."
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Remove Tag if Push Fails
+      if: failure() || steps.push-docker.outcome == 'failure' || steps.build-docker.outcome == 'failure'
+      run: |
+        echo "Push failed, deleting tag..."
+        git fetch --tags
+        git tag -d ${{ env.VERSION }} || echo "Tag not found locally, skipping deletion..."
+        git push --delete origin ${{ env.VERSION }} || echo "Tag not found on remote, skipping deletion..."
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
-#     - name: Create Pull Request for version.txt removal
-#       uses: peter-evans/create-pull-request@v5
-#       with:
-#         token: ${{ secrets.GITHUB_TOKEN }}
-#         commit-message: "Remove version.txt"
-#         branch: remove-version-file
-#         title: "Remove version.txt"
-#         body: "This PR removes version.txt after building and pushing Docker images."
+    - name: Create Pull Request for version.txt removal
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "Remove version.txt"
+        branch: remove-version-file
+        title: "Remove version.txt"
+        body: "This PR removes version.txt after building and pushing Docker images."
