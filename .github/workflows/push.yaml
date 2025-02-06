@@ -51,6 +51,14 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/web-grader:latest
       continue-on-error: true
 
+    - name: Push Tag
+      run: |
+        git tag ${{ env.VERSION }}
+        git push origin ${{ env.VERSION }}
+      if: success() && steps.push-docker.outcome == 'success' && steps.build-docker.outcome == 'success'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Remove Tag if Push Fails
       if: failure() || steps.push-docker.outcome == 'failure' || steps.build-docker.outcome == 'failure'
       run: |
