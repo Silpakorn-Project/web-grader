@@ -22,6 +22,11 @@ jobs:
         VERSION=$(cat version.txt)
         echo "Version from file: $VERSION"
         echo "VERSION=$VERSION" >> $GITHUB_ENV
+    
+    - name: Remove Version File
+      run: |
+        rm version.txt
+      if: success()
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
