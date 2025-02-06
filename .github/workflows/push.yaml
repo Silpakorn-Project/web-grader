@@ -68,12 +68,3 @@ jobs:
         git push --delete origin ${{ env.VERSION }} || echo "Tag not found on remote, skipping deletion..."
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Create Pull Request for version.txt removal
-      uses: peter-evans/create-pull-request@v5
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: "Remove version.txt"
-        branch: remove-version-file
-        title: "Remove version.txt"
-        body: "This PR removes version.txt after building and pushing Docker images."
