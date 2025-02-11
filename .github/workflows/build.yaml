@@ -64,6 +64,10 @@ jobs:
         if [ -f version.txt ]; then
             echo "version.txt exists. Deleting..."
             rm version.txt
+            git add version.txt
+            git commit -m "Remove existing version.txt"
+            git push origin ${{ github.event.pull_request.head.ref }}
+
 
             # Commit and push the changes
             git config user.name "github-actions[bot]"
