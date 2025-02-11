@@ -1,5 +1,5 @@
-import { submitCode, SubmitCodeResponse } from "@/api/api";
 import CodeEditor from "@/components/CodeEditor/CodeEditor";
+import { submitCode, SubmitCodeResponse } from "@/services/api";
 import DomainVerificationIcon from "@mui/icons-material/DomainVerification";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import { AppBar, Box, Button, Divider, Stack, Toolbar } from "@mui/material";

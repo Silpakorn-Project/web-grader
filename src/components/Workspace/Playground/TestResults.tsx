@@ -1,4 +1,4 @@
-import { SubmitCodeResponse, TestCaseResponse } from "@/api/api";
+import { SubmitCodeResponse, TestCaseResponse } from "@/services/api";
 import { Button, Paper, Skeleton, Stack, Typography } from "@mui/material";
 import { FC, useMemo, useState } from "react";
 import TestCaseDetail from "./TestCaseDetail";
