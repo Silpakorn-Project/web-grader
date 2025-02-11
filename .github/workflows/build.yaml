@@ -69,7 +69,7 @@ jobs:
             rm version.txt
             git add version.txt
             git commit -m "Remove existing version.txt"
-            git push origin ${{ github.event.pull_request.head.ref }}
+            git push origin main 
 
             # Commit and push the changes
             git checkout ${{ github.event.pull_request.head.ref }} # Checkout branch ที่ถูกต้อง
