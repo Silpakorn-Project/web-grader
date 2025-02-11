@@ -37,7 +37,7 @@ jobs:
     - name: Output version
       run: echo "New version is ${{ env.VERSION }}"
 
-    - name: Build Docker image
+    - name: Build Docker image 
       id: build-docker
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/web-grader:${{ env.VERSION }} .
