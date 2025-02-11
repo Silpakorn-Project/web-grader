@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import HttpClient from "./HttpClient";
+import HttpClient from "./http/HttpClient";
 
 export abstract class BaseClient {
     protected httpClient: HttpClient;
