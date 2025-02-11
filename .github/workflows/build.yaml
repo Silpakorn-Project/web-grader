@@ -20,7 +20,7 @@ jobs:
       with:
         fetch-depth: 0 # Ensure all branches and tags are fetched
 
-    - name: Install GitHub CLI 
+    - name: Install GitHub CLI
       run: sudo apt-get install gh
 
     - name: Set up Docker Buildx
