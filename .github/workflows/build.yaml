@@ -126,3 +126,4 @@ jobs:
       run: |
         VERSION=$(cat version.txt)
         echo "New version is $VERSION"
+
