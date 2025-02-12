@@ -5,10 +5,10 @@ on:
     branches:
       - main
 
-# Permissions for accessing PR labels and contents
-permissions:
-  contents: write
-  pull-requests: read 
+
+
+
+
 
 jobs:
   semantic-versioning:
@@ -117,7 +117,7 @@ jobs:
         echo "version.txt has changed. Committing..."
         git add version.txt
         git commit -m "Set version from pull request #${{ github.event.pull_request.number }}"
-        git push origin ${{ github.event.pull_request.head.ref }} 
+        git push origin ${{ github.event.pull_request.head.ref }}
 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
