@@ -8,4 +8,4 @@ class Client {
     }
 }
 
-export const client = new Client(process.env.REACT_APP_GRADER_SERVICE_API_URL as string);
+export const client = new Client(import.meta.env.VITE_GRADER_SERVICE_API_URL as string);
