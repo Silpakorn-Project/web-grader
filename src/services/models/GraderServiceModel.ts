@@ -1,8 +1,24 @@
+export interface TestResultResponse {
+    passed: boolean;
+    input: string;
+    expected: string;
+    actual: string;
+    error: string;
+}
+
 export interface ISubmitRequest {
     userId: number;
     problemId: number;
     code: String;
     language: string;
+}
+
+export interface ISubmitResponse {
+    passed: boolean;
+    testcase_total: number;
+    testcase_passed: number;
+    testcase_wrong: number;
+    test_cases: TestResultResponse[];
 }
 
 export interface ILoginRequest {

@@ -1,66 +1,68 @@
-import CodeEditor from "@/components/CodeEditor/CodeEditor";
-import { submitCode, SubmitCodeResponse } from "@/services/api";
+import CodeEditor, { CodeEditorRef } from "@/components/CodeEditor/CodeEditor";
+import { client } from "@/services";
+import { ITestCaseResponse } from "@/services/models/GraderServiceModel";
 import DomainVerificationIcon from "@mui/icons-material/DomainVerification";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import { AppBar, Box, Button, Divider, Stack, Toolbar } from "@mui/material";
-import * as monaco from "monaco-editor";
-import { FC, useRef, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { FC, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import Split from "react-split";
 import TestCaseDetail from "./TestCaseDetail";
 import TestResults from "./TestResults";
 
 type PlaygroundProps = {};
 
-const testCases = [
-    {
-        testcase_id: 1,
-        input: "1 2",
-        expected_output: "3\n",
-    },
-    {
-        testcase_id: 2,
-        input: "-5 10",
-        expected_output: "5\n",
-    },
-];
-
 const Playground: FC<PlaygroundProps> = () => {
-    const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+    const { id } = useParams();
+    const editorRef = useRef<CodeEditorRef | null>(null);
 
-    const [selectedTestCase, setSelectedTestCase] = useState(testCases[0]);
+    const [selectedTestCase, setSelectedTestCase] =
+        useState<ITestCaseResponse | null>(null);
     const [currentView, setCurrentView] = useState<"test_case" | "test_result">(
         "test_case"
     );
+    const { data: testCases } = useQuery({
+        queryKey: ["testcases", id],
+        queryFn: async () => {
+            const response = await client.graderService.testCase.getTestCases({
+                problemId: Number(id),
+            });
+            return response.data;
+        },
+    });
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [response, setResponse] = useState<SubmitCodeResponse | null>(null);
-
-    const handleViewChange = (view: "test_case" | "test_result") => {
-        setCurrentView(view);
-    };
+    const {
+        mutateAsync: submitCodeMutation,
+        isPending: isSubmitting,
+        data: submitResponse,
+    } = useMutation({
+        mutationFn: client.graderService.submission.submit.mutation,
+    });
 
     const handleSubmit = async () => {
-        setCurrentView("test_result");
-
         if (editorRef.current) {
-            const code = editorRef.current.getValue();
+            const code = editorRef.current.getEditorInstance()?.getValue();
+            const language = editorRef.current.getLanguage();
 
-            try {
-                setIsLoading(true);
-
-                const response = await submitCode({
-                    source_code: code,
-                    test_cases: testCases,
-                });
-
-                setResponse(response);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setIsLoading(false);
+            if (code && language) {
+                await submitCodeMutation([
+                    {
+                        code: code,
+                        language: language.toUpperCase(),
+                        problemId: Number(id),
+                        userId: 1,
+                    },
+                ]);
             }
         }
     };
+
+    useEffect(() => {
+        if (testCases && testCases.length > 0) {
+            setSelectedTestCase(testCases[0]);
+        }
+    }, [testCases]);
 
     return (
         <Box bgcolor={"#2d2d2d"}>
@@ -89,9 +91,7 @@ const Playground: FC<PlaygroundProps> = () => {
                                             ? "contained"
                                             : "text"
                                     }
-                                    onClick={() =>
-                                        handleViewChange("test_case")
-                                    }
+                                    onClick={() => setCurrentView("test_case")}
                                 >
                                     Testcase
                                 </Button>
@@ -114,9 +114,9 @@ const Playground: FC<PlaygroundProps> = () => {
                                             : "text"
                                     }
                                     onClick={() =>
-                                        handleViewChange("test_result")
+                                        setCurrentView("test_result")
                                     }
-                                    loading={isLoading}
+                                    loading={isSubmitting}
                                     loadingPosition={"start"}
                                 >
                                     Test Result
@@ -124,47 +124,57 @@ const Playground: FC<PlaygroundProps> = () => {
                             </Toolbar>
                         </AppBar>
 
-                        {currentView === "test_case" && (
-                            <Stack direction="column" spacing={2} p={2}>
-                                <Stack direction="row" spacing={2}>
-                                    {testCases.map((testCase, index) => (
-                                        <Button
-                                            key={index}
-                                            color="inherit"
-                                            variant={
-                                                selectedTestCase.testcase_id ===
-                                                testCase.testcase_id
-                                                    ? "contained"
-                                                    : "text"
-                                            }
-                                            onClick={() =>
-                                                setSelectedTestCase(testCase)
-                                            }
-                                        >
-                                            Case {index + 1}
-                                        </Button>
-                                    ))}
-                                </Stack>
-                                <Stack spacing={2}>
-                                    <TestCaseDetail
-                                        label="Input"
-                                        content={selectedTestCase.input}
-                                    />
-                                    <TestCaseDetail
-                                        label="Output"
-                                        content={
-                                            selectedTestCase.expected_output
-                                        }
-                                    />
-                                </Stack>
-                            </Stack>
-                        )}
+                        {testCases && selectedTestCase && (
+                            <>
+                                {currentView === "test_case" && (
+                                    <Stack direction="column" spacing={2} p={2}>
+                                        <Stack direction="row" spacing={2}>
+                                            {testCases.map(
+                                                (testCase, index) => (
+                                                    <Button
+                                                        key={index}
+                                                        color="inherit"
+                                                        variant={
+                                                            selectedTestCase.testcaseId ===
+                                                            testCase.testcaseId
+                                                                ? "contained"
+                                                                : "text"
+                                                        }
+                                                        onClick={() =>
+                                                            setSelectedTestCase(
+                                                                testCase
+                                                            )
+                                                        }
+                                                    >
+                                                        Case {index + 1}
+                                                    </Button>
+                                                )
+                                            )}
+                                        </Stack>
+                                        <Stack spacing={2}>
+                                            <TestCaseDetail
+                                                label="Input"
+                                                content={
+                                                    selectedTestCase.inputData
+                                                }
+                                            />
+                                            <TestCaseDetail
+                                                label="Output"
+                                                content={
+                                                    selectedTestCase.expectedOutput
+                                                }
+                                            />
+                                        </Stack>
+                                    </Stack>
+                                )}
 
-                        {currentView === "test_result" && (
-                            <TestResults
-                                response={response}
-                                loading={isLoading}
-                            />
+                                {currentView === "test_result" && (
+                                    <TestResults
+                                        response={submitResponse as any}
+                                        loading={isSubmitting}
+                                    />
+                                )}
+                            </>
                         )}
                     </Box>
                 </Split>
@@ -175,7 +185,7 @@ const Playground: FC<PlaygroundProps> = () => {
                         color="inherit"
                         size="small"
                         onClick={handleSubmit}
-                        loading={isLoading}
+                        loading={isSubmitting}
                     >
                         Run
                     </Button>
@@ -184,7 +194,7 @@ const Playground: FC<PlaygroundProps> = () => {
                         color="success"
                         size="small"
                         onClick={handleSubmit}
-                        loading={isLoading}
+                        loading={isSubmitting}
                     >
                         Submit
                     </Button>

@@ -1,7 +1,7 @@
+import Playground from "@/components/Workspace/Playground/Playground";
+import ProblemDescription from "@/components/Workspace/ProblemDescription/ProblemDescription";
 import React from "react";
 import Split from "react-split";
-import Playground from "./Playground/Playground";
-import ProblemDescription from "./ProblemDescription/ProblemDescription";
 
 type WorkspaceProps = {};
 

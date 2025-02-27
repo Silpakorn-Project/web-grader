@@ -1,9 +1,11 @@
+import router from "@/rounter/rounter";
 import { client } from "@/services";
+import { useAuthStore } from "@/store/AuthStore";
 import {
     Button,
     CircularProgress,
     Container,
-    Link,
+    Link as MuiLink,
     Paper,
     Stack,
     TextField,
@@ -11,12 +13,12 @@ import {
 } from "@mui/material";
 import { isAxiosError } from "axios";
 import { FC, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 type LoginProps = {};
 
-const Login : FC<LoginProps> = () => {
-    const navigate = useNavigate();
+const Login: FC<LoginProps> = () => {
+    const { setToken } = useAuthStore();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -33,8 +35,8 @@ const Login : FC<LoginProps> = () => {
                 password: password,
             });
 
-            localStorage.setItem("token", response.data.token);
-            navigate("/workspace"); // TODO: navigate to home page
+            setToken(response.data.token);
+            router.navigate("/");
         } catch (error) {
             let errorMessage = "Something went wrong; please try again.";
 
@@ -72,7 +74,9 @@ const Login : FC<LoginProps> = () => {
                         onChange={(e) => setPassword(e.target.value)}
                     />
 
-                    {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+                    {errorMessage && (
+                        <Typography color="error">{errorMessage}</Typography>
+                    )}
 
                     <Button
                         type="submit"
@@ -86,7 +90,9 @@ const Login : FC<LoginProps> = () => {
 
                     <Typography>
                         Not Registered?{" "}
-                        <Link href="/signup">Create Account</Link>
+                        <MuiLink component={Link} to="/signup">
+                            Create Account
+                        </MuiLink>
                     </Typography>
                 </Stack>
             </Paper>

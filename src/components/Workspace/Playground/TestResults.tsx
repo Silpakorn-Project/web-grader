@@ -1,16 +1,19 @@
-import { SubmitCodeResponse, TestCaseResponse } from "@/services/api";
+import {
+    ISubmitResponse,
+    TestResultResponse
+} from "@/services/models/GraderServiceModel";
 import { Button, Paper, Skeleton, Stack, Typography } from "@mui/material";
 import { FC, useMemo, useState } from "react";
 import TestCaseDetail from "./TestCaseDetail";
 
 type TestResultsProps = {
-    response: SubmitCodeResponse | null;
+    response: ISubmitResponse | null;
     loading?: boolean;
 };
 
 const TestResults: FC<TestResultsProps> = ({ response, loading }) => {
     const [selectedTestCase, setSelectedTestCase] =
-        useState<TestCaseResponse | null>(null);
+        useState<TestResultResponse | null>(null);
 
     useMemo(() => {
         if (response) {

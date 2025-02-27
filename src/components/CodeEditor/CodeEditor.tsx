@@ -2,17 +2,20 @@ import { CODE_SNIPPETS } from "@/constants/languages";
 import { Editor, OnMount } from "@monaco-editor/react";
 import { Box } from "@mui/material";
 import * as monaco from "monaco-editor";
-import { forwardRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import PreferenceBar from "./PreferenceBar";
 
 type CodeEditorProps = {};
 
-const CodeEditor = forwardRef<
-    monaco.editor.IStandaloneCodeEditor | null,
-    CodeEditorProps
->((props, ref) => {
+export type CodeEditorRef = {
+    getLanguage: () => string;
+    getEditorInstance: () => monaco.editor.IStandaloneCodeEditor | null;
+};
+
+const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>((_props, ref) => {
     const [language, setLanguage] = useState("java");
     const [value, setValue] = useState(CODE_SNIPPETS[language]);
+    const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
     const onSelectLanguage = (selectedLanguage?: string) => {
         if (selectedLanguage) {
@@ -22,14 +25,13 @@ const CodeEditor = forwardRef<
     };
 
     const onMount: OnMount = (editor) => {
-        if (ref) {
-            if (typeof ref === "function") {
-                ref(editor);
-            } else {
-                ref.current = editor;
-            }
-        }
+        editorRef.current = editor;
     };
+
+    useImperativeHandle(ref, () => ({
+        getLanguage: () => language,
+        getEditorInstance: () => editorRef.current,
+    }));
 
     return (
         <Box>

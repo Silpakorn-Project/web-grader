@@ -3,14 +3,14 @@ import {
     Button,
     CircularProgress,
     Container,
-    Link,
+    Link as MuiLink,
     Paper,
     Stack,
     TextField,
     Typography,
 } from "@mui/material";
 import { FC, FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 type SignUpProps = {};
 
@@ -22,7 +22,7 @@ const SignUp: FC<SignUpProps> = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const handleLogin = async (event: FormEvent) => {
+    const handleRegister = async (event: FormEvent) => {
         event.preventDefault();
         setLoading(true);
         setError("");
@@ -34,7 +34,7 @@ const SignUp: FC<SignUpProps> = () => {
                 password: password,
             });
 
-            navigate("/");
+            navigate("/login");
         } catch (err) {
             setError("Something went wrong.");
         } finally {
@@ -45,7 +45,7 @@ const SignUp: FC<SignUpProps> = () => {
     return (
         <Container maxWidth="xs">
             <Paper elevation={3} sx={{ p: 4, mt: 8, textAlign: "center" }}>
-                <Stack spacing={2} component="form" onSubmit={handleLogin}>
+                <Stack spacing={2} component="form" onSubmit={handleRegister}>
                     <Typography variant="h5" gutterBottom>
                         Sign Up
                     </Typography>
@@ -83,7 +83,10 @@ const SignUp: FC<SignUpProps> = () => {
                     </Button>
 
                     <Typography>
-                        Already have an account? <Link href="/">Login</Link>
+                        Already have an account?{" "}
+                        <MuiLink component={Link} to="/login">
+                            Login
+                        </MuiLink>
                     </Typography>
                 </Stack>
             </Paper>
