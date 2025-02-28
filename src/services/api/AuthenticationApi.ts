@@ -2,15 +2,15 @@ import { BaseApi } from "../BaseApi";
 import { BaseResponse } from "../models/BaseResponse";
 import {
     ILoginRequest,
-    ILoginResponse,
     IRegisterRequest,
+    IUserTokenResponse,
 } from "../models/GraderServiceModel";
 
 export class AuthenticationApi extends BaseApi {
     public async login(loginRequest: ILoginRequest) {
         const response = await this.httpClient.post<
             ILoginRequest,
-            BaseResponse<ILoginResponse>
+            BaseResponse<IUserTokenResponse>
         >("/api/auth/login", loginRequest);
         return response.data;
     }
@@ -31,9 +31,7 @@ export class AuthenticationApi extends BaseApi {
         const response = await this.httpClient
             .disabledDefaultRequestInterceptor()
             .disabledDefaultResponseInterceptor()
-            .post<ILoginRequest, BaseResponse<ILoginResponse>>(
-                "/api/auth/refresh"
-            );
+            .post<BaseResponse<IUserTokenResponse>>("/api/auth/refresh");
         return response.data;
     }
 }

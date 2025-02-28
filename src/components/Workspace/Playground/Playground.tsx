@@ -1,6 +1,7 @@
 import CodeEditor, { CodeEditorRef } from "@/components/CodeEditor/CodeEditor";
 import { client } from "@/services";
 import { ITestCaseResponse } from "@/services/models/GraderServiceModel";
+import { useAuthStore } from "@/store/AuthStore";
 import DomainVerificationIcon from "@mui/icons-material/DomainVerification";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import { AppBar, Box, Button, Divider, Stack, Toolbar } from "@mui/material";
@@ -14,7 +15,9 @@ import TestResults from "./TestResults";
 type PlaygroundProps = {};
 
 const Playground: FC<PlaygroundProps> = () => {
-    const { id } = useParams();
+    const { userId } = useAuthStore();
+
+    const { id: problemId } = useParams();
     const editorRef = useRef<CodeEditorRef | null>(null);
 
     const [selectedTestCase, setSelectedTestCase] =
@@ -22,11 +25,12 @@ const Playground: FC<PlaygroundProps> = () => {
     const [currentView, setCurrentView] = useState<"test_case" | "test_result">(
         "test_case"
     );
+
     const { data: testCases } = useQuery({
-        queryKey: ["testcases", id],
+        queryKey: ["testcases", problemId],
         queryFn: async () => {
             const response = await client.graderService.testCase.getTestCases({
-                problemId: Number(id),
+                problemId: Number(problemId),
             });
             return response.data;
         },
@@ -41,17 +45,19 @@ const Playground: FC<PlaygroundProps> = () => {
     });
 
     const handleSubmit = async () => {
+        setCurrentView("test_result");
+
         if (editorRef.current) {
             const code = editorRef.current.getEditorInstance()?.getValue();
             const language = editorRef.current.getLanguage();
 
-            if (code && language) {
+            if (code && language && userId && problemId) {
                 await submitCodeMutation([
                     {
                         code: code,
                         language: language.toUpperCase(),
-                        problemId: Number(id),
-                        userId: 1,
+                        problemId: Number(problemId),
+                        userId: userId,
                     },
                 ]);
             }
@@ -170,7 +176,7 @@ const Playground: FC<PlaygroundProps> = () => {
 
                                 {currentView === "test_result" && (
                                     <TestResults
-                                        response={submitResponse as any}
+                                        response={submitResponse?.data!}
                                         loading={isSubmitting}
                                     />
                                 )}

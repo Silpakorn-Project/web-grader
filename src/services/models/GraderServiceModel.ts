@@ -1,4 +1,4 @@
-export interface TestResultResponse {
+export interface ITestResultResponse {
     passed: boolean;
     input: string;
     expected: string;
@@ -18,7 +18,7 @@ export interface ISubmitResponse {
     testcase_total: number;
     testcase_passed: number;
     testcase_wrong: number;
-    test_cases: TestResultResponse[];
+    test_cases: ITestResultResponse[];
 }
 
 export interface ILoginRequest {
@@ -26,7 +26,7 @@ export interface ILoginRequest {
     password: string;
 }
 
-export interface ILoginResponse {
+export interface IUserTokenResponse {
     userId: number;
     username: string;
     token: string;

@@ -1,6 +1,6 @@
 import {
     ISubmitResponse,
-    TestResultResponse
+    ITestResultResponse,
 } from "@/services/models/GraderServiceModel";
 import { Button, Paper, Skeleton, Stack, Typography } from "@mui/material";
 import { FC, useMemo, useState } from "react";
@@ -13,10 +13,10 @@ type TestResultsProps = {
 
 const TestResults: FC<TestResultsProps> = ({ response, loading }) => {
     const [selectedTestCase, setSelectedTestCase] =
-        useState<TestResultResponse | null>(null);
+        useState<ITestResultResponse | null>(null);
 
     useMemo(() => {
-        if (response) {
+        if (response?.test_cases) {
             setSelectedTestCase(response.test_cases[0]);
         }
     }, [response]);
