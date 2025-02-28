@@ -8,19 +8,19 @@ import { useAuthStore } from "./store/AuthStore";
 type AppProps = {};
 
 const App: FC<AppProps> = () => {
-    const { token, setToken } = useAuthStore();
+    const { token, setCredential } = useAuthStore();
 
     const { isLoading } = useQuery({
         queryKey: ["auth-check"],
         queryFn: async () => {
-            const newToken =
+            const response =
                 await client.graderService.authentication.refreshToken();
 
-            if (newToken?.data?.token) {
-                setToken(newToken.data.token);
+            if (response?.data?.token) {
+                setCredential(response.data);
             }
 
-            return newToken;
+            return response;
         },
         enabled: !token,
     });

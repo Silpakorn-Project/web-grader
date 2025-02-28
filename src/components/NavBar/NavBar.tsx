@@ -35,7 +35,7 @@ const Navbar = () => {
         handleCloseMenu();
 
         await client.graderService.authentication.logout();
-        useAuthStore.getState().setToken(null);
+        useAuthStore.getState().clearCredentials();
         router.navigate("/login");
     };
 

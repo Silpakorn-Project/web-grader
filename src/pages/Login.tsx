@@ -18,7 +18,7 @@ import { Link } from "react-router-dom";
 type LoginProps = {};
 
 const Login: FC<LoginProps> = () => {
-    const { setToken } = useAuthStore();
+    const { setCredential } = useAuthStore();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -35,7 +35,7 @@ const Login: FC<LoginProps> = () => {
                 password: password,
             });
 
-            setToken(response.data.token);
+            setCredential(response.data);
             router.navigate("/");
         } catch (error) {
             let errorMessage = "Something went wrong; please try again.";

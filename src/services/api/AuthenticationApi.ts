@@ -28,10 +28,12 @@ export class AuthenticationApi extends BaseApi {
     }
 
     public async refreshToken() {
-        const response = await this.httpClient.post<
-            ILoginRequest,
-            BaseResponse<ILoginResponse>
-        >("/api/auth/refresh");
+        const response = await this.httpClient
+            .disabledDefaultRequestInterceptor()
+            .disabledDefaultResponseInterceptor()
+            .post<ILoginRequest, BaseResponse<ILoginResponse>>(
+                "/api/auth/refresh"
+            );
         return response.data;
     }
 }

@@ -1,5 +1,3 @@
-import router from "@/rounter/rounter";
-import { useAuthStore } from "@/store/AuthStore";
 import axios, {
     AxiosError,
     AxiosInstance,
@@ -7,39 +5,56 @@ import axios, {
     AxiosResponse,
     InternalAxiosRequestConfig,
 } from "axios";
+import {
+    IHttpClientInterceptors,
+    IInnerInterceptor,
+} from "./@types/HttpClients";
 
 class HttpClient {
     private _axios: AxiosInstance;
     private _axiosConfig: AxiosRequestConfig = {
         headers: {
             "Content-Type": "application/json",
-        }
+        },
     };
 
-    constructor(config: AxiosRequestConfig = {}) {
+    public _interceptors: IInnerInterceptor = {};
+
+    constructor(
+        config?: AxiosRequestConfig,
+        interceptors?: IHttpClientInterceptors
+    ) {
         this._axiosConfig = { ...this._axiosConfig, ...config };
         this._axios = axios.create(this._axiosConfig);
+        this.registerInterceptor(
+            interceptors?.requestInterceptor,
+            interceptors?.responseInterceptor
+        );
+    }
 
+    public registerInterceptor(
+        request?: IHttpClientInterceptors["requestInterceptor"],
+        response?: IHttpClientInterceptors["responseInterceptor"]
+    ) {
         this._axios.interceptors.request.use(
-            this.defaultRequestInterceptor().onSuccess,
-            this.defaultRequestInterceptor().onError
+            request?.onSuccess || this.defaultRequestInterceptor().onSuccess,
+            request?.onError || this.defaultRequestInterceptor().onError
         );
 
         this._axios.interceptors.response.use(
-            this.defaultResponseInterceptor().onSucces,
-            this.defaultResponseInterceptor().onError
+            response?.onSuccess || this.defaultResponseInterceptor().onSuccess,
+            response?.onError || this.defaultResponseInterceptor().onError
         );
+
+        this._interceptors = {
+            request: request,
+            response: response,
+        };
     }
 
     private defaultRequestInterceptor() {
         return {
             onSuccess: (config: InternalAxiosRequestConfig) => {
-                const token = useAuthStore.getState().token;
-
-                if (token) {
-                    config.headers.Authorization = `Bearer ${token}`;
-                }
-
                 return config;
             },
 
@@ -51,25 +66,36 @@ class HttpClient {
 
     private defaultResponseInterceptor() {
         return {
-            onSucces: (response: AxiosResponse) => {
+            onSuccess: (response: AxiosResponse) => {
                 return response;
             },
             onError: (error: AxiosError) => {
-                if (error.response?.status === 401) {
-                    router.navigate("/login");
-                }
-
                 return Promise.reject(error);
             },
         };
     }
 
-    public static create(httpConfig?: AxiosRequestConfig) {
-        return new HttpClient(httpConfig);
+    public static create(
+        httpConfig?: AxiosRequestConfig,
+        interceptors?: IHttpClientInterceptors
+    ) {
+        return new HttpClient(httpConfig, interceptors);
     }
 
     public get instance() {
         return this._axios;
+    }
+
+    public disabledDefaultRequestInterceptor() {
+        return new HttpClient(this._axiosConfig, {
+            responseInterceptor: this._interceptors.response,
+        });
+    }
+
+    public disabledDefaultResponseInterceptor() {
+        return new HttpClient(this._axiosConfig, {
+            requestInterceptor: this._interceptors.request,
+        });
     }
 
     public async get<T = any>(

@@ -27,6 +27,7 @@ export interface ILoginRequest {
 }
 
 export interface ILoginResponse {
+    userId: number;
     username: string;
     token: string;
 }
