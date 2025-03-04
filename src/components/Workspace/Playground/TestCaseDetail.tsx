@@ -15,7 +15,7 @@ const TestCaseDetail: FC<TestCaseDetailProps> = ({ label, content, color }) => {
             <Typography variant="subtitle1" gutterBottom>
                 {label}
             </Typography>
-            <Paper sx={{ backgroundColor: "#484444" }}>
+            <Paper>
                 <Typography color={color} py={1} px={2}>
                     {content}
                 </Typography>

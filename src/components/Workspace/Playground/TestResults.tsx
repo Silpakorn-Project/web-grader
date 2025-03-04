@@ -1,19 +1,22 @@
-import { SubmitCodeResponse, TestCaseResponse } from "@/api/api";
+import {
+    ISubmitResponse,
+    ITestResultResponse,
+} from "@/services/models/GraderServiceModel";
 import { Button, Paper, Skeleton, Stack, Typography } from "@mui/material";
 import { FC, useMemo, useState } from "react";
 import TestCaseDetail from "./TestCaseDetail";
 
 type TestResultsProps = {
-    response: SubmitCodeResponse | null;
+    response: ISubmitResponse | null;
     loading?: boolean;
 };
 
 const TestResults: FC<TestResultsProps> = ({ response, loading }) => {
     const [selectedTestCase, setSelectedTestCase] =
-        useState<TestCaseResponse | null>(null);
+        useState<ITestResultResponse | null>(null);
 
     useMemo(() => {
-        if (response) {
+        if (response?.test_cases) {
             setSelectedTestCase(response.test_cases[0]);
         }
     }, [response]);
@@ -76,9 +79,11 @@ const TestResults: FC<TestResultsProps> = ({ response, loading }) => {
 
                     <Stack spacing={2}>
                         {selectedTestCase?.error && (
-                            <Paper sx={{ backgroundColor: "#382c2c" }}>
+                            <Paper>
                                 <Typography color="error" px={2}>
-                                    <pre>{selectedTestCase.error}</pre>
+                                    <pre className="whitespace-pre-wrap">
+                                        {selectedTestCase.error}
+                                    </pre>
                                 </Typography>
                             </Paper>
                         )}
