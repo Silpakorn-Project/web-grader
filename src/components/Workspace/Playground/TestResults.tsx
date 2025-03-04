@@ -79,9 +79,11 @@ const TestResults: FC<TestResultsProps> = ({ response, loading }) => {
 
                     <Stack spacing={2}>
                         {selectedTestCase?.error && (
-                            <Paper sx={{ backgroundColor: "#382c2c" }}>
+                            <Paper>
                                 <Typography color="error" px={2}>
-                                    <pre>{selectedTestCase.error}</pre>
+                                    <pre className="whitespace-pre-wrap">
+                                        {selectedTestCase.error}
+                                    </pre>
                                 </Typography>
                             </Paper>
                         )}

@@ -34,14 +34,21 @@ const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>((_props, ref) => {
     }));
 
     return (
-        <Box>
+        <Box
+            sx={{
+                overflow: "hidden",
+                border: "2px solid",
+                borderColor: "grey.300",
+                borderRadius: 4,
+                boxShadow: 1,
+            }}
+        >
             <PreferenceBar
                 language={language}
                 onSelectLanguage={onSelectLanguage}
             />
             <Editor
                 height="calc(100% - 40px)"
-                theme="vs-dark"
                 language={language}
                 value={value}
                 defaultValue={CODE_SNIPPETS[language]}

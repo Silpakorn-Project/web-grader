@@ -7,20 +7,34 @@ import App from "./App";
 import { queryClient } from "./services/query/queryClient";
 import "./styles/global.css";
 
-const darkTheme = createTheme({
+const theme = createTheme({
     palette: {
-        mode: "dark",
+        primary: {
+            main: "#019699",
+            light: "#33ABAD",
+            dark: "#00696B",
+            contrastText: "#ffffff",
+        },
     },
     typography: {
-        fontFamily: `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, 
-        "Open Sans", "Helvetica Neue", sans-serif`,
+        fontFamily:
+            'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
+    },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    overflow: "hidden",
+                },
+            },
+        },
     },
 });
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <QueryClientProvider client={queryClient}>
-            <ThemeProvider theme={darkTheme}>
+            <ThemeProvider theme={theme}>
                 <CssBaseline />
                 <App />
             </ThemeProvider>

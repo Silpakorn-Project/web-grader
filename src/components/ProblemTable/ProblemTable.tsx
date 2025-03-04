@@ -16,7 +16,6 @@ type ProblemTableProps = {
 };
 
 const ProblemTable: FC<ProblemTableProps> = ({ problems }) => {
-
     return (
         <TableContainer component={Paper} sx={{ mt: 4 }}>
             <Table>
@@ -30,12 +29,10 @@ const ProblemTable: FC<ProblemTableProps> = ({ problems }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {problems.map((problem, index) => (
+                    {problems.map((problem) => (
                         <TableRow
                             key={problem.problemId}
                             sx={{
-                                backgroundColor:
-                                    index % 2 === 0 ? "#1b1a1b" : "#282828",
                                 cursor: "pointer",
                             }}
                             onClick={() => {
