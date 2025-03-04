@@ -2,6 +2,7 @@
 import Navbar from "@/components/NavBar/NavBar";
 import HomePage from "@/pages/HomePage";
 import Login from "@/pages/Login";
+import OnlinePage from "@/pages/OnlinePage";
 import ProblemsPage from "@/pages/ProblemsPage";
 import SignUp from "@/pages/SignUp";
 import Workspace from "@/pages/Workspace";
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
             {
                 path: "/",
                 element: <HomePage />,
+            },
+            {
+                path: "/online",
+                element: <OnlinePage />,
             },
             {
                 path: "/login",

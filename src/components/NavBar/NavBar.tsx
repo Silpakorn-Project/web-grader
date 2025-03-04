@@ -3,6 +3,8 @@ import { client } from "@/services";
 import { useAuthStore } from "@/store/AuthStore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MenuIcon from "@mui/icons-material/Menu";
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+
 import {
     AppBar,
     Box,
@@ -64,6 +66,13 @@ const Navbar = () => {
                         onClick={() => router.navigate("/")}
                     >
                         Home
+                    </Button>
+                    <Button
+                        color="inherit"
+                        onClick={() => router.navigate("/online")}
+                        startIcon={<SportsEsportsIcon />}
+                    >
+                        Online
                     </Button>
                     <Button
                         color="inherit"
