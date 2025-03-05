@@ -1,34 +1,31 @@
-import Box from '@mui/material/Box';
-import React, { useEffect, useState } from 'react';
+import { Button, Typography } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-const socket: Socket = io("http://localhost:3000");
 
 const OnlinePage: React.FC = () => {
-    const [countdown, setCountdown] = useState<number>(30); // 30 seconds countdown
+
+    const [serverTime, setServerTime] = useState<string>("");
+    const [message, setMessage] = useState<string>("");
+    const didMount = useRef(false); // 🔹 ใช้ useRef เพื่อเช็คว่าเคยรันหรือยัง
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setCountdown(prevCountdown => {
-                if (prevCountdown <= 1) {
-                    clearInterval(timer);
-                    // Start the game or handle countdown end
-                    console.log('Game starting...');
-                    return 0;
-                }
-                return prevCountdown - 1;
-            });
-        }, 1000);
+        if (didMount.current) return; // ถ้าเคยรันแล้วให้ return ออกไปเลย
+        didMount.current = true; // กำหนดให้มันรันแค่ครั้งแรก
 
-        return () => clearInterval(timer);
-    }, []);
+        const socket: Socket = io("http://localhost:3000");
 
-    const [serverTime, setServerTime] = useState("");
+        socket.emit("joinRoom");
 
-    useEffect(() => {
         socket.on("server time", (time) => {
             setServerTime(new Date(time).toLocaleTimeString());
         });
+
+        socket.on("roomUpdate", (room) => {
+            console.log(`Room updated: ${JSON.stringify(room)}`);
+            setMessage(`Room updated: ${JSON.stringify(room)}`);
+        });
+
         return () => {
             socket.off("server time");
         };
@@ -36,36 +33,35 @@ const OnlinePage: React.FC = () => {
 
     return (
         <>
-            <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                height="100vh" 
-            >
-                <Box
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    padding={15} 
-                >
+            { message }
+            <Typography variant='h5' color='primary' textAlign={'right'}>{serverTime}</Typography>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', height: '100vh', marginTop: -25 }}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                    <Typography variant="h3" color="primary">
+                        Online Mode
+                    </Typography>
+                    <Button color='error' variant="contained" size='large'>Leave Game</Button>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 15, alignItems: 'center' }}>
                     <div style={{ textAlign: 'center', border: 1, padding: 15 }}>
                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s" width={90} />
-                        <h5>waiting player</h5>
+                        <Typography variant='h6' color='primary'>waiting player</Typography>
                     </div>
                     <div style={{ textAlign: 'center', border: 1, padding: 15 }}>
                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s" width={90} />
-                        <h5>waiting player</h5>
+                        <Typography variant='h6' color='primary'>waiting player</Typography>
                     </div>
                     <div style={{ textAlign: 'center', border: 1, padding: 15 }}>
                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s" width={90} />
-                        <h5>waiting player</h5>
+                        <Typography variant='h6' color='primary'>waiting player</Typography>
                     </div>
                     <div style={{ textAlign: 'center', border: 1, padding: 15 }}>
                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s" width={90} />
-                        <h5>waiting player</h5>
+                        <Typography variant='h6' color='primary'>waiting player</Typography>
                     </div>
-                </Box>
-            </Box>
+                </div>
+            </div>
+
         </>
     );
 };
