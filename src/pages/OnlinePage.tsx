@@ -1,19 +1,22 @@
-import { Button, Typography } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { Button, Typography } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { io, Socket } from "socket.io-client";
 
+const SERVER_URL = "http://localhost:3000";
 
 const OnlinePage: React.FC = () => {
-
     const [serverTime, setServerTime] = useState<string>("");
     const [message, setMessage] = useState<string>("");
-    const didMount = useRef(false); // 🔹 ใช้ useRef เพื่อเช็คว่าเคยรันหรือยัง
+    const [isConnected, setIsConnected] = useState<boolean>(false);
+    const socketRef = useRef<Socket | null>(null);
 
-    useEffect(() => {
-        if (didMount.current) return; // ถ้าเคยรันแล้วให้ return ออกไปเลย
-        didMount.current = true; // กำหนดให้มันรันแค่ครั้งแรก
+    const connectSocket = () => {
+        if (socketRef.current) return; // ถ้ามี socket อยู่แล้ว ไม่ต้องสร้างใหม่
 
-        const socket: Socket = io("http://localhost:3000");
+        console.log("🔌 Connecting to socket...");
+        const socket = io(SERVER_URL);
+        socketRef.current = socket;
+        setIsConnected(true);
 
         socket.emit("joinRoom");
 
@@ -26,42 +29,94 @@ const OnlinePage: React.FC = () => {
             setMessage(`Room updated: ${JSON.stringify(room)}`);
         });
 
+        socket.on("disconnect", () => {
+            console.log("❌ Disconnected from server");
+            setIsConnected(false);
+        });
+    };
+
+    const disconnectSocket = () => {
+        if (socketRef.current) {
+            console.log("❌ Disconnecting socket...");
+            socketRef.current.disconnect();
+            socketRef.current = null;
+            setIsConnected(false);
+        }
+    };
+
+    const handleVisibilityChange = () => {
+        if (document.hidden) {
+            disconnectSocket();
+        } else {
+            connectSocket();
+        }
+    };
+
+    useEffect(() => {
+        connectSocket();
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
         return () => {
-            socket.off("server time");
+            disconnectSocket();
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
     }, []);
 
     return (
         <>
-            { message }
-            <Typography variant='h5' color='primary' textAlign={'right'}>{serverTime}</Typography>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', height: '100vh', marginTop: -25 }}>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+            <Typography variant="h5" color="primary" textAlign="right">
+                {isConnected ? "🟢 Connected" : "🔴 Disconnected"} | {serverTime}
+            </Typography>
+            <Typography variant="h5" color="primary" textAlign="right">
+                {isConnected ? "🟢 Connected" : "🔴 Disconnected"} | {message}
+            </Typography>
+
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "column",
+                    height: "100vh",
+                    marginTop: -25,
+                }}
+            >
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                    }}
+                >
                     <Typography variant="h3" color="primary">
                         Online Mode
                     </Typography>
-                    <Button color='error' variant="contained" size='large'>Leave Game</Button>
+                    <Button color="error" variant="contained" size="large" onClick={disconnectSocket}>
+                        Leave Game
+                    </Button>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: 15, alignItems: 'center' }}>
-                    <div style={{ textAlign: 'center', border: 1, padding: 15 }}>
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s" width={90} />
-                        <Typography variant='h6' color='primary'>waiting player</Typography>
-                    </div>
-                    <div style={{ textAlign: 'center', border: 1, padding: 15 }}>
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s" width={90} />
-                        <Typography variant='h6' color='primary'>waiting player</Typography>
-                    </div>
-                    <div style={{ textAlign: 'center', border: 1, padding: 15 }}>
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s" width={90} />
-                        <Typography variant='h6' color='primary'>waiting player</Typography>
-                    </div>
-                    <div style={{ textAlign: 'center', border: 1, padding: 15 }}>
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s" width={90} />
-                        <Typography variant='h6' color='primary'>waiting player</Typography>
-                    </div>
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: 15,
+                        alignItems: "center",
+                    }}
+                >
+                    {[...Array(4)].map((_, i) => (
+                        <div key={i} style={{ textAlign: "center", border: 1, padding: 15 }}>
+                            <img
+                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s"
+                                width={90}
+                            />
+                            <Typography variant="h6" color="primary">
+                                waiting player
+                            </Typography>
+                        </div>
+                    ))}
                 </div>
             </div>
-
         </>
     );
 };
