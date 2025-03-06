@@ -1,5 +1,5 @@
 import Playground from "@/components/Workspace/Playground/Playground";
-import ProblemDescription from "@/components/Workspace/ProblemDescription/ProblemDescription";
+import ProblemDetails from "@/components/Workspace/ProblemDetail/ProblemDetails";
 import WorkspaceNavBar from "@/components/Workspace/WorkspaceNavBar/WorkspaceNavBar";
 import { Box } from "@mui/material";
 import { FC } from "react";
@@ -10,14 +10,14 @@ type WorkspaceProps = {};
 const Workspace: FC<WorkspaceProps> = () => {
     return (
         <Box
-            height="100vh"
-            overflow="hidden"
             display="flex"
             flexDirection="column"
+            overflow="hidden"
+            height="100vh"
         >
             <WorkspaceNavBar />
-            <Split className="split" minSize={0}>
-                <ProblemDescription />
+            <Split className="split pb-2 px-2" minSize={0}>
+                <ProblemDetails />
                 <Playground />
             </Split>
         </Box>

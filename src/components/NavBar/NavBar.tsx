@@ -23,7 +23,6 @@ const Navbar = () => {
     return (
         <AppBar
             position="static"
-            sx={{ backgroundColor: "#222f3f" }}
         >
             <Toolbar>
                 <IconButton
@@ -34,8 +33,8 @@ const Navbar = () => {
                     <MenuIcon />
                 </IconButton>
 
-                <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                    SU Grader
+                <Typography variant="h4" sx={{ flexGrow: 1 }}>
+                    SU
                 </Typography>
 
                 <Box sx={{ display: "flex", alignItems: "center" }}>

@@ -1,26 +1,38 @@
-import CodeEditor from "@/components/CodeEditor/CodeEditor";
-import { Box, Stack } from "@mui/material";
-import { FC } from "react";
+import CodeEditor, { CodeEditorRef } from "@/components/Workspace/CodeEditor/CodeEditor";
+import { useWorkspaceStore } from "@/store/WorkspaceStore";
+import * as monaco from "monaco-editor";
+import { useRef } from "react";
 import Split from "react-split";
 import TestCase from "./TestCase";
 
-type PlaygroundProps = {};
+const Playground = () => {
+    const editorRef = useRef<CodeEditorRef | null>(null);
+    const { setEditorInstance, setLanguage } = useWorkspaceStore();
 
-const Playground: FC<PlaygroundProps> = () => {
+    const handleEditorMount = (
+        editor: monaco.editor.IStandaloneCodeEditor | null
+    ) => {
+        setEditorInstance(editor);
+    };
+
+    const handleLanguageChange = (language: string) => {
+        setLanguage(language);
+    };
+
     return (
-        <Box>
-            <Stack direction="column">
-                <Split
-                    className="h-[calc(100vh-64px)]"
-                    direction="vertical"
-                    sizes={[60, 40]}
-                    minSize={50}
-                >
-                    <CodeEditor/>
-                    <TestCase />
-                </Split>
-            </Stack>
-        </Box>
+        <Split
+            className="h-[calc(97vh-64px)]"
+            direction="vertical"
+            sizes={[60, 40]}
+            minSize={50}
+        >
+            <CodeEditor
+                ref={editorRef}
+                onEditorMount={handleEditorMount}
+                onLanguageChange={handleLanguageChange}
+            />
+            <TestCase />
+        </Split>
     );
 };
 
