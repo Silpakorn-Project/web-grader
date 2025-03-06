@@ -1,4 +1,4 @@
-import router from "@/rounter/rounter";
+import { router } from "@/rounter/rounter";
 import { client } from "@/services";
 import { useAuthStore } from "@/store/AuthStore";
 import {

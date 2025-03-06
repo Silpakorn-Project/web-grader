@@ -1,4 +1,4 @@
-import router from "@/rounter/rounter";
+import { router } from "@/rounter/rounter";
 import { useAuthStore } from "@/store/AuthStore";
 import axios, {
     AxiosError,

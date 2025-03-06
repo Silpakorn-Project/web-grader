@@ -1,5 +1,5 @@
 import UserMenu from "@/components/UserMenu/UserMenu";
-import router from "@/rounter/rounter";
+import { router } from "@/rounter/rounter";
 import { client } from "@/services";
 import { IProblemResponse } from "@/services/models/GraderServiceModel";
 import { useAuthStore } from "@/store/AuthStore";

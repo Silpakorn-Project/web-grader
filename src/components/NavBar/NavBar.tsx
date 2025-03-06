@@ -1,4 +1,4 @@
-import router from "@/rounter/rounter";
+import { router } from "@/rounter/rounter";
 import { useAuthStore } from "@/store/AuthStore";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
@@ -21,9 +21,7 @@ const Navbar = () => {
     }
 
     return (
-        <AppBar
-            position="static"
-        >
+        <AppBar position="static">
             <Toolbar>
                 <IconButton
                     edge="start"

@@ -1,4 +1,4 @@
-import router from "@/rounter/rounter";
+import { router } from "@/rounter/rounter";
 import { useAuthStore } from "@/store/AuthStore";
 import { Box, Button, Typography } from "@mui/material";
 import { FC } from "react";

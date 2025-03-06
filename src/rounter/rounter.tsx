@@ -1,41 +1,38 @@
+import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import Navbar from "@/components/NavBar/NavBar";
-import HomePage from "@/pages/HomePage";
-import Login from "@/pages/Login";
-import NotFound from "@/pages/NotFound"; // Import the 404 page
-import ProblemsPage from "@/pages/ProblemsPage";
-import SignUp from "@/pages/SignUp";
-import Workspace from "@/pages/Workspace";
+import { HomepageRoutes } from "@/modules/homepage";
+import { LoginRoutes } from "@/modules/login";
+import { ProblemsRoutes } from "@/modules/problems";
+import { SignupRoutes } from "@/modules/signup";
+import { WorkspaceRoutes } from "@/modules/workspace";
 import { Box } from "@mui/material";
 import { createBrowserRouter, Outlet } from "react-router-dom";
 
-const router = createBrowserRouter([
+export const router = createBrowserRouter([
     {
-        path: "/",
+        path: "/*", 
+        errorElement: <ErrorBoundary />,
         element: <NavbarWrapper />,
         children: [
             {
-                path: "/",
-                element: <HomePage />,
+                path: "*", 
+                element: <HomepageRoutes />,
             },
             {
-                path: "/login",
-                element: <Login />,
+                path: "login/*", 
+                element: <LoginRoutes />,
             },
             {
-                path: "/signup",
-                element: <SignUp />,
+                path: "signup/*",
+                element: <SignupRoutes />,
             },
             {
-                path: "/problems",
-                element: <ProblemsPage />,
+                path: "problems/*",
+                element: <ProblemsRoutes />,
             },
             {
-                path: "/problems/:id",
-                element: <Workspace />,
-            },
-            {
-                path: "*",
-                element: <NotFound />,
+                path: "problems/:id/*", 
+                element: <WorkspaceRoutes />,
             },
         ],
     },
@@ -49,5 +46,3 @@ function NavbarWrapper() {
         </Box>
     );
 }
-
-export default router;

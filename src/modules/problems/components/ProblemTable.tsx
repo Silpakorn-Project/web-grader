@@ -1,4 +1,4 @@
-import router from "@/rounter/rounter";
+import { router } from "@/rounter/rounter";
 import { IProblemResponse } from "@/services/models/GraderServiceModel";
 import {
     Paper,

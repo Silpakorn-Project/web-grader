@@ -1,11 +1,11 @@
-import ProblemTable from "@/components/ProblemTable/ProblemTable";
+import ProblemTable from "@/modules/problems/components/ProblemTable";
 import { client } from "@/services";
 import { useQuery } from "@tanstack/react-query";
 import { FC } from "react";
 
 type ProblemPageProps = {};
 
-const ProblemsPage: FC<ProblemPageProps> = () => {
+const Problems: FC<ProblemPageProps> = () => {
     const { data, isLoading, isError } = useQuery({
         queryKey: ["problems"],
         queryFn: async () => {
@@ -19,4 +19,4 @@ const ProblemsPage: FC<ProblemPageProps> = () => {
 
     return <ProblemTable problems={data} />;
 };
-export default ProblemsPage;
+export default Problems;

@@ -1,6 +1,6 @@
-import Playground from "@/components/Workspace/Playground/Playground";
-import ProblemDetails from "@/components/Workspace/ProblemDetail/ProblemDetails";
-import WorkspaceNavBar from "@/components/Workspace/WorkspaceNavBar/WorkspaceNavBar";
+import Playground from "@/modules/workspace/components/Playground/Playground";
+import ProblemDetails from "@/modules/workspace/components/ProblemDetail/ProblemDetails";
+import WorkspaceNavBar from "@/modules/workspace/components/WorkspaceNavBar";
 import { Box } from "@mui/material";
 import { FC } from "react";
 import Split from "react-split";

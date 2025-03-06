@@ -1,4 +1,4 @@
-import CodeEditor, { CodeEditorRef } from "@/components/Workspace/CodeEditor/CodeEditor";
+import CodeEditor, { CodeEditorRef } from "@/modules/workspace/components/CodeEditor/CodeEditor";
 import { useWorkspaceStore } from "@/store/WorkspaceStore";
 import * as monaco from "monaco-editor";
 import { useRef } from "react";
