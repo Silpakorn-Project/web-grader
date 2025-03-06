@@ -1,4 +1,3 @@
-import { router } from "@/rounter/rounter";
 import { useAuthStore } from "@/store/AuthStore";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
@@ -9,10 +8,11 @@ import {
     Toolbar,
     Typography,
 } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import UserMenu from "../UserMenu/UserMenu";
 
 const Navbar = () => {
+    const navigate = useNavigate();
     const { token } = useAuthStore();
     const location = useLocation();
 
@@ -36,16 +36,13 @@ const Navbar = () => {
                 </Typography>
 
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Button
-                        color="inherit"
-                        onClick={() => router.navigate("/")}
-                    >
+                    <Button color="inherit" onClick={() => navigate("/")}>
                         Home
                     </Button>
                     <Button
                         color="inherit"
                         onClick={() => {
-                            router.navigate(token ? "/problems" : "/login");
+                            navigate(token ? "/problems" : "/login");
                         }}
                     >
                         Problems

@@ -1,4 +1,3 @@
-import { router } from "@/rounter/rounter";
 import { IProblemResponse } from "@/services/models/GraderServiceModel";
 import {
     Paper,
@@ -10,12 +9,15 @@ import {
     TableRow,
 } from "@mui/material";
 import { FC } from "react";
+import { useNavigate } from "react-router-dom";
 
 type ProblemTableProps = {
     problems: IProblemResponse[];
 };
 
 const ProblemTable: FC<ProblemTableProps> = ({ problems }) => {
+    const navigate = useNavigate();
+
     return (
         <TableContainer component={Paper} sx={{ mt: 4 }}>
             <Table>
@@ -36,9 +38,7 @@ const ProblemTable: FC<ProblemTableProps> = ({ problems }) => {
                                 cursor: "pointer",
                             }}
                             onClick={() => {
-                                router.navigate(
-                                    `/problems/${problem.problemId}`
-                                );
+                                navigate(`/problems/${problem.problemId}`);
                             }}
                         >
                             <TableCell>{problem.problemId}</TableCell>

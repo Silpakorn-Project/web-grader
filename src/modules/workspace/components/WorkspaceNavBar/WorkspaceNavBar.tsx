@@ -1,6 +1,5 @@
 import UserMenu from "@/components/UserMenu/UserMenu";
 import { useWorkspaceStore } from "@/modules/workspace/store/WorkspaceStore";
-import { router } from "@/rounter/rounter";
 import { client } from "@/services";
 import { IProblemResponse } from "@/services/models/GraderServiceModel";
 import { useAuthStore } from "@/store/AuthStore";
@@ -25,6 +24,7 @@ import { useNavigate, useParams } from "react-router-dom";
 type WorkspaceNavBarProps = {};
 
 const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
+    const navigate = useNavigate();
     const { userId } = useAuthStore();
     const {
         editorInstance,
@@ -35,7 +35,6 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
         setCurrentView,
     } = useWorkspaceStore();
     const { id: problemId } = useParams();
-    const navigate = useNavigate();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -107,7 +106,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
             </Drawer>
 
             <Box display="flex">
-                <Button onClick={() => router.navigate("/")}>
+                <Button onClick={() => navigate("/")}>
                     <Typography variant="h4">SU</Typography>
                 </Button>
 
@@ -153,13 +152,13 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                 </Button>
             </Box>
             <Box display="flex">
-                <Button color="inherit" onClick={() => router.navigate("/")}>
+                <Button color="inherit" onClick={() => navigate("/")}>
                     Home
                 </Button>
                 <Button
                     color="inherit"
                     onClick={() => {
-                        router.navigate("/problems");
+                        navigate("/problems");
                     }}
                 >
                     Problems

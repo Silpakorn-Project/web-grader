@@ -1,4 +1,3 @@
-import { router } from "@/rounter/rounter";
 import { client } from "@/services";
 import { useAuthStore } from "@/store/AuthStore";
 import { useThemeStore } from "@/store/ThemeStore"; // Import the theme store
@@ -13,10 +12,12 @@ import {
     MenuItem,
 } from "@mui/material";
 import { FC, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type UserMenuProps = {};
 
 const UserMenu: FC<UserMenuProps> = () => {
+    const navigate = useNavigate();
     const { token } = useAuthStore();
     const { mode, toggleMode } = useThemeStore();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -34,7 +35,7 @@ const UserMenu: FC<UserMenuProps> = () => {
         handleCloseMenu();
         await client.graderService.authentication.logout();
         useAuthStore.getState().clearCredentials();
-        router.navigate("/login");
+        navigate("/login");
     };
 
     if (!token) return null;

@@ -15,8 +15,6 @@ const WorkspaceBoxTopBar: FC<WorkspaceBoxTopBarProps> = ({
 
     const childrenArray = Children.toArray(children);
 
-    console.log(childrenArray.length);
-
     return (
         <Box
             sx={{

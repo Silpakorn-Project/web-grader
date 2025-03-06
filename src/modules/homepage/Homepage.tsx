@@ -1,11 +1,12 @@
-import { router } from "@/rounter/rounter";
 import { useAuthStore } from "@/store/AuthStore";
 import { Box, Button, Typography } from "@mui/material";
 import { FC } from "react";
+import { useNavigate } from "react-router-dom";
 
 type HomePageProps = {};
 
 const HomePage: FC<HomePageProps> = () => {
+    const navigate = useNavigate();
     const { token } = useAuthStore();
 
     return (
@@ -24,7 +25,7 @@ const HomePage: FC<HomePageProps> = () => {
             <Button
                 variant="contained"
                 onClick={() => {
-                    router.navigate(token ? "/problems" : "/login");
+                    navigate(token ? "/problems" : "/login");
                 }}
             >
                 Get Started
