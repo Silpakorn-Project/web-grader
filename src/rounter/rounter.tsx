@@ -1,6 +1,6 @@
 import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import Navbar from "@/components/NavBar/NavBar";
-import { HomepageRoutes } from "@/modules/homepage";
+import HomePage from "@/modules/homepage/Homepage";
 import { LoginRoutes } from "@/modules/login";
 import { ProblemsRoutes } from "@/modules/problems";
 import { SignupRoutes } from "@/modules/signup";
@@ -10,28 +10,28 @@ import { createBrowserRouter, Outlet } from "react-router-dom";
 
 export const router = createBrowserRouter([
     {
-        path: "/*", 
+        path: "/",
         errorElement: <ErrorBoundary />,
         element: <NavbarWrapper />,
         children: [
             {
-                path: "*", 
-                element: <HomepageRoutes />,
+                path: "/",
+                element: <HomePage />,
             },
             {
-                path: "login/*", 
+                path: "/login/*",
                 element: <LoginRoutes />,
             },
             {
-                path: "signup/*",
+                path: "/signup/*",
                 element: <SignupRoutes />,
             },
             {
-                path: "problems/*",
+                path: "/problems/*",
                 element: <ProblemsRoutes />,
             },
             {
-                path: "problems/:id/*", 
+                path: "/problems/:id/*",
                 element: <WorkspaceRoutes />,
             },
         ],

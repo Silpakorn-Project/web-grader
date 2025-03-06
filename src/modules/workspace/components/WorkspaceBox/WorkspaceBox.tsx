@@ -14,7 +14,7 @@ const WorkspaceBox: FC<WorkspaceBoxProps> = ({ children, sx, ...props }) => {
         overflow: "hidden",
         border: "2px solid",
         borderColor: mode === "dark" ? grey[600] : grey[300],
-        borderRadius: 4,
+        borderRadius: 2,
         boxShadow: 1,
         backgroundColor: mode === "dark" ? grey[900] : "",
     };

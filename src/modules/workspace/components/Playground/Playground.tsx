@@ -24,7 +24,7 @@ const Playground = () => {
             className="h-[calc(97vh-64px)]"
             direction="vertical"
             sizes={[60, 40]}
-            minSize={50}
+            minSize={38}
         >
             <CodeEditorPanel
                 ref={editorRef}
