@@ -1,6 +1,6 @@
+import { useWorkspaceStore } from "@/modules/workspace/store/WorkspaceStore";
 import { client } from "@/services";
 import { ITestCaseResponse } from "@/services/models/GraderServiceModel";
-import { useWorkspaceStore } from "@/store/WorkspaceStore";
 import DomainVerificationIcon from "@mui/icons-material/DomainVerification";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import { Box, Button, Stack } from "@mui/material";

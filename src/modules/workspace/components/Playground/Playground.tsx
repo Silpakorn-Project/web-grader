@@ -1,5 +1,5 @@
 import CodeEditor, { CodeEditorRef } from "@/modules/workspace/components/CodeEditor/CodeEditor";
-import { useWorkspaceStore } from "@/store/WorkspaceStore";
+import { useWorkspaceStore } from "@/modules/workspace/store/WorkspaceStore";
 import * as monaco from "monaco-editor";
 import { useRef } from "react";
 import Split from "react-split";
