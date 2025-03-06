@@ -1,13 +1,16 @@
-import { createTheme, ThemeOptions } from "@mui/material";
+import { createTheme } from "@mui/material";
 
-const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => ({
-    palette: {
-        mode,
-        primary: {
-            main: "#019699",
-        },
-        success: {
-            main: "#2CBB5D",
+export const theme = createTheme({
+    colorSchemes: {
+        dark: {
+            palette: {
+                primary: {
+                    main: "#019699",
+                },
+                success: {
+                    main: "#2CBB5D",
+                },
+            },
         },
     },
     typography: {
@@ -24,6 +27,3 @@ const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => ({
         },
     },
 });
-
-export const createCustomTheme = (mode: "light" | "dark") =>
-    createTheme(getDesignTokens(mode));

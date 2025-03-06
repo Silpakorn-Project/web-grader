@@ -65,14 +65,14 @@ const Submissions: FC<SubmissionsProps> = () => {
                         [...submissions]
                             .sort(
                                 (a, b) =>
-                                    new Date(a.updatedAt).getTime() -
-                                    new Date(b.updatedAt).getTime()
+                                    new Date(b.updatedAt).getTime() -
+                                    new Date(a.updatedAt).getTime()
                             )
-                            .map((submission, index) => (
+                            .map((submission, index, arr) => (
                                 <TableRow key={submission.submissionId}>
                                     <TableCell>
                                         <Typography sx={{ fontSize: "14px" }}>
-                                            {index + 1}
+                                            {arr.length - index}
                                         </Typography>
                                     </TableCell>
                                     <TableCell>

@@ -1,5 +1,4 @@
-import { useThemeStore } from "@/store/ThemeStore";
-import { Box, BoxProps, Divider } from "@mui/material"; // Import Divider
+import { Box, BoxProps, Divider, useColorScheme } from "@mui/material"; // Import Divider
 import { grey } from "@mui/material/colors";
 import React, { Children, FC, ReactNode } from "react";
 
@@ -11,7 +10,7 @@ const WorkspaceBoxTopBar: FC<WorkspaceBoxTopBarProps> = ({
     children,
     ...props
 }) => {
-    const { mode } = useThemeStore();
+    const { colorScheme } = useColorScheme();
 
     const childrenArray = Children.toArray(children);
 
@@ -22,7 +21,7 @@ const WorkspaceBoxTopBar: FC<WorkspaceBoxTopBarProps> = ({
                 alignItems: "center",
                 gap: 1,
                 padding: "2px 8px",
-                backgroundColor: mode === "dark" ? grey[800] : grey[50],
+                backgroundColor: colorScheme === "dark" ? grey[800] : grey[50],
             }}
             {...props}
         >
@@ -35,7 +34,9 @@ const WorkspaceBoxTopBar: FC<WorkspaceBoxTopBarProps> = ({
                             flexItem
                             sx={{
                                 borderColor:
-                                    mode === "dark" ? grey[600] : grey[300],
+                                    colorScheme === "dark"
+                                        ? grey[600]
+                                        : grey[300],
                                 borderWidth: 1,
                             }}
                         />

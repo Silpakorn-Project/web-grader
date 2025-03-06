@@ -1,21 +1,16 @@
-import { ThemeProvider } from "@emotion/react";
 import { CssBaseline } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
 import { useQuery } from "@tanstack/react-query";
 import { FC } from "react";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./rounter/rounter";
 import { client } from "./services";
 import { useAuthStore } from "./store/AuthStore";
-import { useThemeStore } from "./store/ThemeStore";
 import GlobalScrollbarStyles from "./styles/GlobalScrollbarStyles";
-import { createCustomTheme } from "./styles/theme";
+import { theme } from "./styles/theme";
 
-type AppProps = {};
-
-const App: FC<AppProps> = () => {
+const App: FC = () => {
     const { token, setCredential } = useAuthStore();
-    const { mode } = useThemeStore();
-    const theme = createCustomTheme(mode);
 
     const { isLoading } = useQuery({
         queryKey: ["auth-check"],
@@ -35,7 +30,7 @@ const App: FC<AppProps> = () => {
     if (isLoading) {
         return null;
     }
-
+    
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />

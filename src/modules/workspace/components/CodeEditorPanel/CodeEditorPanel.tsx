@@ -1,6 +1,6 @@
 import { CODE_SNIPPETS } from "@/constants/languages";
-import { useThemeStore } from "@/store/ThemeStore";
 import { Editor, OnMount } from "@monaco-editor/react";
+import { useColorScheme } from "@mui/material";
 import * as monaco from "monaco-editor";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import WorkspaceBox from "../WorkspaceBox/WorkspaceBox";
@@ -18,7 +18,7 @@ export type CodeEditorRef = {
 
 const CodeEditorPanel = forwardRef<CodeEditorRef, CodeEditorProps>(
     ({ onEditorMount, onLanguageChange }, ref) => {
-        const { mode } = useThemeStore();
+        const { colorScheme } = useColorScheme();
         const [language, setLanguage] = useState("java");
         const [value, setValue] = useState(CODE_SNIPPETS[language]);
         const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(
@@ -50,7 +50,7 @@ const CodeEditorPanel = forwardRef<CodeEditorRef, CodeEditorProps>(
                     onSelectLanguage={onSelectLanguage}
                 />
                 <Editor
-                    theme={mode === "dark" ? "vs-dark" : "vs"}
+                    theme={colorScheme === "dark" ? "vs-dark" : "vs"}
                     language={language}
                     value={value}
                     defaultValue={CODE_SNIPPETS[language]}
@@ -59,7 +59,7 @@ const CodeEditorPanel = forwardRef<CodeEditorRef, CodeEditorProps>(
                     options={{
                         minimap: {
                             enabled: false,
-                        }
+                        },
                     }}
                 />
             </WorkspaceBox>
