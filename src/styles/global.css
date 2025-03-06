@@ -2,25 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-::-webkit-scrollbar {
-    width: 0.5rem;
-}
-
-::-webkit-scrollbar-track {
-    background: #282828;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #4d4d4d;
-}
-
 .split {
     display: flex;
     flex-direction: row;
 }
 
 .gutter {
-    /* background-color: #ffffff; */
     background-repeat: no-repeat;
     background-position: 50%;
 }
