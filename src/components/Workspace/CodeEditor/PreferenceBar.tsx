@@ -1,6 +1,8 @@
 import { LANGUAGE } from "@/constants/languages";
+import { useThemeStore } from "@/store/ThemeStore";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Box, Button, Menu, MenuItem } from "@mui/material";
+import { grey } from "@mui/material/colors";
 import React, { useState } from "react";
 
 type PreferenceBarProps = {
@@ -12,6 +14,7 @@ const PreferenceBar: React.FC<PreferenceBarProps> = ({
     language,
     onSelectLanguage,
 }) => {
+    const { mode } = useThemeStore();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -21,11 +24,10 @@ const PreferenceBar: React.FC<PreferenceBarProps> = ({
     return (
         <Box
             sx={{
+                backgroundColor: mode === "dark" ? grey[800] : grey[50],
                 display: "flex",
                 alignItems: "center",
                 gap: 1,
-                backgroundColor: "primary.main",
-                color: "white",
                 padding: "8px 16px",
             }}
         >
@@ -52,7 +54,6 @@ const PreferenceBar: React.FC<PreferenceBarProps> = ({
                             onSelectLanguage(lang);
                             setAnchorEl(null);
                         }}
-                        sx={{ fontSize: "0.90rem" }}
                     >
                         {lang}
                     </MenuItem>

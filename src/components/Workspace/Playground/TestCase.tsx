@@ -1,29 +1,26 @@
-import { CodeEditorRef } from "@/components/CodeEditor/CodeEditor";
 import { client } from "@/services";
 import { ITestCaseResponse } from "@/services/models/GraderServiceModel";
-import { useAuthStore } from "@/store/AuthStore";
+import { useWorkspaceStore } from "@/store/WorkspaceStore";
 import DomainVerificationIcon from "@mui/icons-material/DomainVerification";
 import TerminalIcon from "@mui/icons-material/Terminal";
-import { Box, Button, Divider, Stack } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { FC, useEffect, useRef, useState } from "react";
+import { Box, Button, Stack } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
+import { FC, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import WorkspaceBox from "../WorkspaceBox/WorkspaceBox";
+import WorkspaceBoxTopBar from "../WorkspaceBox/WorkspaceBoxTopBar";
 import TestCaseDetail from "./TestCaseDetail";
 import TestResults from "./TestResults";
 
 type TestCaseProps = {};
 
 const TestCase: FC<TestCaseProps> = () => {
-    const { userId } = useAuthStore();
-
+    const { isSubmitting, submitResponse, currentView, setCurrentView } =
+        useWorkspaceStore();
     const { id: problemId } = useParams();
-    const editorRef = useRef<CodeEditorRef | null>(null);
 
     const [selectedTestCase, setSelectedTestCase] =
         useState<ITestCaseResponse | null>(null);
-    const [currentView, setCurrentView] = useState<"test_case" | "test_result">(
-        "test_case"
-    );
 
     const { data: testCases } = useQuery({
         queryKey: ["testcases", problemId],
@@ -35,34 +32,6 @@ const TestCase: FC<TestCaseProps> = () => {
         },
     });
 
-    const {
-        mutateAsync: submitCodeMutation,
-        isPending: isSubmitting,
-        data: submitResponse,
-    } = useMutation({
-        mutationFn: client.graderService.submission.submit.mutation,
-    });
-
-    const handleSubmit = async () => {
-        setCurrentView("test_result");
-
-        if (editorRef.current) {
-            const code = editorRef.current.getEditorInstance()?.getValue();
-            const language = editorRef.current.getLanguage();
-
-            if (code && language && userId && problemId) {
-                await submitCodeMutation([
-                    {
-                        code: code,
-                        language: language.toUpperCase(),
-                        problemId: Number(problemId),
-                        userId: userId,
-                    },
-                ]);
-            }
-        }
-    };
-
     useEffect(() => {
         if (testCases && testCases.length > 0) {
             setSelectedTestCase(testCases[0]);
@@ -70,52 +39,44 @@ const TestCase: FC<TestCaseProps> = () => {
     }, [testCases]);
 
     return (
-        <Box
-            sx={{
-                overflow: "hidden",
-                border: "2px solid",
-                borderColor: "grey.300",
-                borderRadius: 4,
-                boxShadow: 1,
-                display: "flex",
-                flexDirection: "column",
-            }}
-        >
-            <Box
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    backgroundColor: "primary.main",
-                    color: "white",
-                    padding: "8px 16px",
-                }}
-            >
+        <WorkspaceBox>
+            <WorkspaceBoxTopBar>
                 <Button
-                    variant="contained"
-                    startIcon={<DomainVerificationIcon />}
+                    color="inherit"
+                    variant="text"
+                    startIcon={<DomainVerificationIcon color="success" />}
                     size="small"
                     onClick={() => setCurrentView("test_case")}
+                    sx={{
+                        opacity: currentView === "test_case" ? 1 : 0.5,
+                    }}
                 >
                     Testcase
                 </Button>
 
-                <Divider orientation="vertical" sx={{ mx: 2 }} />
-
                 <Button
-                    variant="contained"
-                    startIcon={<TerminalIcon />}
+                    color="inherit"
+                    variant="text"
+                    startIcon={<TerminalIcon color="success" />}
                     size="small"
                     onClick={() => setCurrentView("test_result")}
                     loading={isSubmitting}
-                    loadingPosition={"start"}
+                    loadingPosition="start"
+                    sx={{
+                        opacity: currentView === "test_result" ? 1 : 0.5,
+                    }}
                 >
                     Test Result
                 </Button>
-            </Box>
+            </WorkspaceBoxTopBar>
 
             {testCases && selectedTestCase && (
-                <Box overflow="auto">
+                <Box
+                    sx={{
+                        overflowY: "auto",
+                        height: "calc(100% - 40px)",
+                    }}
+                >
                     {currentView === "test_case" && (
                         <Stack direction="column" spacing={2} p={2}>
                             <Stack direction="row" spacing={2}>
@@ -152,13 +113,14 @@ const TestCase: FC<TestCaseProps> = () => {
 
                     {currentView === "test_result" && (
                         <TestResults
-                            response={submitResponse?.data!}
+                            response={submitResponse}
                             loading={isSubmitting}
                         />
                     )}
                 </Box>
             )}
-        </Box>
+        </WorkspaceBox>
     );
 };
+
 export default TestCase;

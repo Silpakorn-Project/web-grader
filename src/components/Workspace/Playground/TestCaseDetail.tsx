@@ -1,4 +1,6 @@
+import { useThemeStore } from "@/store/ThemeStore";
 import { Box, Paper, Typography } from "@mui/material";
+import { grey } from "@mui/material/colors";
 import { FC } from "react";
 
 type TestCaseDetailProps = {
@@ -8,6 +10,8 @@ type TestCaseDetailProps = {
 };
 
 const TestCaseDetail: FC<TestCaseDetailProps> = ({ label, content, color }) => {
+    const {mode} = useThemeStore();
+    
     if (!content) return null;
 
     return (
@@ -15,7 +19,7 @@ const TestCaseDetail: FC<TestCaseDetailProps> = ({ label, content, color }) => {
             <Typography variant="subtitle1" gutterBottom>
                 {label}
             </Typography>
-            <Paper>
+            <Paper sx={{ backgroundColor: mode === "dark" ? grey[800] : grey[50] }}>
                 <Typography color={color} py={1} px={2}>
                     {content}
                 </Typography>

@@ -1,14 +1,24 @@
 import router from "@/rounter/rounter";
 import { client } from "@/services";
 import { useAuthStore } from "@/store/AuthStore";
+import { useThemeStore } from "@/store/ThemeStore"; // Import the theme store
+import { Brightness4, Brightness7 } from "@mui/icons-material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import {
+    Box,
+    IconButton,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+} from "@mui/material";
 import { FC, useState } from "react";
 
 type UserMenuProps = {};
 
 const UserMenu: FC<UserMenuProps> = () => {
     const { token } = useAuthStore();
+    const { mode, toggleMode } = useThemeStore();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
@@ -30,15 +40,22 @@ const UserMenu: FC<UserMenuProps> = () => {
     if (!token) return null;
 
     return (
-        <>
+        <Box>
             <IconButton color="inherit" onClick={handleMenuClick}>
                 <AccountCircleIcon fontSize="large" />
             </IconButton>
             <Menu anchorEl={anchorEl} open={open} onClose={handleCloseMenu}>
-                <MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
+                <MenuItem onClick={toggleMode}>
+                    <ListItemIcon>
+                        {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={mode === "dark" ? "Light Mode" : "Dark Mode"}
+                    />
+                </MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
-        </>
+        </Box>
     );
 };
 

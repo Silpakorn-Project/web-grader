@@ -1,11 +1,15 @@
 import UserMenu from "@/components/UserMenu/UserMenu";
+import router from "@/rounter/rounter";
 import { client } from "@/services";
+import { useAuthStore } from "@/store/AuthStore";
+import { useWorkspaceStore } from "@/store/WorkspaceStore";
 import MenuIcon from "@mui/icons-material/Menu";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow"; // Import PlayArrow icon
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PublishIcon from "@mui/icons-material/Publish";
 import {
     Box,
     Button,
+    Divider,
     Drawer,
     IconButton,
     List,
@@ -13,13 +17,23 @@ import {
     ListItemText,
     Typography,
 } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { FC, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 type WorkspaceNavBarProps = {};
 
 const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
+    const { userId } = useAuthStore();
+    const { id: problemId } = useParams();
+    const {
+        editorInstance,
+        language,
+        isSubmitting,
+        setIsSubmitting,
+        setSubmitResponse,
+        setCurrentView,
+    } = useWorkspaceStore();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -31,13 +45,41 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
         },
     });
 
+    const { mutateAsync: submitCodeMutation } = useMutation({
+        mutationFn: client.graderService.submission.submit.mutation,
+        onMutate: () => setIsSubmitting(true),
+        onSuccess: (response) => {
+            setSubmitResponse(response.data);
+        },
+        onSettled: () => setIsSubmitting(false),
+    });
+
+    const handleSubmit = async () => {
+        if (editorInstance && language) {
+            const code = editorInstance.getValue();
+
+            if (code && language && userId && problemId) {
+                setCurrentView("test_result");
+
+                await submitCodeMutation([
+                    {
+                        code: code,
+                        language: language.toUpperCase(),
+                        problemId: Number(problemId),
+                        userId: userId,
+                    },
+                ]);
+            }
+        }
+    };
+
     return (
         <Box
             display="flex"
             flexDirection="row"
             justifyContent="space-between"
             alignItems="center"
-            bgcolor="#222f3f"
+            p={1}
         >
             <Drawer
                 anchor="left"
@@ -62,21 +104,24 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                 </Box>
             </Drawer>
 
-            <IconButton
-                color="inherit"
-                onClick={() => setDrawerOpen(true)}
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    color: "common.white",
-                }}
-            >
-                <MenuIcon />
-                <Typography variant="h6" color="common.white">
-                    Problems List
-                </Typography>
-            </IconButton>
+            <Box display="flex">
+                <Button onClick={() => router.navigate("/")}>
+                    <Typography variant="h4">SU</Typography>
+                </Button>
+
+                <Divider orientation="vertical" flexItem />
+                <IconButton
+                    onClick={() => setDrawerOpen(true)}
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                    }}
+                >
+                    <MenuIcon />
+                    <Typography variant="h6">Problems List</Typography>
+                </IconButton>
+            </Box>
 
             <Box
                 display="flex"
@@ -88,6 +133,9 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     color="inherit"
                     variant="contained"
                     startIcon={<PlayArrowIcon />}
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    loading={isSubmitting}
                 >
                     Run
                 </Button>
@@ -95,12 +143,27 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     variant="contained"
                     color="success"
                     startIcon={<PublishIcon />}
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    loading={isSubmitting}
                 >
                     Submit
                 </Button>
             </Box>
-
-            <UserMenu />
+            <Box display="flex">
+                <Button color="inherit" onClick={() => router.navigate("/")}>
+                    Home
+                </Button>
+                <Button
+                    color="inherit"
+                    onClick={() => {
+                        router.navigate("/problems");
+                    }}
+                >
+                    Problems
+                </Button>
+                <UserMenu />
+            </Box>
         </Box>
     );
 };
