@@ -1,7 +1,6 @@
 import { client } from "@/services";
 import {
     Button,
-    CircularProgress,
     Container,
     Link as MuiLink,
     Paper,
@@ -9,43 +8,56 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { FC, FormEvent, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { FC, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 
 type SignUpProps = {};
 
-const SignUp: FC<SignUpProps> = () => {
+interface ISignUpForm {
+    username: string;
+    email: string;
+    password: string;
+}
+
+const Signup: FC<SignUpProps> = () => {
     const navigate = useNavigate();
-    const [email, setEmail] = useState("");
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+    const {
+        handleSubmit,
+        register,
+        formState: { errors },
+    } = useForm<ISignUpForm>();
+    const [errorMessage, setErrorMessage] = useState("");
 
-    const handleRegister = async (event: FormEvent) => {
-        event.preventDefault();
-        setLoading(true);
-        setError("");
+    const { mutateAsync: registerMutation, isPending } = useMutation({
+        mutationFn: client.graderService.authentication.register,
+        onSuccess: () => {
+            navigate("/signup/success");
+        },
+        onError: () => {
+            setErrorMessage("Something went wrong, please try again.");
+        },
+    });
 
-        try {
-            await client.graderService.authentication.register({
-                username: username,
-                email: email,
-                password: password,
-            });
+    const onSubmit: SubmitHandler<ISignUpForm> = async (data) => {
+        setErrorMessage("");
 
-            navigate("/login");
-        } catch (err) {
-            setError("Something went wrong.");
-        } finally {
-            setLoading(false);
-        }
+        await registerMutation({
+            username: data.username,
+            email: data.email,
+            password: data.password,
+        });
     };
 
     return (
         <Container maxWidth="xs">
             <Paper elevation={3} sx={{ p: 4, mt: 8, textAlign: "center" }}>
-                <Stack spacing={2} component="form" onSubmit={handleRegister}>
+                <Stack
+                    spacing={2}
+                    component="form"
+                    onSubmit={handleSubmit(onSubmit)}
+                >
                     <Typography variant="h5" gutterBottom>
                         Sign Up
                     </Typography>
@@ -53,33 +65,46 @@ const SignUp: FC<SignUpProps> = () => {
                     <TextField
                         fullWidth
                         label="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        {...register("username", {
+                            required: "Username is required",
+                        })}
+                        error={!!errors.username}
+                        helperText={errors.username?.message as React.ReactNode}
                     />
                     <TextField
                         fullWidth
                         label="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        {...register("email", {
+                            required: "Email is required",
+                            pattern: {
+                                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                message: "Invalid email format",
+                            },
+                        })}
+                        error={!!errors.email}
+                        helperText={errors.email?.message as React.ReactNode}
                     />
                     <TextField
                         fullWidth
                         label="Password"
                         type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        {...register("password", {
+                            required: "Password is required",
+                        })}
+                        error={!!errors.password}
+                        helperText={errors.password?.message as React.ReactNode}
                     />
 
-                    {error && <Typography color="error">{error}</Typography>}
+                    {errorMessage && <Typography color="error">{errorMessage}</Typography>}
 
                     <Button
                         type="submit"
                         variant="contained"
                         color="primary"
                         fullWidth
-                        disabled={loading}
+                        disabled={isPending}
                     >
-                        {loading ? <CircularProgress size={24} /> : "Register"}
+                        Register
                     </Button>
 
                     <Typography>
@@ -93,4 +118,5 @@ const SignUp: FC<SignUpProps> = () => {
         </Container>
     );
 };
-export default SignUp;
+
+export default Signup;

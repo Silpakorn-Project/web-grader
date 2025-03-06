@@ -1,4 +1,3 @@
-import { router } from "@/rounter/rounter";
 import { client } from "@/services";
 import { useAuthStore } from "@/store/AuthStore";
 import {
@@ -11,67 +10,87 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { FC, useState } from "react";
-import { Link } from "react-router-dom";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
 
 type LoginProps = {};
 
+interface ILoginForm {
+    username: string;
+    password: string;
+}
+
 const Login: FC<LoginProps> = () => {
+    const navigate = useNavigate();
     const { setCredential } = useAuthStore();
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    const handleLogin = async (event: React.FormEvent) => {
-        event.preventDefault();
-        setLoading(true);
-        setErrorMessage("");
+    const {
+        handleSubmit,
+        register,
+        formState: { errors },
+    } = useForm<ILoginForm>();
 
-        try {
-            const response = await client.graderService.authentication.login({
-                username: username,
-                password: password,
-            });
-
+    const { mutateAsync: loginMutation, isPending } = useMutation({
+        mutationFn: client.graderService.authentication.login,
+        onSuccess: (response) => {
             setCredential(response.data);
-            router.navigate("/");
-        } catch (error) {
-            let errorMessage = "Something went wrong; please try again.";
+            navigate("/");
+        },
+        onError: (error) => {
+            let errorMsg = "Something went wrong; please try again.";
 
             if (isAxiosError(error)) {
-                if (error.response && error.response.status === 401) {
-                    errorMessage = "Incorrect email or password";
+                if (error?.response?.status === 401) {
+                    errorMsg = "Incorrect username or password.";
                 }
             }
 
-            setErrorMessage(errorMessage);
-        } finally {
-            setLoading(false);
-        }
+            setErrorMessage(errorMsg);
+        },
+    });
+
+    const onSubmit: SubmitHandler<ILoginForm> = async (data) => {
+        setErrorMessage("");
+        await loginMutation({
+            username: data.username,
+            password: data.password,
+        });
     };
 
     return (
         <Container maxWidth="xs">
             <Paper elevation={3} sx={{ p: 4, mt: 8, textAlign: "center" }}>
-                <Stack spacing={2} component="form" onSubmit={handleLogin}>
+                <Stack
+                    spacing={2}
+                    component="form"
+                    onSubmit={handleSubmit(onSubmit)}
+                >
                     <Typography variant="h5" gutterBottom>
                         Login
                     </Typography>
 
                     <TextField
                         fullWidth
-                        label="Email"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        label="Username"
+                        {...register("username", {
+                            required: "Username is required",
+                        })}
+                        error={!!errors.username}
+                        helperText={errors.username?.message as React.ReactNode}
                     />
                     <TextField
                         fullWidth
                         label="Password"
                         type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        {...register("password", {
+                            required: "Password is required",
+                        })}
+                        error={!!errors.password}
+                        helperText={errors.password?.message as React.ReactNode}
                     />
 
                     {errorMessage && (
@@ -83,9 +102,9 @@ const Login: FC<LoginProps> = () => {
                         variant="contained"
                         color="primary"
                         fullWidth
-                        disabled={loading}
+                        disabled={isPending}
                     >
-                        {loading ? <CircularProgress size={24} /> : "Login"}
+                        {isPending ? <CircularProgress size={24} /> : "Login"}
                     </Button>
 
                     <Typography>
