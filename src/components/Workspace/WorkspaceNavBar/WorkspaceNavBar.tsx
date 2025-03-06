@@ -1,6 +1,7 @@
 import UserMenu from "@/components/UserMenu/UserMenu";
 import router from "@/rounter/rounter";
 import { client } from "@/services";
+import { IProblemResponse } from "@/services/models/GraderServiceModel";
 import { useAuthStore } from "@/store/AuthStore";
 import { useWorkspaceStore } from "@/store/WorkspaceStore";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -25,7 +26,6 @@ type WorkspaceNavBarProps = {};
 
 const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
     const { userId } = useAuthStore();
-    const { id: problemId } = useParams();
     const {
         editorInstance,
         language,
@@ -34,8 +34,10 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
         setSubmitResponse,
         setCurrentView,
     } = useWorkspaceStore();
-    const [drawerOpen, setDrawerOpen] = useState(false);
+    const { id: problemId } = useParams();
     const navigate = useNavigate();
+
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     const { data: problems } = useQuery({
         queryKey: ["problems"],
@@ -89,7 +91,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                 <Box width={250} p={2}>
                     <Typography variant="h6">Problem List</Typography>
                     <List>
-                        {problems?.map((problem: any) => (
+                        {problems?.map((problem: IProblemResponse) => (
                             <ListItemButton
                                 key={problem.problemId}
                                 onClick={() => {
