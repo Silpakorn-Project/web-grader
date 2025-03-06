@@ -12,7 +12,7 @@ interface WorkspaceStore {
         editor: monaco.editor.IStandaloneCodeEditor | null
     ) => void;
     setLanguage: (language: string) => void;
-    setSubmitResponse: (response: ISubmitResponse) => void;
+    setSubmitResponse: (response: ISubmitResponse | null) => void;
     setIsSubmitting: (isSubmitting: boolean) => void;
     setCurrentView: (view: "test_case" | "test_result") => void;
 }

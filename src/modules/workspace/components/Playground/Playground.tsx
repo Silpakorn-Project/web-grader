@@ -1,9 +1,9 @@
-import CodeEditor, { CodeEditorRef } from "@/modules/workspace/components/CodeEditor/CodeEditor";
+import CodeEditorPanel, { CodeEditorRef } from "@/modules/workspace/components/CodeEditorPanel/CodeEditorPanel";
 import { useWorkspaceStore } from "@/modules/workspace/store/WorkspaceStore";
 import * as monaco from "monaco-editor";
 import { useRef } from "react";
 import Split from "react-split";
-import TestCase from "./TestCase";
+import TestCasePanel from "../TestCasePanel/TestcasePanel";
 
 const Playground = () => {
     const editorRef = useRef<CodeEditorRef | null>(null);
@@ -26,12 +26,12 @@ const Playground = () => {
             sizes={[60, 40]}
             minSize={50}
         >
-            <CodeEditor
+            <CodeEditorPanel
                 ref={editorRef}
                 onEditorMount={handleEditorMount}
                 onLanguageChange={handleLanguageChange}
             />
-            <TestCase />
+            <TestCasePanel />
         </Split>
     );
 };

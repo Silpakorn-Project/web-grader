@@ -16,7 +16,7 @@ export type CodeEditorRef = {
     getEditorInstance: () => monaco.editor.IStandaloneCodeEditor | null;
 };
 
-const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>(
+const CodeEditorPanel = forwardRef<CodeEditorRef, CodeEditorProps>(
     ({ onEditorMount, onLanguageChange }, ref) => {
         const { mode } = useThemeStore();
         const [language, setLanguage] = useState("java");
@@ -67,4 +67,4 @@ const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>(
     }
 );
 
-export default CodeEditor;
+export default CodeEditorPanel;

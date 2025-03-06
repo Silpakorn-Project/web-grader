@@ -15,13 +15,15 @@ const WorkspaceBoxTopBar: FC<WorkspaceBoxTopBarProps> = ({
 
     const childrenArray = Children.toArray(children);
 
+    console.log(childrenArray.length);
+
     return (
         <Box
             sx={{
                 display: "flex",
                 alignItems: "center",
                 gap: 1,
-                padding: "8px 16px",
+                padding: "2px 8px",
                 backgroundColor: mode === "dark" ? grey[800] : grey[50],
             }}
             {...props}
@@ -29,7 +31,7 @@ const WorkspaceBoxTopBar: FC<WorkspaceBoxTopBarProps> = ({
             {childrenArray.map((child, index) => (
                 <React.Fragment key={index}>
                     {child}
-                    {index % 2 === 0 && index < childrenArray.length - 1 && (
+                    {index < childrenArray.length - 1 && (
                         <Divider
                             orientation="vertical"
                             flexItem

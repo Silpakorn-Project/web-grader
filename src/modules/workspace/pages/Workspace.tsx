@@ -1,6 +1,6 @@
 import Playground from "@/modules/workspace/components/Playground/Playground";
-import ProblemDetails from "@/modules/workspace/components/ProblemDetail/ProblemDetails";
-import WorkspaceNavBar from "@/modules/workspace/components/WorkspaceNavBar";
+import ProblemPanel from "@/modules/workspace/components/ProblemPanel/ProblemPanel";
+import WorkspaceNavBar from "@/modules/workspace/components/WorkspaceNavBar/WorkspaceNavBar";
 import { Box } from "@mui/material";
 import { FC } from "react";
 import Split from "react-split";
@@ -17,7 +17,7 @@ const Workspace: FC<WorkspaceProps> = () => {
         >
             <WorkspaceNavBar />
             <Split className="split pb-2 px-2" minSize={0}>
-                <ProblemDetails />
+                <ProblemPanel />
                 <Playground />
             </Split>
         </Box>

@@ -1,27 +1,23 @@
-import {
-    ISubmitResponse,
-    ITestResultResponse,
-} from "@/services/models/GraderServiceModel";
+import { ITestResultResponse } from "@/services/models/GraderServiceModel";
 import { Box, Button, Paper, Skeleton, Stack, Typography } from "@mui/material";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useState } from "react";
+import { useWorkspaceStore } from "../../store/WorkspaceStore";
 import TestCaseDetail from "./TestCaseDetail";
 
-type TestResultsProps = {
-    response: ISubmitResponse | null;
-    loading?: boolean;
-};
+type TestResultsProps = {};
 
-const TestResults: FC<TestResultsProps> = ({ response, loading }) => {
+const TestResults: FC<TestResultsProps> = () => {
+    const { isSubmitting, submitResponse } = useWorkspaceStore();
     const [selectedTestCase, setSelectedTestCase] =
         useState<ITestResultResponse | null>(null);
 
-    useMemo(() => {
-        if (response?.test_cases) {
-            setSelectedTestCase(response.test_cases[0]);
+    useEffect(() => {
+        if (submitResponse?.test_cases) {
+            setSelectedTestCase(submitResponse.test_cases[0]);
         }
-    }, [response]);
+    }, [submitResponse]);
 
-    if (loading) {
+    if (isSubmitting) {
         return (
             <Stack direction="column" spacing={2} p={2}>
                 <Stack direction="row" spacing={2}>
@@ -56,16 +52,32 @@ const TestResults: FC<TestResultsProps> = ({ response, loading }) => {
         );
     }
 
+    if (!submitResponse) {
+        return (
+            <Stack
+                height="100%"
+                alignItems="center"
+                justifyContent="center"
+                p={2}
+            >
+                <Typography variant="body1" color="textSecondary">
+                    Run your code
+                </Typography>
+            </Stack>
+        );
+    }
+
     return (
         <>
-            {response && (
+            {submitResponse && (
                 <Stack direction="column" spacing={2} p={2}>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <Typography
                             variant="h5"
-                            color={response.passed ? "success" : "error"}
+                            fontWeight="bold"
+                            color={submitResponse.passed ? "success" : "error"}
                         >
-                            {response.passed ? "Passed" : "Failed"}
+                            {submitResponse.passed ? "Passed" : "Failed"}
                         </Typography>
                         <Typography variant="subtitle2" color="textSecondary">
                             Runtime: 0 ms
@@ -73,7 +85,7 @@ const TestResults: FC<TestResultsProps> = ({ response, loading }) => {
                     </Stack>
 
                     <Stack direction="row" spacing={2}>
-                        {response.test_cases.map((testCase, index) => (
+                        {submitResponse.test_cases.map((testCase, index) => (
                             <Button
                                 key={index}
                                 color="inherit"

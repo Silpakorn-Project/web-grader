@@ -9,7 +9,7 @@ import Submissions from "./Submissions";
 
 type ProblemDescriptionProps = {};
 
-const ProblemDetails: React.FC<ProblemDescriptionProps> = () => {
+const ProblemPanel: React.FC<ProblemDescriptionProps> = () => {
     const [activeView, setActiveView] = useState<"description" | "submissions">(
         "description"
     );
@@ -54,4 +54,4 @@ const ProblemDetails: React.FC<ProblemDescriptionProps> = () => {
     );
 };
 
-export default ProblemDetails;
+export default ProblemPanel;
