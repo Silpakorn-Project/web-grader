@@ -1,4 +1,5 @@
-import { Button, Typography } from "@mui/material";
+import router from "@/rounter/rounter";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -44,6 +45,11 @@ const OnlinePage: React.FC = () => {
         }
     };
 
+    const handleLeaveGame = () => {
+        disconnectSocket();
+        router.navigate("/");
+    };
+
     const handleVisibilityChange = () => {
         if (document.hidden) {
             disconnectSocket();
@@ -70,7 +76,7 @@ const OnlinePage: React.FC = () => {
             <Typography variant="h5" color="primary" textAlign="right">
                 {isConnected ? "🟢 Connected" : "🔴 Disconnected"} | {message}
             </Typography>
-
+            <CircularProgress />
             <div
                 style={{
                     display: "flex",
@@ -78,7 +84,6 @@ const OnlinePage: React.FC = () => {
                     alignItems: "center",
                     flexDirection: "column",
                     height: "100vh",
-                    marginTop: -25,
                 }}
             >
                 <div
@@ -92,7 +97,10 @@ const OnlinePage: React.FC = () => {
                     <Typography variant="h3" color="primary">
                         Online Mode
                     </Typography>
-                    <Button color="error" variant="contained" size="large" onClick={disconnectSocket}>
+                    <Typography variant="h3" color="primary">
+                        Cool down {"-->"} 5 minutes
+                    </Typography>
+                    <Button color="error" variant="contained" size="large" onClick={handleLeaveGame}>
                         Leave Game
                     </Button>
                 </div>
@@ -105,7 +113,7 @@ const OnlinePage: React.FC = () => {
                     }}
                 >
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} style={{ textAlign: "center", border: 1, padding: 15 }}>
+                        <div key={i} style={{ textAlign: "center", padding: 15 }}>
                             <img
                                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s"
                                 width={90}
@@ -120,5 +128,8 @@ const OnlinePage: React.FC = () => {
         </>
     );
 };
+
+
+
 
 export default OnlinePage;
