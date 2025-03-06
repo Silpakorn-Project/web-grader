@@ -112,6 +112,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
 
                 <Divider orientation="vertical" flexItem />
                 <IconButton
+                    color="inherit"
                     onClick={() => setDrawerOpen(true)}
                     sx={{
                         display: "flex",

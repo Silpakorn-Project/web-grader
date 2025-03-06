@@ -1,6 +1,6 @@
 import { CODE_SNIPPETS } from "@/constants/languages";
 import { Editor, OnMount } from "@monaco-editor/react";
-import { useColorScheme } from "@mui/material";
+import { CircularProgress, useColorScheme } from "@mui/material";
 import * as monaco from "monaco-editor";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import WorkspaceBox from "../WorkspaceBox/WorkspaceBox";
@@ -50,6 +50,7 @@ const CodeEditorPanel = forwardRef<CodeEditorRef, CodeEditorProps>(
                     onSelectLanguage={onSelectLanguage}
                 />
                 <Editor
+                    loading={<CircularProgress />}
                     theme={colorScheme === "dark" ? "vs-dark" : "vs"}
                     language={language}
                     value={value}
