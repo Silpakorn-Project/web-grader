@@ -43,7 +43,14 @@ const ProblemPanel: React.FC<ProblemDescriptionProps> = () => {
                 </Button>
             </WorkspaceBoxTopBar>
 
-            <Box overflow="auto">
+            <Box
+                sx={{
+                    overflow: "auto",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                }}
+            >
                 {activeView === "description" ? (
                     <ProblemDescription />
                 ) : (

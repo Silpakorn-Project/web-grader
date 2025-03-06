@@ -19,7 +19,10 @@ const TestCaseDetail: FC<TestCaseDetailProps> = ({ label, content, color }) => {
                 {label}
             </Typography>
             <Paper
-                sx={{ backgroundColor: colorScheme === "dark" ? grey[800] : grey[50] }}
+                sx={{
+                    backgroundColor:
+                        colorScheme === "dark" ? grey[800] : grey[50],
+                }}
             >
                 <Typography color={color} py={1} px={2}>
                     {content}

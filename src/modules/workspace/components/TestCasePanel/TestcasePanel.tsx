@@ -55,7 +55,7 @@ const TestCasePanel: FC<TestCaseProps> = () => {
             <Box
                 sx={{
                     overflowY: "auto",
-                    height: "calc(100% - 40px)",
+                    height: "100%",
                 }}
             >
                 {currentView === "test_case" && <TestCase />}
