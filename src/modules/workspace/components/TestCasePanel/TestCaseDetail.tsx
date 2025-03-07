@@ -1,4 +1,4 @@
-import { Box, Paper, Typography, useColorScheme } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { FC } from "react";
 
@@ -9,20 +9,21 @@ type TestCaseDetailProps = {
 };
 
 const TestCaseDetail: FC<TestCaseDetailProps> = ({ label, content, color }) => {
-    const { colorScheme } = useColorScheme();
-
-    if (!content) return null;
-
     return (
         <Box>
             <Typography variant="subtitle1" gutterBottom>
                 {label}
             </Typography>
             <Paper
-                sx={{
-                    backgroundColor:
-                        colorScheme === "dark" ? grey[800] : grey[50],
-                }}
+                sx={[
+                    {
+                        backgroundColor: grey[50],
+                    },
+                    (theme) =>
+                        theme.applyStyles("dark", {
+                            backgroundColor: grey[800],
+                        }),
+                ]}
             >
                 <Typography color={color} py={1} px={2}>
                     {content}

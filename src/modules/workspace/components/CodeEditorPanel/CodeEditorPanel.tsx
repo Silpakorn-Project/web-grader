@@ -51,7 +51,7 @@ const CodeEditorPanel = forwardRef<CodeEditorRef, CodeEditorProps>(
                 />
                 <Editor
                     loading={<CircularProgress />}
-                    theme={colorScheme === "dark" ? "vs-dark" : "vs"}
+                    theme={colorScheme === "dark" ? "vs-dark" : "light"}
                     language={language}
                     value={value}
                     defaultValue={CODE_SNIPPETS[language]}
