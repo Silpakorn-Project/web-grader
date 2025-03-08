@@ -103,13 +103,11 @@ const OnlinePage: React.FC = () => {
                         Leave Game
                     </Button>
                 </Box>
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: 15,
-                        alignItems: "center",
-                    }}
+                <Box
+                    display={"flex"}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    gap={5}
                 >
                     {[...Array(4)].map((_, i) => (
                         <div key={i} style={{ textAlign: "center", padding: 15 }}>
@@ -122,7 +120,7 @@ const OnlinePage: React.FC = () => {
                             </Typography>
                         </div>
                     ))}
-                </div>
+                </Box>
             </Box>
         </>
     );
