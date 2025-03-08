@@ -3,7 +3,7 @@ import { Button, CircularProgress, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-const SERVER_URL = "http://localhost:3000";
+const SERVER_URL = "http://localhost:8000";
 
 const OnlinePage: React.FC = () => {
     const [serverTime, setServerTime] = useState<string>("");
@@ -17,7 +17,10 @@ const OnlinePage: React.FC = () => {
         console.log("🔌 Connecting to socket...");
         const socket = io(SERVER_URL);
         socketRef.current = socket;
-        setIsConnected(true);
+
+        socket.on("connect", () => {
+            setIsConnected(true);
+        });
 
         socket.emit("joinRoom");
 
