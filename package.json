@@ -4,7 +4,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "start": "vite",
+        "dev": "vite --mode development",
         "build": "tsc -b && vite build",
         "lint": "eslint .",
         "preview": "vite preview"

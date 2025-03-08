@@ -1,7 +1,7 @@
 import { client } from "@/services";
 import { IProblemResponse } from "@/services/models/GraderServiceModel";
 import DescriptionIcon from "@mui/icons-material/Description";
-import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { useParams } from "react-router-dom";
@@ -35,23 +35,32 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = () => {
     const problem = cachedProblem || data;
 
     return (
-        <Box bgcolor={"#2d2d2d"} overflow={"auto"}>
-            <AppBar position="sticky">
-                <Toolbar
-                    variant="dense"
-                    disableGutters
-                    sx={{ minHeight: 40, height: 40, padding: 1 }}
+        <Box
+            sx={{
+                overflow: "hidden",
+                border: "2px solid",
+                borderColor: "grey.300",
+                borderRadius: 4,
+                boxShadow: 1,
+            }}
+        >
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    backgroundColor: "primary.main",
+                    padding: "8px 16px",
+                }}
+            >
+                <Button
+                    startIcon={<DescriptionIcon />}
+                    size="small"
+                    variant="contained"
                 >
-                    <Button
-                        startIcon={<DescriptionIcon />}
-                        size="small"
-                        color="inherit"
-                        variant="contained"
-                    >
-                        Description
-                    </Button>
-                </Toolbar>
-            </AppBar>
+                    Description
+                </Button>
+            </Box>
 
             <Box p={2}>
                 {problem ? (
