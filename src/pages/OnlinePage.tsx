@@ -1,5 +1,5 @@
 import router from "@/rounter/rounter";
-import { Button, CircularProgress, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -80,22 +80,18 @@ const OnlinePage: React.FC = () => {
                 {isConnected ? "🟢 Connected" : "🔴 Disconnected"} | {message}
             </Typography>
             <CircularProgress />
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "column",
-                    height: "100vh",
-                }}
+            <Box
+                display={"flex"}
+                justifyContent={"center"}
+                alignItems={"center"}
+                flexDirection={"column"}
+                height={"100vh"}
             >
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        flexDirection: "column",
-                    }}
+                <Box
+                    display={"flex"}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    flexDirection={"column"}
                 >
                     <Typography variant="h3" color="primary">
                         Online Mode
@@ -106,7 +102,7 @@ const OnlinePage: React.FC = () => {
                     <Button color="error" variant="contained" size="large" onClick={handleLeaveGame}>
                         Leave Game
                     </Button>
-                </div>
+                </Box>
                 <div
                     style={{
                         display: "flex",
@@ -127,7 +123,7 @@ const OnlinePage: React.FC = () => {
                         </div>
                     ))}
                 </div>
-            </div>
+            </Box>
         </>
     );
 };
