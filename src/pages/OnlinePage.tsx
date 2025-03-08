@@ -1,15 +1,17 @@
 import router from "@/rounter/rounter";
+import { useAuthStore } from "@/store/AuthStore";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-const SERVER_URL = "http://localhost:8000";
+const SERVER_URL = "http://localhost:5555";
 
 const OnlinePage: React.FC = () => {
     const [serverTime, setServerTime] = useState<string>("");
     const [message, setMessage] = useState<string>("");
     const [isConnected, setIsConnected] = useState<boolean>(false);
     const socketRef = useRef<Socket | null>(null);
+    const { userId, username } = useAuthStore();
 
     const connectSocket = () => {
         if (socketRef.current) return; // ถ้ามี socket อยู่แล้ว ไม่ต้องสร้างใหม่
@@ -22,7 +24,7 @@ const OnlinePage: React.FC = () => {
             setIsConnected(true);
         });
 
-        socket.emit("joinRoom");
+        socket.emit("joinRoom", { userId, username });
 
         socket.on("server time", (time) => {
             setServerTime(new Date(time).toLocaleTimeString());
