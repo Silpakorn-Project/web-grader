@@ -1,15 +1,17 @@
-// src/router.tsx
+import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import Navbar from "@/components/NavBar/NavBar";
-import HomePage from "@/pages/HomePage";
-import Login from "@/pages/Login";
-import ProblemsPage from "@/pages/ProblemsPage";
-import SignUp from "@/pages/SignUp";
-import Workspace from "@/pages/Workspace";
+import HomePage from "@/modules/homepage/Homepage";
+import { LoginRoutes } from "@/modules/login";
+import { ProblemsRoutes } from "@/modules/problems";
+import { SignupRoutes } from "@/modules/signup";
+import { WorkspaceRoutes } from "@/modules/workspace";
+import { Box } from "@mui/material";
 import { createBrowserRouter, Outlet } from "react-router-dom";
 
-const router = createBrowserRouter([
+export const router = createBrowserRouter([
     {
         path: "/",
+        errorElement: <ErrorBoundary />,
         element: <NavbarWrapper />,
         children: [
             {
@@ -17,20 +19,20 @@ const router = createBrowserRouter([
                 element: <HomePage />,
             },
             {
-                path: "/login",
-                element: <Login />,
+                path: "/login/*",
+                element: <LoginRoutes />,
             },
             {
-                path: "/signup",
-                element: <SignUp />,
+                path: "/signup/*",
+                element: <SignupRoutes />,
             },
             {
-                path: "/problems",
-                element: <ProblemsPage />,
+                path: "/problems/*",
+                element: <ProblemsRoutes />,
             },
             {
-                path: "/problems/:id",
-                element: <Workspace />,
+                path: "/problems/:id/*",
+                element: <WorkspaceRoutes />,
             },
         ],
     },
@@ -38,11 +40,9 @@ const router = createBrowserRouter([
 
 function NavbarWrapper() {
     return (
-        <div>
+        <Box>
             <Navbar />
             <Outlet />
-        </div>
+        </Box>
     );
 }
-
-export default router;
