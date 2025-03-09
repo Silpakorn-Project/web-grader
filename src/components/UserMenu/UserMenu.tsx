@@ -9,14 +9,17 @@ import {
     ListItemText,
     Menu,
     MenuItem,
+    SxProps,
     useColorScheme,
 } from "@mui/material";
 import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-type UserMenuProps = {};
+type UserMenuProps = {
+    sx?: SxProps
+};
 
-const UserMenu: FC<UserMenuProps> = () => {
+const UserMenu: FC<UserMenuProps> = ({ sx }) => {
     const navigate = useNavigate();
     const { token } = useAuthStore();
     const { setMode } = useColorScheme();
@@ -59,7 +62,7 @@ const UserMenu: FC<UserMenuProps> = () => {
     if (!token) return null;
 
     return (
-        <Box>
+        <Box sx={sx}>
             <IconButton color="inherit" onClick={handleMenuClick}>
                 <AccountCircleIcon fontSize="large" />
             </IconButton>

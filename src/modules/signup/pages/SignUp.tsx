@@ -64,15 +64,6 @@ const Signup: FC<SignUpProps> = () => {
 
                     <TextField
                         fullWidth
-                        label="Username"
-                        {...register("username", {
-                            required: "Username is required",
-                        })}
-                        error={!!errors.username}
-                        helperText={errors.username?.message as React.ReactNode}
-                    />
-                    <TextField
-                        fullWidth
                         label="Email"
                         {...register("email", {
                             required: "Email is required",
@@ -86,6 +77,15 @@ const Signup: FC<SignUpProps> = () => {
                     />
                     <TextField
                         fullWidth
+                        label="Username"
+                        {...register("username", {
+                            required: "Username is required",
+                        })}
+                        error={!!errors.username}
+                        helperText={errors.username?.message as React.ReactNode}
+                    />
+                    <TextField
+                        fullWidth
                         label="Password"
                         type="password"
                         {...register("password", {
@@ -95,7 +95,9 @@ const Signup: FC<SignUpProps> = () => {
                         helperText={errors.password?.message as React.ReactNode}
                     />
 
-                    {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+                    {errorMessage && (
+                        <Typography color="error">{errorMessage}</Typography>
+                    )}
 
                     <Button
                         type="submit"

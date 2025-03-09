@@ -75,13 +75,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
     };
 
     return (
-        <Box
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
-            alignItems="center"
-            p={1}
-        >
+        <Box display="flex" flexDirection="row" alignItems="center" p={1}>
             <Drawer
                 anchor="left"
                 open={drawerOpen}
@@ -105,7 +99,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                 </Box>
             </Drawer>
 
-            <Box display="flex">
+            <Box display="flex" flexGrow={1}>
                 <Button onClick={() => navigate("/")}>
                     <Typography variant="h4">SU</Typography>
                 </Button>
@@ -127,6 +121,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
 
             <Box
                 display="flex"
+                flexGrow={2}
                 alignItems="center"
                 justifyContent="center"
                 gap={1}
@@ -152,20 +147,14 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     Submit
                 </Button>
             </Box>
-            <Box display="flex">
-                <Button color="inherit" onClick={() => navigate("/")}>
-                    Home
-                </Button>
-                <Button
-                    color="inherit"
-                    onClick={() => {
-                        navigate("/problems");
-                    }}
-                >
-                    Problems
-                </Button>
-                <UserMenu />
-            </Box>
+
+            <UserMenu
+                sx={{
+                    display: "flex",
+                    flexGrow: 2,
+                    justifyContent: "flex-end",
+                }}
+            />
         </Box>
     );
 };
