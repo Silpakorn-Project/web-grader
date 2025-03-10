@@ -56,3 +56,18 @@ export interface ITestCaseResponse {
 export interface ITestCasesQueryParams {
     problemId?: number;
 }
+
+export interface ISubmissionResponse {
+    submissionId: number;
+    userId: number;
+    problemId: number;
+    code: string;
+    language: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ISubmissionsQueryParams {
+    problemId?: number;
+}

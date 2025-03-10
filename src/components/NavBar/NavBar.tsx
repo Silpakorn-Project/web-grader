@@ -1,4 +1,3 @@
-import router from "@/rounter/rounter";
 import { useAuthStore } from "@/store/AuthStore";
 import MenuIcon from "@mui/icons-material/Menu";
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
@@ -11,10 +10,11 @@ import {
     Toolbar,
     Typography,
 } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import UserMenu from "../UserMenu/UserMenu";
 
 const Navbar = () => {
+    const navigate = useNavigate();
     const { token } = useAuthStore();
     const location = useLocation();
 
@@ -23,10 +23,7 @@ const Navbar = () => {
     }
 
     return (
-        <AppBar
-            position="static"
-            sx={{ backgroundColor: "#222f3f" }}
-        >
+        <AppBar position="static">
             <Toolbar>
                 <IconButton
                     edge="start"
@@ -36,15 +33,12 @@ const Navbar = () => {
                     <MenuIcon />
                 </IconButton>
 
-                <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                    SU Grader
+                <Typography variant="h4" sx={{ flexGrow: 1 }}>
+                    SU
                 </Typography>
 
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Button
-                        color="inherit"
-                        onClick={() => router.navigate("/")}
-                    >
+                    <Button color="inherit" onClick={() => navigate("/")}>
                         Home
                     </Button>
                     <Button
@@ -57,7 +51,7 @@ const Navbar = () => {
                     <Button
                         color="inherit"
                         onClick={() => {
-                            router.navigate(token ? "/problems" : "/login");
+                            navigate(token ? "/problems" : "/login");
                         }}
                     >
                         Problems
