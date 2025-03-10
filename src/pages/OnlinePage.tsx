@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 
-const SERVER_URL = "http://localhost:5555";
+const SERVER_URL = import.meta.env.VITE_APP_GAME_SERVER_URL || "http://localhost:5555";
 
 const OnlinePage: React.FC = () => {
     const [serverTime, setServerTime] = useState<string>("");
