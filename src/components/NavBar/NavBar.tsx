@@ -43,7 +43,7 @@ const Navbar = () => {
                     </Button>
                     <Button
                         color="inherit"
-                        onClick={() => router.navigate("/online")}
+                        onClick={() => navigate("/online")}
                         startIcon={<SportsEsportsIcon />}
                     >
                         Online
