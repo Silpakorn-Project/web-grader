@@ -19,7 +19,12 @@ const OnlinePage: React.FC = () => {
         if (socketRef.current) return; // ถ้ามี socket อยู่แล้ว ไม่ต้องสร้างใหม่
 
         console.log("🔌 Connecting to socket...");
-        const socket = io(SERVER_URL);
+        const socket = io(SERVER_URL, {
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+        });
         socketRef.current = socket;
 
         socket.on("connect", () => {
@@ -35,6 +40,19 @@ const OnlinePage: React.FC = () => {
         socket.on("roomUpdate", (room) => {
             console.log(`Room updated: ${JSON.stringify(room)}`);
             setMessage(`Room updated: ${JSON.stringify(room)}`);
+        });
+
+        socket.on("reconnect_attempt", () => {
+            console.log("Trying to reconnect...");
+        });
+
+        socket.on("reconnect", (attempt) => {
+            console.log(`Reconnected on attempt ${attempt}`);
+            setIsConnected(true);
+        });
+        
+        socket.on("reconnect_failed", () => {
+            console.log("Reconnect failed.");
         });
 
         socket.on("disconnect", () => {
@@ -57,21 +75,11 @@ const OnlinePage: React.FC = () => {
         navigate("/");
     };
 
-    const handleVisibilityChange = () => {
-        if (document.hidden) {
-            disconnectSocket();
-        } else {
-            connectSocket();
-        }
-    };
-
     useEffect(() => {
         connectSocket();
-        document.addEventListener("visibilitychange", handleVisibilityChange);
 
         return () => {
             disconnectSocket();
-            document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
     }, []);
 
@@ -89,13 +97,14 @@ const OnlinePage: React.FC = () => {
                 justifyContent={"center"}
                 alignItems={"center"}
                 flexDirection={"column"}
-                height={"100vh"}
+                height={"80vh"}
             >
                 <Box
                     display={"flex"}
                     justifyContent={"center"}
                     alignItems={"center"}
                     flexDirection={"column"}
+                    marginTop={-25}
                 >
                     <Typography variant="h3" color="primary">
                         Online Mode
