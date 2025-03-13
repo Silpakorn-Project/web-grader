@@ -8,17 +8,12 @@ import {
     Toolbar,
     Typography,
 } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import UserMenu from "../UserMenu/UserMenu";
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const location = useLocation();
     const { user } = useAuthStore();
-
-    if (location.pathname.startsWith("/problems/")) {
-        return null;
-    }
 
     return (
         <AppBar position="static">
