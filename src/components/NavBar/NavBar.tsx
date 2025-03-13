@@ -13,8 +13,8 @@ import UserMenu from "../UserMenu/UserMenu";
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const { token } = useAuthStore();
     const location = useLocation();
+    const { user } = useAuthStore();
 
     if (location.pathname.startsWith("/problems/")) {
         return null;
@@ -42,7 +42,7 @@ const Navbar = () => {
                     <Button
                         color="inherit"
                         onClick={() => {
-                            navigate(token ? "/problems" : "/login");
+                            navigate(user ? "/problems" : "/login");
                         }}
                     >
                         Problems

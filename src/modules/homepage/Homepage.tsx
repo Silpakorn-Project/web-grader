@@ -7,7 +7,7 @@ type HomePageProps = {};
 
 const HomePage: FC<HomePageProps> = () => {
     const navigate = useNavigate();
-    const { token } = useAuthStore();
+    const { user } = useAuthStore();
 
     return (
         <Box
@@ -25,7 +25,7 @@ const HomePage: FC<HomePageProps> = () => {
             <Button
                 variant="contained"
                 onClick={() => {
-                    navigate(token ? "/problems" : "/login");
+                    navigate(user ? "/problems" : "/login");
                 }}
             >
                 Get Started

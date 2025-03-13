@@ -29,6 +29,7 @@ export interface ILoginRequest {
 export interface IUserTokenResponse {
     userId: number;
     username: string;
+    email: string;
     token: string;
 }
 
@@ -70,4 +71,11 @@ export interface ISubmissionResponse {
 
 export interface ISubmissionsQueryParams {
     problemId?: number;
+}
+
+export interface IUserResponse {
+    id: number;
+    username: string;
+    email: string;
+    score: number;
 }

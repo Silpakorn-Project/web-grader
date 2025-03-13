@@ -10,7 +10,6 @@ import { AuthenticationApi } from "../api/AuthenticationApi";
 import { ProblemApi } from "../api/ProblemApi";
 import { SubmissionApi } from "../api/SubmissionApi";
 import { TestCaseApi } from "../api/TestCaseApi";
-import { UserApi } from "../api/UserApi";
 import { BaseClient } from "../BaseClient";
 import { withMutation, WithMutationApi } from "../utils/withMutation";
 
@@ -19,7 +18,6 @@ export class GraderServiceClient extends BaseClient {
     public authentication: WithMutationApi<AuthenticationApi>;
     public problems: WithMutationApi<ProblemApi>;
     public testCase: WithMutationApi<TestCaseApi>;
-    public users: WithMutationApi<UserApi>;
 
     constructor(baseURL: string) {
         super(
@@ -39,13 +37,12 @@ export class GraderServiceClient extends BaseClient {
         );
         this.problems = withMutation(new ProblemApi(this.httpClient));
         this.testCase = withMutation(new TestCaseApi(this.httpClient));
-        this.users = withMutation(new UserApi(this.httpClient));
     }
 }
 
 const requestInterceptor = {
     onSuccess: (config: InternalAxiosRequestConfig) => {
-        const token = useAuthStore.getState().token;
+        const token = useAuthStore.getState().user?.token;
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -61,7 +58,7 @@ const responseInterceptor = {
             const config = error.config;
             const authStore = useAuthStore.getState();
 
-            if (config && !config.__isRetryRequest && authStore.token) {
+            if (config && !config.__isRetryRequest && authStore.user) {
                 try {
                     config.__isRetryRequest = true;
 

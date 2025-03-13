@@ -4,25 +4,30 @@ import { Brightness4, Brightness7, Computer } from "@mui/icons-material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {
     Box,
+    Button,
+    Divider,
     IconButton,
     ListItemIcon,
     ListItemText,
     Menu,
     MenuItem,
+    Stack,
     SxProps,
+    Typography,
     useColorScheme,
 } from "@mui/material";
 import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 type UserMenuProps = {
-    sx?: SxProps
+    sx?: SxProps;
 };
 
 const UserMenu: FC<UserMenuProps> = ({ sx }) => {
     const navigate = useNavigate();
-    const { token } = useAuthStore();
     const { setMode } = useColorScheme();
+
+    const { user, clearCredentials } = useAuthStore();
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [appearanceAnchorEl, setAppearanceAnchorEl] =
@@ -50,7 +55,7 @@ const UserMenu: FC<UserMenuProps> = ({ sx }) => {
     const handleLogout = async () => {
         handleCloseMenu();
         await client.graderService.authentication.logout();
-        useAuthStore.getState().clearCredentials();
+        clearCredentials();
         navigate("/login");
     };
 
@@ -59,18 +64,55 @@ const UserMenu: FC<UserMenuProps> = ({ sx }) => {
         handleCloseAppearanceMenu();
     };
 
-    if (!token) return null;
+    if (!user)
+        return (
+            <Button
+                color="inherit"
+                onClick={() => {
+                    navigate("/login");
+                }}
+            >
+                Login
+            </Button>
+        );
 
     return (
         <Box sx={sx}>
             <IconButton color="inherit" onClick={handleMenuClick}>
                 <AccountCircleIcon fontSize="large" />
             </IconButton>
-            <Menu anchorEl={anchorEl} open={open} onClose={handleCloseMenu}>
+
+            <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleCloseMenu}
+                sx={{ mt: 1 }}
+            >
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={2}
+                    px={2}
+                    py={1}
+                >
+                    <AccountCircleIcon fontSize="large" />
+                    <Stack>
+                        <Typography fontWeight="bold">
+                            {user?.username}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                            {user?.email}
+                        </Typography>
+                        {/* <Typography variant="body2">{user?.score}</Typography> */}
+                    </Stack>
+                </Stack>
+                <Divider />
                 <MenuItem onClick={handleAppearanceClick}>
                     <ListItemText primary="Appearance" />
                 </MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                <MenuItem onClick={handleLogout}>
+                    <ListItemText primary="Logout" />
+                </MenuItem>
             </Menu>
 
             <Menu

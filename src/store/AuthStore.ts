@@ -1,21 +1,20 @@
 import { create } from "zustand";
 
+interface IUserStore {
+    token: string;
+    username: string;
+    userId: number;
+    email: string;
+}
+
 interface AuthState {
-    token: string | null;
-    username: string | null;
-    userId: number | null;
-    setCredential: (credentials: {
-        token: string;
-        username: string;
-        userId: number;
-    }) => void;
+    user: IUserStore | null;
+    setCredential: (credentials: IUserStore) => void;
     clearCredentials: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-    token: null,
-    username: null,
-    userId: null,
-    setCredential: (credentials) => set({ ...credentials }),
-    clearCredentials: () => set({ token: null, username: null, userId: null }),
+    user: null,
+    setCredential: (credentials) => set({ user: credentials }),
+    clearCredentials: () => set({ user: null }),
 }));

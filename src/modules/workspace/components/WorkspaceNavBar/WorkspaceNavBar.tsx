@@ -25,7 +25,7 @@ type WorkspaceNavBarProps = {};
 
 const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
     const navigate = useNavigate();
-    const { userId } = useAuthStore();
+    const { user } = useAuthStore();
     const {
         editorInstance,
         language,
@@ -56,10 +56,10 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
     });
 
     const handleSubmit = async () => {
-        if (editorInstance && language) {
+        if (editorInstance) {
             const code = editorInstance.getValue();
 
-            if (code && language && userId && problemId) {
+            if (code && language && problemId && user) {
                 setCurrentView("test_result");
 
                 await submitCodeMutation([
@@ -67,7 +67,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                         code: code,
                         language: language.toUpperCase(),
                         problemId: Number(problemId),
-                        userId: userId,
+                        userId: user.userId,
                     },
                 ]);
             }
