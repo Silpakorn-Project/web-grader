@@ -10,7 +10,7 @@ import GlobalScrollbarStyles from "./styles/GlobalScrollbarStyles";
 import { theme } from "./styles/theme";
 
 const App: FC = () => {
-    const { token, setCredential } = useAuthStore();
+    const { setCredential } = useAuthStore();
 
     const { isLoading } = useQuery({
         queryKey: ["auth-check"],
@@ -24,13 +24,12 @@ const App: FC = () => {
 
             return response;
         },
-        enabled: !token,
     });
 
     if (isLoading) {
         return null;
     }
-    
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
