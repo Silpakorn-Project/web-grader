@@ -15,9 +15,10 @@ const TestCaseDetail: FC<TestCaseDetailProps> = ({ label, content, color }) => {
                 {label}
             </Typography>
             <Paper
+                elevation={0}
                 sx={[
                     {
-                        backgroundColor: grey[50],
+                        backgroundColor: grey[100],
                     },
                     (theme) =>
                         theme.applyStyles("dark", {

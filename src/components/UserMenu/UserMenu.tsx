@@ -23,7 +23,7 @@ type UserMenuProps = {
     sx?: SxProps;
 };
 
-const UserMenu: FC<UserMenuProps> = ({ sx }) => {
+const UserMenu: FC<UserMenuProps> = () => {
     const navigate = useNavigate();
     const { setMode } = useColorScheme();
 
@@ -66,18 +66,20 @@ const UserMenu: FC<UserMenuProps> = ({ sx }) => {
 
     if (!user)
         return (
-            <Button
-                color="inherit"
-                onClick={() => {
-                    navigate("/login");
-                }}
-            >
-                Login
-            </Button>
+            <Box>
+                <Button
+                    color="inherit"
+                    onClick={() => {
+                        navigate("/login");
+                    }}
+                >
+                    Login
+                </Button>
+            </Box>
         );
 
     return (
-        <Box sx={sx}>
+        <Box>
             <IconButton color="inherit" onClick={handleMenuClick}>
                 <AccountCircleIcon fontSize="large" />
             </IconButton>
@@ -103,7 +105,7 @@ const UserMenu: FC<UserMenuProps> = ({ sx }) => {
                         <Typography variant="body2" color="textSecondary">
                             {user?.email}
                         </Typography>
-                        {/* <Typography variant="body2">{user?.score}</Typography> */}
+                        <Typography variant="body2">Your score: </Typography>
                     </Stack>
                 </Stack>
                 <Divider />

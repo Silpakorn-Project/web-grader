@@ -79,9 +79,6 @@ const TestResults: FC<TestResultsProps> = () => {
                         >
                             {submitResponse.passed ? "Passed" : "Failed"}
                         </Typography>
-                        <Typography variant="subtitle2" color="textSecondary">
-                            Runtime: 0 ms
-                        </Typography>
                     </Stack>
 
                     <Stack direction="row" spacing={2}>

@@ -75,7 +75,13 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
     };
 
     return (
-        <Box display="flex" flexDirection="row" alignItems="center" p={1}>
+        <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
+            p={1}
+        >
             <Drawer
                 anchor="left"
                 open={drawerOpen}
@@ -99,7 +105,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                 </Box>
             </Drawer>
 
-            <Box display="flex" flexGrow={1}>
+            <Box display="flex">
                 <Button onClick={() => navigate("/")}>
                     <Typography variant="h4">SU</Typography>
                 </Button>
@@ -121,7 +127,6 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
 
             <Box
                 display="flex"
-                flexGrow={2}
                 alignItems="center"
                 justifyContent="center"
                 gap={1}
@@ -148,13 +153,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                 </Button>
             </Box>
 
-            <UserMenu
-                sx={{
-                    display: "flex",
-                    flexGrow: 2,
-                    justifyContent: "flex-end",
-                }}
-            />
+            <UserMenu />
         </Box>
     );
 };
