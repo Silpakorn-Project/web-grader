@@ -9,7 +9,7 @@ type WorkspaceProps = {};
 
 const Workspace: FC<WorkspaceProps> = () => {
     return (
-        <Box>
+        <Box overflow="hidden">
             <WorkspaceNavBar />
             <Split className="split pb-2 px-2" minSize={0}>
                 <ProblemPanel />

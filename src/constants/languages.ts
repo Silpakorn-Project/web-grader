@@ -1,17 +1,20 @@
-export const LANGUAGE = ["java", "python"];
+export const LANGUAGE = ["java", "python", "c"];
 
 export const CODE_SNIPPETS = {
-    python: `
-# Python Example
-def greet(name):
+    python: `def greet(name):
     return f"Hello, {name}!"
     `,
-    java: `
-// Java Example
-public class Main {
+    java: `public class Main {
     public static void main(String[] args) {
         System.out.println("Hello world");
     }
+}
+    `,
+    c: `#include <stdio.h>
+
+int main() {
+    printf("Hello, world!\\n");
+    return 0;
 }
     `,
 };

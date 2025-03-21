@@ -138,6 +138,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     onClick={handleSubmit}
                     disabled={isSubmitting}
                     loading={isSubmitting}
+                    loadingPosition="start"
                 >
                     Run
                 </Button>
@@ -148,6 +149,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     onClick={handleSubmit}
                     disabled={isSubmitting}
                     loading={isSubmitting}
+                    loadingPosition="start"
                 >
                     Submit
                 </Button>
