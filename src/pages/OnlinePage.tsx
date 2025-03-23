@@ -59,6 +59,15 @@ const OnlinePage: React.FC = () => {
             console.log("❌ Disconnected from server");
             setIsConnected(false);
         });
+
+        // กรณีที่ถูกเตะออกจากห้อง ตอน tab 2 join มา
+        socket.on("forceDisconnect", (reason: string) => {
+            console.log("⚠️ ถูกเตะออกจากห้อง: ", reason);
+            alert(reason);
+            disconnectSocket();
+            navigate("/"); // หรือจะไปหน้าที่บอกเหตุผลเพิ่มเติมก็ได้ เช่น "/kicked"
+        });
+
     };
 
     const disconnectSocket = () => {
