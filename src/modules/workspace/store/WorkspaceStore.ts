@@ -7,14 +7,14 @@ interface WorkspaceStore {
     language: string;
     submitResponse: ISubmitResponse | null;
     isSubmitting: boolean;
-    currentView: "test_case" | "test_result";
+    testCasePanelView: "test_case" | "test_result";
     setEditorInstance: (
         editor: monaco.editor.IStandaloneCodeEditor | null
     ) => void;
     setLanguage: (language: string) => void;
     setSubmitResponse: (response: ISubmitResponse | null) => void;
     setIsSubmitting: (isSubmitting: boolean) => void;
-    setCurrentView: (view: "test_case" | "test_result") => void;
+    setTestCasePanelView: (view: "test_case" | "test_result") => void;
 }
 
 export const useWorkspaceStore = create<WorkspaceStore>((set) => ({
@@ -22,10 +22,10 @@ export const useWorkspaceStore = create<WorkspaceStore>((set) => ({
     language: "java",
     submitResponse: null,
     isSubmitting: false,
-    currentView: "test_case",
+    testCasePanelView: "test_case",
     setEditorInstance: (editor) => set({ editorInstance: editor }),
     setLanguage: (language) => set({ language }),
     setSubmitResponse: (response) => set({ submitResponse: response }),
     setIsSubmitting: (isSubmitting) => set({ isSubmitting }),
-    setCurrentView: (view) => set({ currentView: view }),
+    setTestCasePanelView: (view) => set({ testCasePanelView: view }),
 }));

@@ -1,5 +1,7 @@
 export const LANGUAGE = ["java", "python", "c"];
 
+export const STATUS = ["Passed", "Failed"];
+
 export const CODE_SNIPPETS = {
     python: `def greet(name):
     return f"Hello, {name}!"

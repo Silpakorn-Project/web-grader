@@ -1,3 +1,5 @@
+import { PaginationQueryParams } from "./PaginationQueryParams";
+
 export interface ITestResultResponse {
     passed: boolean;
     input: string;
@@ -54,7 +56,7 @@ export interface ITestCaseResponse {
     expectedOutput: string;
 }
 
-export interface ITestCasesQueryParams {
+export interface ITestCasesQueryParams extends PaginationQueryParams {
     problemId?: number;
 }
 
@@ -69,8 +71,11 @@ export interface ISubmissionResponse {
     updatedAt: string;
 }
 
-export interface ISubmissionsQueryParams {
+export interface ISubmissionsQueryParams extends PaginationQueryParams {
+    userId?: number;
     problemId?: number;
+    language?: string;
+    status?: string;
 }
 
 export interface IUserResponse {

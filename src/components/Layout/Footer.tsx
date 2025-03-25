@@ -20,12 +20,11 @@ const Footer: FC<FooterProps> = () => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                mt: 8,
                 padding: 2,
             }}
         >
-            <Typography variant="body2">
-                &copy; 2025 Su Grader.
-            </Typography>
+            <Typography variant="body2">&copy; 2025 Su Grader.</Typography>
 
             <FormControl size="small" sx={{ minWidth: 120 }}>
                 <InputLabel id="mode-select-label">Theme</InputLabel>
@@ -38,9 +37,9 @@ const Footer: FC<FooterProps> = () => {
                         setMode(e.target.value as "light" | "dark" | "system")
                     }
                 >
+                    <MenuItem value="system">System</MenuItem>
                     <MenuItem value="light">Light</MenuItem>
                     <MenuItem value="dark">Dark</MenuItem>
-                    <MenuItem value="system">System</MenuItem>
                 </Select>
             </FormControl>
         </Box>

@@ -2,6 +2,7 @@ import UserMenu from "@/components/UserMenu/UserMenu";
 import { useWorkspaceStore } from "@/modules/workspace/store/WorkspaceStore";
 import { client } from "@/services";
 import { IProblemResponse } from "@/services/models/GraderServiceModel";
+import { queryClient } from "@/services/query/queryClient";
 import { useAuthStore } from "@/store/AuthStore";
 import MenuIcon from "@mui/icons-material/Menu";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -32,7 +33,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
         isSubmitting,
         setIsSubmitting,
         setSubmitResponse,
-        setCurrentView,
+        setTestCasePanelView: setCurrentView,
     } = useWorkspaceStore();
     const { id: problemId } = useParams();
 
@@ -62,7 +63,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
             if (code && language && problemId && user) {
                 setCurrentView("test_result");
 
-                await submitCodeMutation([
+                const response = await submitCodeMutation([
                     {
                         code: code,
                         language: language.toUpperCase(),
@@ -70,6 +71,12 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                         userId: user.userId,
                     },
                 ]);
+
+                if (response.data) {
+                    queryClient.invalidateQueries({
+                        queryKey: ["submissions"],
+                    });
+                }
             }
         }
     };
