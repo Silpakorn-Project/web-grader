@@ -18,6 +18,8 @@ const TestCase: FC<TestCaseProps> = () => {
         queryFn: async () => {
             const response = await client.graderService.testCase.getTestCases({
                 problemId: Number(problemId),
+                offset: 1,
+                limit: 3,
             });
             return response.data;
         },
@@ -26,8 +28,14 @@ const TestCase: FC<TestCaseProps> = () => {
     useEffect(() => {
         if (testCases && testCases.length > 0) {
             setSelectedTestCase(testCases[0]);
+        } else {
+            setSelectedTestCase(null);
         }
     }, [problemId, testCases]);
+
+    if (!testCases) {
+        return null;
+    }
 
     return (
         <Stack direction="column" spacing={2} p={2}>

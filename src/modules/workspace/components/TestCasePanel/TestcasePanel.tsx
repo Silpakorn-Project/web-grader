@@ -13,7 +13,7 @@ type TestCaseProps = {};
 
 const TestCasePanel: FC<TestCaseProps> = () => {
     const { id: problemId } = useParams();
-    const { isSubmitting, currentView, setCurrentView, setSubmitResponse } =
+    const { isSubmitting, testCasePanelView, setTestCasePanelView, setSubmitResponse } =
         useWorkspaceStore();
 
     useEffect(() => {
@@ -28,9 +28,9 @@ const TestCasePanel: FC<TestCaseProps> = () => {
                     variant="text"
                     startIcon={<DomainVerificationIcon color="success" />}
                     size="small"
-                    onClick={() => setCurrentView("test_case")}
+                    onClick={() => setTestCasePanelView("test_case")}
                     sx={{
-                        opacity: currentView === "test_case" ? 1 : 0.5,
+                        opacity: testCasePanelView === "test_case" ? 1 : 0.5,
                     }}
                 >
                     Testcase
@@ -41,11 +41,11 @@ const TestCasePanel: FC<TestCaseProps> = () => {
                     variant="text"
                     startIcon={<TerminalIcon color="success" />}
                     size="small"
-                    onClick={() => setCurrentView("test_result")}
+                    onClick={() => setTestCasePanelView("test_result")}
                     loading={isSubmitting}
                     loadingPosition="start"
                     sx={{
-                        opacity: currentView === "test_result" ? 1 : 0.5,
+                        opacity: testCasePanelView === "test_result" ? 1 : 0.5,
                     }}
                 >
                     Test Result
@@ -58,8 +58,8 @@ const TestCasePanel: FC<TestCaseProps> = () => {
                     height: "100%",
                 }}
             >
-                {currentView === "test_case" && <TestCase />}
-                {currentView === "test_result" && <TestResults />}
+                {testCasePanelView === "test_case" && <TestCase />}
+                {testCasePanelView === "test_result" && <TestResults />}
             </Box>
         </WorkspaceBox>
     );

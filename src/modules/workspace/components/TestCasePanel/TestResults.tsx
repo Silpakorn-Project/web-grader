@@ -1,5 +1,5 @@
 import { ITestResultResponse } from "@/services/models/GraderServiceModel";
-import { Box, Button, Paper, Skeleton, Stack, Typography } from "@mui/material";
+import { Box, Button, Skeleton, Stack, Typography } from "@mui/material";
 import { FC, useEffect, useState } from "react";
 import { useWorkspaceStore } from "../../store/WorkspaceStore";
 import TestCaseDetail from "./TestCaseDetail";
@@ -74,7 +74,6 @@ const TestResults: FC<TestResultsProps> = () => {
                     <Stack direction="row" spacing={2} alignItems="center">
                         <Typography
                             variant="h5"
-                            fontWeight="bold"
                             color={submitResponse.passed ? "success" : "error"}
                         >
                             {submitResponse.passed ? "Passed" : "Failed"}
@@ -115,13 +114,10 @@ const TestResults: FC<TestResultsProps> = () => {
 
                     <Stack spacing={2}>
                         {selectedTestCase?.error && (
-                            <Paper>
-                                <Typography color="error" px={2}>
-                                    <pre className="whitespace-pre-wrap">
-                                        {selectedTestCase.error}
-                                    </pre>
-                                </Typography>
-                            </Paper>
+                            <TestCaseDetail
+                                content={selectedTestCase.error}
+                                fontColor="error"
+                            />
                         )}
 
                         <TestCaseDetail
@@ -131,11 +127,15 @@ const TestResults: FC<TestResultsProps> = () => {
 
                         <TestCaseDetail
                             label="Output"
+                            fontColor={selectedTestCase?.passed! ? "" : "error"}
                             content={selectedTestCase?.actual!}
                         />
 
                         <TestCaseDetail
                             label="Expected"
+                            fontColor={
+                                selectedTestCase?.passed! ? "" : "success"
+                            }
                             content={selectedTestCase?.expected!}
                         />
                     </Stack>
