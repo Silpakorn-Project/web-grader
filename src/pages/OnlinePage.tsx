@@ -6,11 +6,15 @@ import { io, Socket } from "socket.io-client";
 
 const SERVER_URL = import.meta.env.VITE_APP_GAME_SERVER_URL || "http://localhost:5555";
 
-interface User {
-    userId: number;
+interface DetailRoomType {
+    userId: string;
     username: string;
     socketId: string;
-  }
+}
+interface RoomType {
+    players: DetailRoomType[];
+    gameStarted: boolean;
+}
 
 const OnlinePage: React.FC = () => {
     const [serverTime, setServerTime] = useState<string>("");
@@ -21,7 +25,7 @@ const OnlinePage: React.FC = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const isTablet = useMediaQuery(theme.breakpoints.down('md'));
-    const [test, setTest] = useState<User[]>([]);
+    const [test, setTest] = useState<RoomType>({players: [], gameStarted: false});
     const [countdown , setCountdown] = useState<number>(10);
     
     const navigate = useNavigate();
@@ -51,10 +55,10 @@ const OnlinePage: React.FC = () => {
         socket.on("roomUpdate", (room) => {
             console.log(`Room updated: ${JSON.stringify(room)}`);
             setMessage(`Room updated: ${JSON.stringify(room)}`);
-            console.log(room[0].username);
             
-            console.log(room);
-            console.log(typeof room[0]);
+
+            console.log(room.players[0].username);
+             
             
             setTest(room);
         });
@@ -120,7 +124,7 @@ const OnlinePage: React.FC = () => {
 
     return (
         <>
-        {test.length}
+        {test.players.length}
         <Box sx={{ padding: { xs: 1, sm: 2, md: 3 }, width: "100%" }}>
             <Box sx={{ width: "100%" }}>
                 <Typography 
@@ -252,7 +256,7 @@ const OnlinePage: React.FC = () => {
                                 />
                                 <Box sx={{ mt: 1 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                                        {test[i]?.username ? '' : <CircularProgress size={isMobile ? 16 : 20} />}
+                                        {test.players[i]?.username ? '' : <CircularProgress size={isMobile ? 16 : 20} />}
                                         <Typography 
                                             variant={isMobile ? "body1" : "h6"} 
                                             color="primary"
@@ -264,7 +268,7 @@ const OnlinePage: React.FC = () => {
                                                 }
                                             }}
                                         >
-                                            {test[i]?.username || "Loading..."} 
+                                            {test.players[i]?.username || "Loading..."} 
                                         </Typography>
                                     </Box>
                                 </Box>
