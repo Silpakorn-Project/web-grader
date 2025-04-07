@@ -20,3 +20,6 @@ int main() {
 }
     `,
 };
+
+export const TYPES = ["String", "Math"];
+

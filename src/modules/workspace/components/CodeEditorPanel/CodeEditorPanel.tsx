@@ -1,4 +1,4 @@
-import { CODE_SNIPPETS } from "@/constants/languages";
+import { CODE_SNIPPETS } from "@/constants/common";
 import { Editor, OnMount } from "@monaco-editor/react";
 import { CircularProgress, useColorScheme } from "@mui/material";
 import * as monaco from "monaco-editor";
