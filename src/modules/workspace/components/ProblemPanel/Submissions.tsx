@@ -1,5 +1,5 @@
 import NoDataPlaceholder from "@/components/NoData";
-import { LANGUAGE, STATUS } from "@/constants/languages";
+import { LANGUAGE, STATUS } from "@/constants/common";
 import { client } from "@/services";
 import {
     ISubmissionResponse,
@@ -12,6 +12,7 @@ import {
     Box,
     Menu,
     MenuItem,
+    Skeleton,
     Table,
     TableBody,
     TableCell,
@@ -42,7 +43,7 @@ const Submissions: FC<SubmissionsProps> = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [menuType, setMenuType] = useState<"Status" | "Language">("Status");
 
-    const { data: submissions } = useQuery({
+    const { data: submissions, isLoading } = useQuery({
         queryKey: [
             "submissions",
             { user: user?.userId, problemId, status, language },
@@ -132,20 +133,12 @@ const Submissions: FC<SubmissionsProps> = () => {
                                     },
                                 }}
                             >
-                                <Box
-                                    component={"span"}
-                                    style={{
-                                        display: "inline-block",
-                                    }}
-                                >
+                                <Box component={"span"}>
                                     {status ? status : "Status"}
                                 </Box>
                                 <ArrowDropDown
                                     fontSize="small"
-                                    sx={{
-                                        padding: 0,
-                                        marginLeft: 1,
-                                    }}
+                                    sx={{ padding: 0, marginLeft: 1 }}
                                 />
                             </Typography>
                         </TableCell>
@@ -168,20 +161,12 @@ const Submissions: FC<SubmissionsProps> = () => {
                                     },
                                 }}
                             >
-                                <Box
-                                    component={"span"}
-                                    style={{
-                                        display: "inline-block",
-                                    }}
-                                >
+                                <Box component={"span"}>
                                     {language ? language : "Language"}
                                 </Box>
                                 <ArrowDropDown
                                     fontSize="small"
-                                    sx={{
-                                        padding: 0,
-                                        marginLeft: 1,
-                                    }}
+                                    sx={{ padding: 0, marginLeft: 1 }}
                                 />
                             </Typography>
                         </TableCell>
@@ -189,7 +174,22 @@ const Submissions: FC<SubmissionsProps> = () => {
                 </TableHead>
 
                 <TableBody>
-                    {submissions && submissions.length > 0 ? (
+                    {isLoading ? (
+                        [...Array(5)].map((_, index) => (
+                            <TableRow key={index}>
+                                <TableCell>
+                                    <Skeleton variant="text" width={20} />
+                                </TableCell>
+                                <TableCell>
+                                    <Skeleton variant="text" width={100} />
+                                    <Skeleton variant="text" width={80} />
+                                </TableCell>
+                                <TableCell>
+                                    <Skeleton variant="text" width={50} />
+                                </TableCell>
+                            </TableRow>
+                        ))
+                    ) : submissions && submissions.length > 0 ? (
                         submissions.map((submission, index, arr) => (
                             <TableRow
                                 key={submission.submissionId}

@@ -1,4 +1,4 @@
-import { LANGUAGE, STATUS } from "@/constants/languages";
+import { LANGUAGE, STATUS } from "@/constants/common";
 import { ISubmissionsQueryParams } from "@/services/models/GraderServiceModel";
 import {
     FormControl,
