@@ -10,6 +10,7 @@ import { AuthenticationApi } from "../api/AuthenticationApi";
 import { ProblemApi } from "../api/ProblemApi";
 import { SubmissionApi } from "../api/SubmissionApi";
 import { TestCaseApi } from "../api/TestCaseApi";
+import { UserApi } from "../api/UserApi";
 import { BaseClient } from "../BaseClient";
 import { withMutation, WithMutationApi } from "../utils/withMutation";
 
@@ -18,6 +19,7 @@ export class GraderServiceClient extends BaseClient {
     public authentication: WithMutationApi<AuthenticationApi>;
     public problems: WithMutationApi<ProblemApi>;
     public testCase: WithMutationApi<TestCaseApi>;
+    public user: WithMutationApi<UserApi>;
 
     constructor(baseURL: string) {
         super(
@@ -37,6 +39,7 @@ export class GraderServiceClient extends BaseClient {
         );
         this.problems = withMutation(new ProblemApi(this.httpClient));
         this.testCase = withMutation(new TestCaseApi(this.httpClient));
+        this.user = withMutation(new UserApi(this.httpClient));
     }
 }
 

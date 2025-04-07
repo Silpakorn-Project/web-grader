@@ -41,12 +41,31 @@ export interface IRegisterRequest {
     email: string;
 }
 
+export interface IProblemRequest {
+    title: string;
+    description: string;
+    difficulty: string;
+    type: string;
+}
+
 export interface IProblemResponse {
     problemId: number;
     title: string;
     description: string;
     difficulty: string;
     type: string;
+}
+
+export interface IProblemsQueryParams extends PaginationQueryParams {
+    title?: string;
+    description?: string;
+    difficulty?: string;
+    type?: string;
+}
+
+export interface ITestCaseRequset {
+    problemId: number;
+    testcases: { inputData: string; expectedOutput: string }[];
 }
 
 export interface ITestCaseResponse {
