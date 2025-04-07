@@ -53,5 +53,14 @@ export const theme = createTheme({
                 },
             },
         },
+        MuiAutocomplete: {
+            defaultProps: {
+                slotProps: {
+                    paper: {
+                        elevation: 6,
+                    },
+                },
+            },
+        },
     },
 });

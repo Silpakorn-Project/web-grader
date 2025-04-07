@@ -1,12 +1,10 @@
 import { useAuthStore } from "@/store/AuthStore";
-import MenuIcon from "@mui/icons-material/Menu";
 import {
     AppBar,
     Box,
     Button,
-    IconButton,
     Toolbar,
-    Typography,
+    Typography
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import UserMenu from "../UserMenu/UserMenu";
@@ -18,27 +16,26 @@ const Navbar = () => {
     return (
         <AppBar position="static">
             <Toolbar>
-                <IconButton
-                    edge="start"
+                <Button
                     color="inherit"
-                    sx={{ mr: 2, display: { sm: "none" } }}
+                    onClick={() => navigate("/")}
                 >
-                    <MenuIcon />
-                </IconButton>
+                    <Typography variant="h4">SU</Typography>
+                </Button>
 
-                <Typography variant="h4" sx={{ flexGrow: 1 }}>
-                    SU
-                </Typography>
-
-                <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginLeft: "auto",
+                    }}
+                >
                     <Button color="inherit" onClick={() => navigate("/")}>
                         Home
                     </Button>
                     <Button
                         color="inherit"
-                        onClick={() => {
-                            navigate(user ? "/problems" : "/login");
-                        }}
+                        onClick={() => navigate(user ? "/problems" : "/login")}
                     >
                         Problems
                     </Button>

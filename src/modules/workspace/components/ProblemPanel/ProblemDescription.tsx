@@ -3,6 +3,7 @@ import { Box, Skeleton, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { FC, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
 
 type ProblemDescriptionProps = {};
@@ -49,9 +50,7 @@ const ProblemDescription: FC<ProblemDescriptionProps> = () => {
             ) : problem ? (
                 <>
                     <Typography variant="h4">{problem.title}</Typography>
-                    <Typography variant="subtitle1">
-                        {problem.description}
-                    </Typography>
+                    <ReactMarkdown children={problem.description} />
                 </>
             ) : null}
         </Box>
