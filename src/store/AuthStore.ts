@@ -5,6 +5,7 @@ interface IUserStore {
     username: string;
     userId: number;
     email: string;
+    role: string;
 }
 
 interface AuthState {
