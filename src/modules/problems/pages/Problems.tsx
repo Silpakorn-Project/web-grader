@@ -1,3 +1,5 @@
+import { DatagridPagination } from "@/components/Datagrid/CustomPagination";
+import { StyledDataGrid } from "@/components/Datagrid/StyledDataGrid";
 import { useDebounce } from "@/hooks/useDebounce";
 import { client } from "@/services";
 import { getDifficultyColor } from "@/utilts/common";
@@ -11,11 +13,9 @@ import {
     Input,
     InputAdornment,
     Stack,
-    styled,
     Typography,
 } from "@mui/material";
 import {
-    DataGrid,
     GridColDef,
     GridPaginationModel,
     GridSortModel,
@@ -24,23 +24,6 @@ import { useQuery } from "@tanstack/react-query";
 import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProblemsFilter from "../components/ProblemsFilter";
-
-const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-    cursor: "pointer",
-    "& .MuiDataGrid-cell:focus": {
-        outline: "none",
-    },
-    "& .MuiDataGrid-cell:focus-within": {
-        outline: "none",
-    },
-    "&, [class^=MuiDataGrid]": { border: "none" },
-    "& .MuiDataGrid-row:nth-of-type(even)": {
-        backgroundColor: theme.palette.background.default,
-    },
-    "& .MuiDataGrid-row:nth-of-type(odd)": {
-        backgroundColor: theme.palette.background.paper,
-    },
-}));
 
 type ProblemTableProps = {};
 
@@ -231,14 +214,15 @@ const Problems: FC<ProblemTableProps> = () => {
                 paginationMode="server"
                 sortingMode="server"
                 rowCount={rowCount}
-                pageSizeOptions={[5, 10, 20, 100]}
                 paginationModel={paginationModel}
                 onPaginationModelChange={handlePaginationModelChange}
                 onSortModelChange={handleSortModelChange}
                 disableRowSelectionOnClick
                 disableColumnResize
                 onRowClick={(params) => navigate(`/problems/${params.id}`)}
+                slots={{ pagination: DatagridPagination }}
                 sx={{
+                    height: 500,
                     cursor: isFetching ? "not-allowed" : "pointer",
                     opacity: isFetching ? 0.5 : 1,
                     pointerEvents: isFetching ? "none" : "auto",
