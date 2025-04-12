@@ -1,3 +1,4 @@
+import { LazyPage } from "@/components/LazyPage";
 import { useAuthStore } from "@/store/AuthStore";
 import { FC, lazy, useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
@@ -31,7 +32,7 @@ export const AdminRoutes: FC = () => {
 
     return (
         <Routes>
-            <Route path="/create" element={<CreateProblemPage />} />
+            <Route path="/create" element={<LazyPage element={CreateProblemPage} />} />
         </Routes>
     );
 };

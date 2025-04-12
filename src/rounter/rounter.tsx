@@ -1,4 +1,5 @@
 import Layout from "@/components/Layout/Layout";
+import { LazyPage } from "@/components/LazyPage";
 import { AdminRoutes } from "@/modules/admin";
 import { LoginRoutes } from "@/modules/login";
 import { ProblemsRoutes } from "@/modules/problems";
@@ -18,7 +19,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <HomePage />,
+                element: <LazyPage element={HomePage} />,
             },
             {
                 path: "/login/*",
