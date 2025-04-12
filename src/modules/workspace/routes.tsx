@@ -1,11 +1,12 @@
-import { FC } from "react";
+import { FC, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-import Workspace from "./pages/Workspace";
+
+const WorkspacePage = lazy(() => import("./pages/Workspace"));
 
 export const WorkspaceRoutes: FC = () => {
     return (
         <Routes>
-            <Route path="" element={<Workspace />} />
+            <Route path="" element={<WorkspacePage />} />
         </Routes>
     );
 };

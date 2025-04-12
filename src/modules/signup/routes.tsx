@@ -1,13 +1,14 @@
-import { FC } from "react";
+import { FC, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-import Signup from "./pages/Signup";
-import SignupSuccess from "./pages/SignupSuccess";
+
+const SignUpPage = lazy(() => import("./pages/Signup"));
+const SignUpSuccessPage = lazy(() => import("./pages/SignupSuccess"));
 
 export const SignupRoutes: FC = () => {
     return (
         <Routes>
-            <Route path="" element={<Signup />} />
-            <Route path="/success" element={<SignupSuccess />} />
+            <Route path="" element={<SignUpPage />} />
+            <Route path="/success" element={<SignUpSuccessPage />} />
         </Routes>
     );
 };
