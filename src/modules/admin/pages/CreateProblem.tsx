@@ -1,6 +1,7 @@
-import { TYPES } from "@/constants/common"; // Ensure TYPES is a string[]
+import { TYPES } from "@/constants/common";
 import { client } from "@/services";
-import { Add, Delete } from "@mui/icons-material";
+import Add from "@mui/icons-material/Add";
+import Delete from "@mui/icons-material/Delete";
 import {
     Alert,
     Autocomplete,
@@ -199,7 +200,7 @@ const CreateProblem: FC = () => {
             </Paper>
 
             <Snackbar
-                anchorOrigin={{vertical: "bottom", horizontal: "center"}}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                 open={openSnackbar}
                 autoHideDuration={6000}
                 onClose={() => setOpenSnackbar(false)}

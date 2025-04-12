@@ -1,6 +1,9 @@
 import Leaderboard from "@/components/Leaderboard/Leaderboard";
 import { useAuthStore } from "@/store/AuthStore";
-import { CheckCircle, Code, HelpOutline, School } from "@mui/icons-material";
+import CheckCircle from "@mui/icons-material/CheckCircle";
+import Code from "@mui/icons-material/Code";
+import HelpOutline from "@mui/icons-material/HelpOutline";
+import School from "@mui/icons-material/School";
 import {
     Box,
     Button,
@@ -9,7 +12,6 @@ import {
     Paper,
     Stack,
     Typography,
-    useTheme,
 } from "@mui/material";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +21,6 @@ type HomePageProps = {};
 const HomePage: FC<HomePageProps> = () => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
-    const theme = useTheme();
 
     // TODO: REFACTOR
     return (
@@ -27,8 +28,6 @@ const HomePage: FC<HomePageProps> = () => {
             {/* Hero Section */}
             <Box
                 sx={{
-                    backgroundColor: theme.palette.primary.main,
-                    color: "white",
                     py: 12,
                     width: "100%",
                 }}
@@ -36,7 +35,12 @@ const HomePage: FC<HomePageProps> = () => {
                 <Container maxWidth="lg">
                     <Grid2 container spacing={3} alignItems="center">
                         <Grid2 size={{ xs: 12, md: 6 }}>
-                            <Typography variant="h4" fontWeight="bold" mb={2}>
+                            <Typography
+                                color="primary"
+                                variant="h4"
+                                fontWeight="bold"
+                                mb={2}
+                            >
                                 Level Up Your Coding Skills
                             </Typography>
 
@@ -60,10 +64,6 @@ const HomePage: FC<HomePageProps> = () => {
                                 <Button
                                     variant="outlined"
                                     onClick={() => navigate("/")}
-                                    sx={{
-                                        borderColor: "white",
-                                        color: "white",
-                                    }}
                                 >
                                     Multiplayer
                                 </Button>

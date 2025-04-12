@@ -7,7 +7,7 @@ import {
 } from "@/services/models/GraderServiceModel";
 import { useAuthStore } from "@/store/AuthStore";
 import { getStatusColor } from "@/utilts/common";
-import { ArrowDropDown } from "@mui/icons-material";
+import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import {
     Box,
     Menu,

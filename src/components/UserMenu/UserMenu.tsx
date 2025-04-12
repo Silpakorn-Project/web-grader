@@ -1,7 +1,9 @@
 import { client } from "@/services";
 import { useAuthStore } from "@/store/AuthStore";
-import { Brightness4, Brightness7, Computer } from "@mui/icons-material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import Brightness4 from "@mui/icons-material/Brightness4";
+import Brightness7 from "@mui/icons-material/Brightness7";
+import Computer from "@mui/icons-material/Computer";
 import {
     Box,
     Button,

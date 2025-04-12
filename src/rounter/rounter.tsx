@@ -1,4 +1,3 @@
-import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import Layout from "@/components/Layout/Layout";
 import { AdminRoutes } from "@/modules/admin";
 import { LoginRoutes } from "@/modules/login";
@@ -43,7 +42,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/error",
-                element: <ErrorBoundary />,
+                element: <ErrorBoundaryPage />,
             },
         ],
     },
