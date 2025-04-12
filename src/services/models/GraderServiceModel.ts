@@ -104,3 +104,16 @@ export interface IUserResponse {
     email: string;
     score: number;
 }
+
+export interface ILeaderboardRequest {
+    offset: number;
+    limit: number;
+    filteredUserIds: number;
+}
+
+export interface ILeaderboardResponse {
+    id: number;
+    username: string;
+    score: number;
+    rank: number;
+}

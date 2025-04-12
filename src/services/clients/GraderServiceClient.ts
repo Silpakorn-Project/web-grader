@@ -7,6 +7,7 @@ import axios, {
 } from "axios";
 import { client } from "..";
 import { AuthenticationApi } from "../api/AuthenticationApi";
+import { LeaderboardApi } from "../api/LeaderboardApi";
 import { ProblemApi } from "../api/ProblemApi";
 import { SubmissionApi } from "../api/SubmissionApi";
 import { TestCaseApi } from "../api/TestCaseApi";
@@ -20,6 +21,7 @@ export class GraderServiceClient extends BaseClient {
     public problems: WithMutationApi<ProblemApi>;
     public testCase: WithMutationApi<TestCaseApi>;
     public user: WithMutationApi<UserApi>;
+    public leaderboard: WithMutationApi<LeaderboardApi>;
 
     constructor(baseURL: string) {
         super(
@@ -40,6 +42,7 @@ export class GraderServiceClient extends BaseClient {
         this.problems = withMutation(new ProblemApi(this.httpClient));
         this.testCase = withMutation(new TestCaseApi(this.httpClient));
         this.user = withMutation(new UserApi(this.httpClient));
+        this.leaderboard = withMutation(new LeaderboardApi(this.httpClient));
     }
 }
 
