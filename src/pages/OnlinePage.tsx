@@ -1,130 +1,42 @@
 import { useAuthStore } from "@/store/AuthStore";
+import { useSocketStore } from "@/store/SocketStore";
 import { Box, Button, CircularProgress, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { io, Socket } from "socket.io-client";
-
-const SERVER_URL = import.meta.env.VITE_APP_GAME_SERVER_URL || "http://localhost:5555";
-
-interface DetailRoomType {
-    userId: string;
-    username: string;
-    socketId: string;
-}
-interface RoomType {
-    players: DetailRoomType[];
-    gameStarted: boolean;
-}
 
 const OnlinePage: React.FC = () => {
-    const [serverTime, setServerTime] = useState<string>("");
-    const [message, setMessage] = useState<string>("");
-    const [isConnected, setIsConnected] = useState<boolean>(false);
-    const socketRef = useRef<Socket | null>(null);
+    const { isConnected, room, countdown, serverTime, redirectToHome, redirectToPlayOnline,
+        connectSocket, handleLeaveGame, resetRedirectToHome, resetRedirectToPlayOnline } = useSocketStore();
     const { userId, username } = useAuthStore();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const isTablet = useMediaQuery(theme.breakpoints.down('md'));
-    const [test, setTest] = useState<RoomType>({players: [], gameStarted: false});
-    const [countdown , setCountdown] = useState<number>(10);
     
     const navigate = useNavigate();
 
-    const connectSocket = () => {
-        if (socketRef.current) return; // ถ้ามี socket อยู่แล้ว ไม่ต้องสร้างใหม่
-
-        console.log("🔌 Connecting to socket...");
-        const socket = io(SERVER_URL, {
-            reconnection: true,
-            reconnectionAttempts: 5,
-            reconnectionDelay: 1000,
-            reconnectionDelayMax: 5000,
-        });
-        socketRef.current = socket;
-
-        socket.on("connect", () => {
-            setIsConnected(true);
-        });
-
-        socket.emit("joinRoom", { userId, username });
-
-        socket.on("server time", (time) => {
-            setServerTime(new Date(time).toLocaleTimeString());
-        });
-
-        socket.on("roomUpdate", (room) => {
-            console.log(`Room updated: ${JSON.stringify(room)}`);
-            setMessage(`Room updated: ${JSON.stringify(room)}`);
-            
-
-            console.log(room.players[0].username);
-             
-            
-            setTest(room);
-        });
-
-        socket.on("countdown", (countdown) => {
-            console.log(`Game starts in: ${countdown} seconds`);
-            setCountdown(countdown);
-        });
-
-        socket.on("gameStart", () => {
-            console.log("Redirecting to game page...");
-            navigate("/") // เปลี่ยนไปหน้าสำหรับเล่นเกม
-        });
-
-        socket.on("reconnect_attempt", () => {
-            console.log("Trying to reconnect...");
-        });
-
-        socket.on("reconnect", (attempt) => {
-            console.log(`Reconnected on attempt ${attempt}`);
-            setIsConnected(true);
-        });
-        
-        socket.on("reconnect_failed", () => {
-            console.log("Reconnect failed.");
-        });
-
-        socket.on("disconnect", () => {
-            console.log("❌ Disconnected from server");
-            setIsConnected(false);
-        });
-
-        // กรณีที่ถูกเตะออกจากห้อง ตอน tab 2 join มา
-        socket.on("forceDisconnect", (reason: string) => {
-            console.log("⚠️ ถูกเตะออกจากห้อง: ", reason);
-            alert(reason);
-            disconnectSocket();
-            navigate("/"); 
-        });
-    };
-
-    const disconnectSocket = () => {
-        if (socketRef.current) {
-            console.log("❌ Disconnecting socket...");
-            socketRef.current.disconnect();
-            socketRef.current = null;
-            setIsConnected(false);
-        }
-    };
-
-    const handleLeaveGame = () => {
-        disconnectSocket();
-        navigate("/");
-    };
-
     useEffect(() => {
-        connectSocket();
-
+        connectSocket(userId || -1, username || "null")
         return () => {
-            disconnectSocket();
         };
     }, []);
 
+    useEffect(() => {
+        if (redirectToHome) {
+            navigate("/")
+            resetRedirectToHome();
+        }
+
+        if (redirectToPlayOnline) {
+            navigate("/play-online")
+            resetRedirectToPlayOnline();
+        }
+    
+    }, [redirectToHome, redirectToPlayOnline]);
+
     return (
         <>
-        {test.players.length}
+        {/* {test.players.length} */}
+        { room.players.length }
         <Box sx={{ padding: { xs: 1, sm: 2, md: 3 }, width: "100%" }}>
             <Box sx={{ width: "100%" }}>
                 <Typography 
@@ -158,12 +70,9 @@ const OnlinePage: React.FC = () => {
                         maxWidth: '100%'
                     }}
                 >
-                    {isConnected ? "🟢 Connected" : "🔴 Disconnected"} | {message}
+                    {/* {isConnected ? "🟢 Connected" : "🔴 Disconnected"} | {message} */}
+                    {isConnected ? "🟢 Connected" : "🔴 Disconnected"} | { JSON.stringify(room.players) }
                 </Typography>
-            </Box>
-            
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                {/* <CircularProgress /> */}
             </Box>
             
             <Box
@@ -256,7 +165,8 @@ const OnlinePage: React.FC = () => {
                                 />
                                 <Box sx={{ mt: 1 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                                        {test.players[i]?.username ? '' : <CircularProgress size={isMobile ? 16 : 20} />}
+                                        {/* {test.players[i]?.username ? '' : <CircularProgress size={isMobile ? 16 : 20} />} */}
+                                        {room.players[i]?.username ? '' : <CircularProgress size={isMobile ? 16 : 20} />}
                                         <Typography 
                                             variant={isMobile ? "body1" : "h6"} 
                                             color="primary"
@@ -268,7 +178,8 @@ const OnlinePage: React.FC = () => {
                                                 }
                                             }}
                                         >
-                                            {test.players[i]?.username || "Loading..."} 
+                                            {/* {test.players[i]?.username || "Loading..."}  */}
+                                            {room.players[i]?.username || "Loading..."} 
                                         </Typography>
                                     </Box>
                                 </Box>

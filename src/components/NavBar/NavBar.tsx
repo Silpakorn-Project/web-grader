@@ -22,6 +22,10 @@ const Navbar = () => {
         return null;
     }
 
+    if (location.pathname.startsWith("/play-online")) {
+        return null;
+    }
+
     return (
         <AppBar position="static">
             <Toolbar>

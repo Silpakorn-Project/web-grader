@@ -1,4 +1,5 @@
 import { client } from "@/services";
+import { useSocketStore } from "@/store/SocketStore";
 import { Box, Skeleton, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -9,8 +10,14 @@ type ProblemDescriptionProps = {};
 
 const ProblemDescription: FC<ProblemDescriptionProps> = () => {
     const { id } = useParams();
-    const problemId = Number(id);
+    // const problemId = Number(id);
     const navigate = useNavigate();
+    const { room } = useSocketStore();
+    let problemId = Number(id);
+
+    if (location.pathname.startsWith("/play-online")) {
+        problemId = Number(room.problems);
+    }
 
     const {
         data: problem,
