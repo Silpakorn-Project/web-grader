@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/store/AuthStore";
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import {
     AppBar,
     Box,
@@ -32,6 +33,13 @@ const Navbar = () => {
                 >
                     <Button color="inherit" onClick={() => navigate("/")}>
                         Home
+                    </Button>
+                    <Button
+                        color="inherit"
+                        onClick={() => navigate(token ? "/online" : "/login")}
+                        startIcon={<SportsEsportsIcon />}
+                    >
+                        Online
                     </Button>
                     <Button
                         color="inherit"

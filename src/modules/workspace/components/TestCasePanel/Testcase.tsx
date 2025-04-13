@@ -1,5 +1,6 @@
 import { client } from "@/services";
 import { ITestCaseResponse } from "@/services/models/GraderServiceModel";
+import { useSocketStore } from "@/store/SocketStore";
 import { Button, Stack } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { FC, useEffect, useState } from "react";
@@ -10,6 +11,7 @@ type TestCaseProps = {};
 
 const TestCase: FC<TestCaseProps> = () => {
     const { id: problemId } = useParams();
+    const { room } = useSocketStore();
     const [selectedTestCase, setSelectedTestCase] =
         useState<ITestCaseResponse | null>(null);
 
@@ -17,7 +19,9 @@ const TestCase: FC<TestCaseProps> = () => {
         queryKey: ["testcases", problemId],
         queryFn: async () => {
             const response = await client.graderService.testCase.getTestCases({
-                problemId: Number(problemId),
+                problemId: !location.pathname.startsWith("/play-online")
+                    ? Number(problemId)
+                    : Number(room.problems),
                 offset: 1,
                 limit: 3,
             });
