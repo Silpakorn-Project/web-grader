@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Route, Routes } from "react-router-dom";
-import Signup from "./pages/Signup";
+import Signup from "./pages/SignUp";
 import SignupSuccess from "./pages/SignupSuccess";
 
 export const SignupRoutes: FC = () => {

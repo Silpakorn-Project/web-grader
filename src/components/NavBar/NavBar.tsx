@@ -1,5 +1,7 @@
 import { useAuthStore } from "@/store/AuthStore";
 import MenuIcon from "@mui/icons-material/Menu";
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+
 import {
     AppBar,
     Box,
@@ -17,6 +19,10 @@ const Navbar = () => {
     const location = useLocation();
 
     if (location.pathname.startsWith("/problems/")) {
+        return null;
+    }
+
+    if (location.pathname.startsWith("/play-online")) {
         return null;
     }
 
@@ -38,6 +44,13 @@ const Navbar = () => {
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Button color="inherit" onClick={() => navigate("/")}>
                         Home
+                    </Button>
+                    <Button
+                        color="inherit"
+                        onClick={() => navigate(token ? "/online" : "/login")}
+                        startIcon={<SportsEsportsIcon />}
+                    >
+                        Online
                     </Button>
                     <Button
                         color="inherit"

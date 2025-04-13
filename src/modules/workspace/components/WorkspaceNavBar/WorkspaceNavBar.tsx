@@ -3,6 +3,7 @@ import { useWorkspaceStore } from "@/modules/workspace/store/WorkspaceStore";
 import { client } from "@/services";
 import { IProblemResponse } from "@/services/models/GraderServiceModel";
 import { useAuthStore } from "@/store/AuthStore";
+import { useSocketStore } from "@/store/SocketStore";
 import MenuIcon from "@mui/icons-material/Menu";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PublishIcon from "@mui/icons-material/Publish";
@@ -34,7 +35,8 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
         setSubmitResponse,
         setCurrentView,
     } = useWorkspaceStore();
-    const { id: problemId } = useParams();
+    let { id: problemId } = useParams();
+    const { room, getRoomKey, updatePercentage } = useSocketStore();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -51,6 +53,21 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
         onMutate: () => setIsSubmitting(true),
         onSuccess: (response) => {
             setSubmitResponse(response.data);
+            console.log("response", response.data);
+
+            const passedTestCases = response.data.testcase_passed;
+            const totalTestCases = response.data.testcase_total;
+            const percentagePassed = (passedTestCases / totalTestCases) * 100;  
+            
+            const roomKey = getRoomKey();
+
+            const userPercentage = {
+                roomKey: roomKey, 
+                userId: userId || -1,
+                percentage: percentagePassed, 
+            };
+
+            updatePercentage(userPercentage);
         },
         onSettled: () => setIsSubmitting(false),
     });
@@ -58,6 +75,13 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
     const handleSubmit = async () => {
         if (editorInstance && language) {
             const code = editorInstance.getValue();
+            //change problemid to room.problems if in play online
+            if (
+                location.pathname.startsWith("/play-online") &&
+                room.problems !== null
+            ) {
+                problemId = room.problems.toString();
+            }
 
             if (code && language && userId && problemId) {
                 setCurrentView("test_result");
@@ -66,6 +90,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     {
                         code: code,
                         language: language.toUpperCase(),
+                        // problemId: !location.pathname.startsWith("/play-online") ? Number(problemId) : Number(room.problems),
                         problemId: Number(problemId),
                         userId: userId,
                     },
