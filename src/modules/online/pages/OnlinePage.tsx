@@ -27,7 +27,7 @@ const OnlinePage: React.FC = () => {
         }
 
         if (redirectToPlayOnline) {
-            navigate("/play-online")
+            navigate("/online/play")
             resetRedirectToPlayOnline();
         }
     

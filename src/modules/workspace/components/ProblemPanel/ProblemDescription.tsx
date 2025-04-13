@@ -16,7 +16,7 @@ const ProblemDescription: FC<ProblemDescriptionProps> = () => {
     const { room } = useSocketStore();
     let problemId = Number(id);
 
-    if (location.pathname.startsWith("/play-online")) {
+    if (location.pathname.startsWith("/online/play")) {
         problemId = Number(room.problems);
     }
 

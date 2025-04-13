@@ -24,9 +24,9 @@ export const AdminRoutes: FC = () => {
                 },
             });
         }
-    }, [user, navigate]);
+    }, [user]);
 
-    if (!user || user.role !== "ADMIN") {
+    if (!user) {
         return null;
     }
 

@@ -2,10 +2,10 @@ import Layout from "@/components/Layout/Layout";
 import { LazyPage } from "@/components/LazyPage";
 import { AdminRoutes } from "@/modules/admin";
 import { LoginRoutes } from "@/modules/login";
+import { OnlineRoutes } from "@/modules/online";
 import { ProblemsRoutes } from "@/modules/problems";
 import { SignupRoutes } from "@/modules/signup";
 import { WorkspaceRoutes } from "@/modules/workspace";
-import OnlinePage from "@/pages/OnlinePage";
 import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 
@@ -13,7 +13,6 @@ const HomePage = lazy(() => import("@/modules/homepage/Homepage"));
 const ErrorBoundaryPage = lazy(
     () => import("@/components/ErrorBoundary/ErrorBoundary")
 );
-const PlayOnlinePage = lazy(() => import("@/pages/PlayOnlinePage"));
 
 export const router = createBrowserRouter([
     {
@@ -26,12 +25,8 @@ export const router = createBrowserRouter([
                 element: <LazyPage element={HomePage} />,
             },
             {
-                path: "/online",
-                element: <OnlinePage />,
-            },
-            {
-                path: "/play-online",
-                element: <PlayOnlinePage />,
+                path: "/online/*",
+                element: <OnlineRoutes />,
             },
             {
                 path: "/login/*",

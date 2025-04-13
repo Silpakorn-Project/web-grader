@@ -78,7 +78,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
             const code = editorInstance.getValue();
             //change problemid to room.problems if in play online
             if (
-                location.pathname.startsWith("/play-online") &&
+                location.pathname.startsWith("/online/play") &&
                 room.problems !== null
             ) {
                 problemId = room.problems.toString();
@@ -91,7 +91,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     {
                         code: code,
                         language: language.toUpperCase(),
-                        // problemId: !location.pathname.startsWith("/play-online") ? Number(problemId) : Number(room.problems),
+                        // problemId: !location.pathname.startsWith("/online/play/") ? Number(problemId) : Number(room.problems),
                         problemId: Number(problemId),
                         userId: user.userId,
                     },

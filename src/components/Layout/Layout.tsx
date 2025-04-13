@@ -7,7 +7,10 @@ import Navbar from "./NavBar";
 const Layout: FC = () => {
     const location = useLocation();
 
-    if (location.pathname.startsWith("/problems/")) {
+    if (
+        location.pathname.startsWith("/problems/") ||
+        location.pathname.startsWith("/online/")
+    ) {
         return (
             <Box
                 component="main"
