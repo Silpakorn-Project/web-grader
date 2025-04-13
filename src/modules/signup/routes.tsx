@@ -2,7 +2,7 @@ import { LazyPage } from "@/components/LazyPage";
 import { FC, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 
-const SignUpPage = lazy(() => import("./pages/Signup"));
+const SignUpPage = lazy(() => import("./pages/SignUp"));
 const SignUpSuccessPage = lazy(() => import("./pages/SignupSuccess"));
 
 export const SignupRoutes: FC = () => {

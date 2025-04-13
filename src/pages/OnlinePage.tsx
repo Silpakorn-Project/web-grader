@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const OnlinePage: React.FC = () => {
     const { isConnected, room, countdown, serverTime, redirectToHome, redirectToPlayOnline,
         connectSocket, handleLeaveGame, resetRedirectToHome, resetRedirectToPlayOnline } = useSocketStore();
-    const { userId, username } = useAuthStore();
+    const { user } = useAuthStore();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const isTablet = useMediaQuery(theme.breakpoints.down('md'));
@@ -15,7 +15,7 @@ const OnlinePage: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        connectSocket(userId || -1, username || "null")
+        connectSocket(user?.userId || -1, user?.username || "null")
         return () => {
         };
     }, []);

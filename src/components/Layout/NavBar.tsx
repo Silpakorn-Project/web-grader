@@ -36,7 +36,7 @@ const Navbar = () => {
                     </Button>
                     <Button
                         color="inherit"
-                        onClick={() => navigate(token ? "/online" : "/login")}
+                        onClick={() => navigate(user ? "/online" : "/login")}
                         startIcon={<SportsEsportsIcon />}
                     >
                         Online
