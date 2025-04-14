@@ -1,22 +1,21 @@
 import { TYPES } from "@/constants/common";
 import { client } from "@/services";
+import { useSnackbarStore } from "@/store/SnackbarStore";
 import Add from "@mui/icons-material/Add";
 import Delete from "@mui/icons-material/Delete";
 import {
-    Alert,
     Autocomplete,
     Box,
     Button,
     IconButton,
     MenuItem,
     Paper,
-    Snackbar,
     Stack,
     TextField,
-    Typography,
+    Typography
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 
 type FormValues = {
@@ -56,11 +55,7 @@ const CreateProblem: FC = () => {
         mutationFn: client.graderService.testCase.createTestcases,
     });
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState("");
-    const [snackbarSeverity, setSnackbarSeverity] = useState<
-        "success" | "error"
-    >("success");
+    const { showSnackbar } = useSnackbarStore();
 
     const onSubmit = async (data: FormValues) => {
         try {
@@ -76,13 +71,12 @@ const CreateProblem: FC = () => {
                 testcases: data.testCases,
             });
 
-            setSnackbarMessage("Problem created successfully!");
-            setSnackbarSeverity("success");
-            setOpenSnackbar(true);
+            showSnackbar("Problem created successfully!", "success");
         } catch (error) {
-            setSnackbarMessage("An error occurred while creating the problem.");
-            setSnackbarSeverity("error");
-            setOpenSnackbar(true);
+            showSnackbar(
+                "An error occurred while creating the problem.",
+                "error"
+            );
         }
     };
 
@@ -92,127 +86,110 @@ const CreateProblem: FC = () => {
                 <Typography variant="h5" gutterBottom>
                     Create New Problem
                 </Typography>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <Stack spacing={3}>
-                        <TextField
-                            label="Title"
-                            fullWidth
-                            {...register("title", { required: true })}
-                            error={!!errors.title}
-                        />
-
-                        <TextField
-                            label="Description (Markdown)"
-                            fullWidth
-                            multiline
-                            rows={8}
-                            {...register("description", { required: true })}
-                            error={!!errors.description}
-                        />
-
-                        <Controller
-                            control={control}
-                            name="type"
-                            rules={{ required: true }}
-                            render={({ field }) => (
-                                <Autocomplete
-                                    options={TYPES}
-                                    value={field.value || null}
-                                    onChange={(_, newValue) =>
-                                        field.onChange(newValue)
-                                    }
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            label="Type"
-                                            error={!!errors.type}
-                                        />
-                                    )}
-                                />
-                            )}
-                        />
-
-                        <TextField
-                            select
-                            label="Difficulty"
-                            defaultValue="Easy"
-                            fullWidth
-                            {...register("difficulty", { required: true })}
-                            error={!!errors.difficulty}
-                        >
-                            <MenuItem value="Easy">Easy</MenuItem>
-                            <MenuItem value="Medium">Medium</MenuItem>
-                            <MenuItem value="Hard">Hard</MenuItem>
-                        </TextField>
-
-                        <Typography variant="h6">Test Cases</Typography>
-                        {fields.map((field, index) => (
-                            <Stack key={field.id} spacing={1}>
-                                <TextField
-                                    label={`Input #${index + 1}`}
-                                    {...register(
-                                        `testCases.${index}.inputData`,
-                                        { required: true }
-                                    )}
-                                    multiline
-                                    error={
-                                        !!errors.testCases?.[index]?.inputData
-                                    }
-                                />
-                                <TextField
-                                    label={`Output #${index + 1}`}
-                                    {...register(
-                                        `testCases.${index}.expectedOutput`,
-                                        { required: true }
-                                    )}
-                                    multiline
-                                    error={
-                                        !!errors.testCases?.[index]
-                                            ?.expectedOutput
-                                    }
-                                />
-                                <Box display="flex" justifyContent="flex-end">
-                                    <IconButton
-                                        onClick={() => remove(index)}
-                                        disabled={fields.length === 1}
-                                    >
-                                        <Delete />
-                                    </IconButton>
-                                </Box>
-                            </Stack>
-                        ))}
-
-                        <Button
-                            variant="outlined"
-                            onClick={() =>
-                                append({ inputData: "", expectedOutput: "" })
-                            }
-                            startIcon={<Add />}
-                        >
-                            Add Test Case
-                        </Button>
-
-                        <Button type="submit" variant="contained">
-                            Submit
-                        </Button>
-                    </Stack>
-                </form>
-            </Paper>
-
-            <Snackbar
-                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={() => setOpenSnackbar(false)}
-            >
-                <Alert
-                    onClose={() => setOpenSnackbar(false)}
-                    severity={snackbarSeverity}
-                    sx={{ width: "100%" }}
+                <Stack
+                    spacing={3}
+                    component="form"
+                    onSubmit={handleSubmit(onSubmit)}
                 >
-                    {snackbarMessage}
-                </Alert>
-            </Snackbar>
+                    <TextField
+                        label="Title"
+                        fullWidth
+                        {...register("title", { required: true })}
+                        error={!!errors.title}
+                    />
+
+                    <TextField
+                        label="Description (Markdown)"
+                        fullWidth
+                        multiline
+                        rows={8}
+                        {...register("description", { required: true })}
+                        error={!!errors.description}
+                    />
+
+                    <Controller
+                        control={control}
+                        name="type"
+                        rules={{ required: true }}
+                        render={({ field }) => (
+                            <Autocomplete
+                                options={TYPES}
+                                value={field.value || null}
+                                onChange={(_, newValue) =>
+                                    field.onChange(newValue)
+                                }
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Type"
+                                        error={!!errors.type}
+                                    />
+                                )}
+                            />
+                        )}
+                    />
+
+                    <TextField
+                        select
+                        label="Difficulty"
+                        defaultValue="Easy"
+                        fullWidth
+                        {...register("difficulty", { required: true })}
+                        error={!!errors.difficulty}
+                    >
+                        <MenuItem value="Easy">Easy</MenuItem>
+                        <MenuItem value="Medium">Medium</MenuItem>
+                        <MenuItem value="Hard">Hard</MenuItem>
+                    </TextField>
+
+                    <Typography variant="h6">Test Cases</Typography>
+                    {fields.map((field, index) => (
+                        <Stack key={field.id} spacing={1}>
+                            <TextField
+                                label={`Input #${index + 1}`}
+                                {...register(`testCases.${index}.inputData`, {
+                                    required: true,
+                                })}
+                                multiline
+                                error={!!errors.testCases?.[index]?.inputData}
+                            />
+                            <TextField
+                                label={`Output #${index + 1}`}
+                                {...register(
+                                    `testCases.${index}.expectedOutput`,
+                                    { required: true }
+                                )}
+                                multiline
+                                error={
+                                    !!errors.testCases?.[index]?.expectedOutput
+                                }
+                            />
+                            <Box display="flex" justifyContent="flex-end">
+                                <IconButton
+                                    onClick={() => remove(index)}
+                                    disabled={fields.length === 1}
+                                >
+                                    <Delete />
+                                </IconButton>
+                            </Box>
+                        </Stack>
+                    ))}
+
+                    <Button
+                        variant="outlined"
+                        onClick={() =>
+                            append({ inputData: "", expectedOutput: "" })
+                        }
+                        startIcon={<Add />}
+                    >
+                        Add Test Case
+                    </Button>
+
+                    <Button type="submit" variant="contained">
+                        Submit
+                    </Button>
+                </Stack>
+            </Paper>
         </Box>
     );
 };
