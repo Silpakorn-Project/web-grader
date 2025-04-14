@@ -9,6 +9,12 @@ export const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     "& .MuiDataGrid-cell:focus-within": {
         outline: "none",
     },
+    "& .MuiDataGrid-columnHeader:focus": {
+        outline: "none",
+    },
+    "& .MuiDataGrid-columnHeader:focus-within": {
+        outline: "none",
+    },
     "&, [class^=MuiDataGrid]": { border: "none" },
     "& .MuiDataGrid-row:nth-of-type(even)": {
         backgroundColor: theme.palette.background.default,
