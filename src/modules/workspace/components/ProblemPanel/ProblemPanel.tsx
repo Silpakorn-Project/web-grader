@@ -56,7 +56,7 @@ const ProblemPanel: React.FC<ProblemDescriptionProps> = () => {
                 >
                     Description
                 </Button>
-                { !location.pathname.startsWith("/online/play/") && (
+                { !location.pathname.startsWith("/online/play") && (
                     <Button
                         color="inherit"
                         startIcon={<HistoryIcon color="info" />}

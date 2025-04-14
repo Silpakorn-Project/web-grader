@@ -19,7 +19,7 @@ const TestCase: FC<TestCaseProps> = () => {
         queryKey: ["testcases", problemId],
         queryFn: async () => {
             const response = await client.graderService.testCase.getTestCases({
-                problemId: !location.pathname.startsWith("/online/play/")
+                problemId: !location.pathname.startsWith("/online/play")
                     ? Number(problemId)
                     : Number(room.problems),
                 offset: 1,

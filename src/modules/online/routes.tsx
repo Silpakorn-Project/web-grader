@@ -1,7 +1,8 @@
 import { LazyPage } from "@/components/LazyPage";
+import RoutesWithFallback from "@/components/RoutesWithFallback";
 import { useAuthStore } from "@/store/AuthStore";
 import { FC, lazy, useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, useNavigate } from "react-router-dom";
 
 const OnlinePage = lazy(() => import("./pages/OnlinePage"));
 const PlayOnlinePage = lazy(() => import("./pages/PlayOnlinePage"));
@@ -22,9 +23,12 @@ export const OnlineRoutes: FC = () => {
     }
 
     return (
-        <Routes>
-            <Route path="/" element={<LazyPage element={OnlinePage}/>} />
-            <Route path="/play" element={<LazyPage element={PlayOnlinePage}/>} />
-        </Routes>
+        <RoutesWithFallback>
+            <Route path="/" element={<LazyPage element={OnlinePage} />} />
+            <Route
+                path="/play"
+                element={<LazyPage element={PlayOnlinePage} />}
+            />
+        </RoutesWithFallback>
     );
 };

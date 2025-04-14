@@ -1,7 +1,8 @@
 import { LazyPage } from "@/components/LazyPage";
+import RoutesWithFallback from "@/components/RoutesWithFallback";
 import { useAuthStore } from "@/store/AuthStore";
 import { FC, lazy, useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, useNavigate } from "react-router-dom";
 
 const CreateProblemPage = lazy(() => import("./pages/CreateProblem"));
 
@@ -31,8 +32,8 @@ export const AdminRoutes: FC = () => {
     }
 
     return (
-        <Routes>
+        <RoutesWithFallback>
             <Route path="/create" element={<LazyPage element={CreateProblemPage} />} />
-        </Routes>
+        </RoutesWithFallback>
     );
 };

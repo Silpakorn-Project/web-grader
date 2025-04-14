@@ -1,15 +1,16 @@
 import { LazyPage } from "@/components/LazyPage";
+import RoutesWithFallback from "@/components/RoutesWithFallback";
 import { FC, lazy } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route } from "react-router-dom";
 
 const SignUpPage = lazy(() => import("./pages/SignUp"));
 const SignUpSuccessPage = lazy(() => import("./pages/SignupSuccess"));
 
 export const SignupRoutes: FC = () => {
     return (
-        <Routes>
+        <RoutesWithFallback>
             <Route path="" element={<LazyPage element={SignUpPage} />} />
             <Route path="/success" element={<LazyPage element={SignUpSuccessPage} />} />
-        </Routes>
+        </RoutesWithFallback>
     );
 };

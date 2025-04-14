@@ -1,12 +1,15 @@
 import { useAuthStore } from "@/store/AuthStore";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
 import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import UserMenu from "../UserMenu/UserMenu";
 
 const Navbar = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { user } = useAuthStore();
+
+    const isActive = (path: string) => (location.pathname === path) ? "primary" : "inherit";
 
     return (
         <AppBar position="static" color="inherit" elevation={0}>
@@ -22,21 +25,21 @@ const Navbar = () => {
                         marginLeft: "auto",
                     }}
                 >
-                    <Button color="inherit" onClick={() => navigate("/")}>
+                    <Button color={isActive("/")} onClick={() => navigate("/")}>
                         Home
                     </Button>
 
                     {user && (
                         <>
                             <Button
-                                color="inherit"
+                                color={isActive("/online")}
                                 onClick={() => navigate("/online")}
                                 startIcon={<SportsEsportsIcon />}
                             >
                                 Online
                             </Button>
                             <Button
-                                color="inherit"
+                                color={isActive("/problems")}
                                 onClick={() => navigate("/problems")}
                             >
                                 Problems
