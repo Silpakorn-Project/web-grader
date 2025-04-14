@@ -1,13 +1,13 @@
 import { ITestResultResponse } from "@/services/models/GraderServiceModel";
 import { Box, Button, Skeleton, Stack, Typography } from "@mui/material";
 import { FC, useEffect, useState } from "react";
-import { useWorkspaceStore } from "../../store/WorkspaceStore";
+import { useWorkspace } from "../../context/WorkspaceContext";
 import TestCaseDetail from "./TestCaseDetail";
 
 type TestResultsProps = {};
 
 const TestResults: FC<TestResultsProps> = () => {
-    const { isSubmitting, submitResponse } = useWorkspaceStore();
+    const { isSubmitting, submitResponse } = useWorkspace();
     const [selectedTestCase, setSelectedTestCase] =
         useState<ITestResultResponse | null>(null);
 

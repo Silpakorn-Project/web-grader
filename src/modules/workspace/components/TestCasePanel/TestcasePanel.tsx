@@ -1,9 +1,9 @@
-import { useWorkspaceStore } from "@/modules/workspace/store/WorkspaceStore";
 import DomainVerificationIcon from "@mui/icons-material/DomainVerification";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import { Box, Button } from "@mui/material";
 import { FC, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useWorkspace } from "../../context/WorkspaceContext";
 import WorkspaceBox from "../WorkspaceBox/WorkspaceBox";
 import WorkspaceBoxTopBar from "../WorkspaceBox/WorkspaceBoxTopBar";
 import TestResults from "./TestResults";
@@ -13,8 +13,12 @@ type TestCaseProps = {};
 
 const TestCasePanel: FC<TestCaseProps> = () => {
     const { id: problemId } = useParams();
-    const { isSubmitting, testCasePanelView, setTestCasePanelView, setSubmitResponse } =
-        useWorkspaceStore();
+    const {
+        isSubmitting,
+        testCasePanelView,
+        setTestCasePanelView,
+        setSubmitResponse,
+    } = useWorkspace();
 
     useEffect(() => {
         setSubmitResponse(null);

@@ -1,5 +1,4 @@
 import UserMenu from "@/components/UserMenu/UserMenu";
-import { useWorkspaceStore } from "@/modules/workspace/store/WorkspaceStore";
 import { client } from "@/services";
 import { IProblemResponse } from "@/services/models/GraderServiceModel";
 import { queryClient } from "@/services/query/queryClient";
@@ -22,6 +21,7 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FC, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useWorkspace } from "../../context/WorkspaceContext";
 
 type WorkspaceNavBarProps = {};
 
@@ -29,13 +29,13 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
     const {
-        editorInstance,
         language,
         isSubmitting,
+        sourceCode,
         setIsSubmitting,
         setSubmitResponse,
-        setTestCasePanelView: setCurrentView,
-    } = useWorkspaceStore();
+        setTestCasePanelView,
+    } = useWorkspace();
     let { id: problemId } = useParams();
     const { room, getRoomKey, updatePercentage } = useSocketStore();
 
@@ -58,14 +58,14 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
 
             const passedTestCases = response.data.testcase_passed;
             const totalTestCases = response.data.testcase_total;
-            const percentagePassed = (passedTestCases / totalTestCases) * 100;  
-            
+            const percentagePassed = (passedTestCases / totalTestCases) * 100;
+
             const roomKey = getRoomKey();
 
             const userPercentage = {
-                roomKey: roomKey, 
+                roomKey: roomKey,
                 userId: user?.userId || -1,
-                percentage: percentagePassed, 
+                percentage: percentagePassed,
             };
 
             updatePercentage(userPercentage);
@@ -74,34 +74,30 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
     });
 
     const handleSubmit = async () => {
-        if (editorInstance) {
-            const code = editorInstance.getValue();
-            //change problemid to room.problems if in play online
-            if (
-                location.pathname.startsWith("/online/play") &&
-                room.problems !== null
-            ) {
-                problemId = room.problems.toString();
-            }
+        //change problemid to room.problems if in play online
+        if (
+            location.pathname.startsWith("/online/play") &&
+            room.problems !== null
+        ) {
+            problemId = room.problems.toString();
+        }
 
-            if (code && language && problemId && user) {
-                setCurrentView("test_result");
+        if (sourceCode && language && problemId && user) {
+            setTestCasePanelView("test_result");
 
-                const response = await submitCodeMutation([
-                    {
-                        code: code,
-                        language: language.toUpperCase(),
-                        // problemId: !location.pathname.startsWith("/online/play/") ? Number(problemId) : Number(room.problems),
-                        problemId: Number(problemId),
-                        userId: user.userId,
-                    },
-                ]);
+            const response = await submitCodeMutation([
+                {
+                    code: sourceCode,
+                    language: language.toUpperCase(),
+                    problemId: !location.pathname.startsWith("/online/play/") ? Number(problemId) : Number(room.problems),
+                    userId: user.userId,
+                },
+            ]);
 
-                if (response.data) {
-                    queryClient.invalidateQueries({
-                        queryKey: ["submissions"],
-                    });
-                }
+            if (response.data) {
+                queryClient.invalidateQueries({
+                    queryKey: ["submissions"],
+                });
             }
         }
     };

@@ -1,71 +1,50 @@
 import { CODE_SNIPPETS } from "@/constants/common";
-import { Editor, OnMount } from "@monaco-editor/react";
+import { Editor } from "@monaco-editor/react";
 import { CircularProgress, useColorScheme } from "@mui/material";
-import * as monaco from "monaco-editor";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { FC } from "react";
+import { useWorkspace } from "../../context/WorkspaceContext";
 import WorkspaceBox from "../WorkspaceBox/WorkspaceBox";
 import PreferenceBar from "./PreferenceBar";
 
-type CodeEditorProps = {
-    onEditorMount: (editor: monaco.editor.IStandaloneCodeEditor | null) => void;
-    onLanguageChange: (language: string) => void;
+type CodeEditorProps = {};
+
+const CodeEditorPanel: FC<CodeEditorProps> = () => {
+    const { sourceCode, setSourceCode, language, setLanguage } = useWorkspace();
+    const { colorScheme } = useColorScheme();
+
+    const onSelectLanguage = (selectedLanguage?: string) => {
+        if (selectedLanguage) {
+            setLanguage(selectedLanguage);
+            setSourceCode(CODE_SNIPPETS[selectedLanguage]);
+        }
+    };
+
+    const onMount = () => {
+        setSourceCode(CODE_SNIPPETS[language]);
+    };
+
+    return (
+        <WorkspaceBox>
+            <PreferenceBar
+                language={language}
+                onSelectLanguage={onSelectLanguage}
+            />
+            <Editor
+                loading={<CircularProgress />}
+                theme={colorScheme === "dark" ? "vs-dark" : "light"}
+                language={language}
+                value={sourceCode}
+                defaultValue={CODE_SNIPPETS[language]}
+                onChange={(value) => setSourceCode(value!)}
+                onMount={onMount}
+                options={{
+                    minimap: {
+                        enabled: false,
+                    },
+                }}
+            />
+        </WorkspaceBox>
+    );
 };
-
-export type CodeEditorRef = {
-    getLanguage: () => string;
-    getEditorInstance: () => monaco.editor.IStandaloneCodeEditor | null;
-};
-
-const CodeEditorPanel = forwardRef<CodeEditorRef, CodeEditorProps>(
-    ({ onEditorMount, onLanguageChange }, ref) => {
-        const { colorScheme } = useColorScheme();
-        const [language, setLanguage] = useState("java");
-        const [value, setValue] = useState(CODE_SNIPPETS[language]);
-        const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(
-            null
-        );
-
-        const onSelectLanguage = (selectedLanguage?: string) => {
-            if (selectedLanguage) {
-                setLanguage(selectedLanguage);
-                setValue(CODE_SNIPPETS[selectedLanguage]);
-                onLanguageChange(selectedLanguage);
-            }
-        };
-
-        const onMount: OnMount = (editor) => {
-            editorRef.current = editor;
-            onEditorMount(editor);
-        };
-
-        useImperativeHandle(ref, () => ({
-            getLanguage: () => language,
-            getEditorInstance: () => editorRef.current,
-        }));
-
-        return (
-            <WorkspaceBox>
-                <PreferenceBar
-                    language={language}
-                    onSelectLanguage={onSelectLanguage}
-                />
-                <Editor
-                    loading={<CircularProgress />}
-                    theme={colorScheme === "dark" ? "vs-dark" : "light"}
-                    language={language}
-                    value={value}
-                    defaultValue={CODE_SNIPPETS[language]}
-                    onChange={(value) => setValue(value)}
-                    onMount={onMount}
-                    options={{
-                        minimap: {
-                            enabled: false,
-                        },
-                    }}
-                />
-            </WorkspaceBox>
-        );
-    }
-);
 
 export default CodeEditorPanel;

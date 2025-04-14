@@ -4,17 +4,20 @@ import WorkspaceNavBar from "@/modules/workspace/components/WorkspaceNavBar/Work
 import { Box } from "@mui/material";
 import { FC } from "react";
 import Split from "react-split";
+import { WorkspaceProvider } from "../context/WorkspaceContext";
 
 type WorkspaceProps = {};
 
 const Workspace: FC<WorkspaceProps> = () => {
     return (
         <Box overflow="hidden">
-            <WorkspaceNavBar />
-            <Split className="split pb-2 px-2" minSize={0}>
-                <ProblemPanel />
-                <Playground />
-            </Split>
+            <WorkspaceProvider>
+                <WorkspaceNavBar />
+                <Split className="split pb-2 px-2" minSize={0}>
+                    <ProblemPanel />
+                    <Playground />
+                </Split>
+            </WorkspaceProvider>
         </Box>
     );
 };
