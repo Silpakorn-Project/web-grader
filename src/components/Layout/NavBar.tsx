@@ -1,12 +1,6 @@
 import { useAuthStore } from "@/store/AuthStore";
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import {
-    AppBar,
-    Box,
-    Button,
-    Toolbar,
-    Typography
-} from "@mui/material";
+import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
+import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import UserMenu from "../UserMenu/UserMenu";
 
@@ -15,12 +9,9 @@ const Navbar = () => {
     const { user } = useAuthStore();
 
     return (
-        <AppBar position="static">
+        <AppBar position="static" color="inherit" elevation={0}>
             <Toolbar>
-                <Button
-                    color="inherit"
-                    onClick={() => navigate("/")}
-                >
+                <Button color="primary" onClick={() => navigate("/")}>
                     <Typography variant="h4">SU</Typography>
                 </Button>
 
@@ -34,19 +25,25 @@ const Navbar = () => {
                     <Button color="inherit" onClick={() => navigate("/")}>
                         Home
                     </Button>
-                    <Button
-                        color="inherit"
-                        onClick={() => navigate(user ? "/online" : "/login")}
-                        startIcon={<SportsEsportsIcon />}
-                    >
-                        Online
-                    </Button>
-                    <Button
-                        color="inherit"
-                        onClick={() => navigate(user ? "/problems" : "/login")}
-                    >
-                        Problems
-                    </Button>
+
+                    {user && (
+                        <>
+                            <Button
+                                color="inherit"
+                                onClick={() => navigate("/online")}
+                                startIcon={<SportsEsportsIcon />}
+                            >
+                                Online
+                            </Button>
+                            <Button
+                                color="inherit"
+                                onClick={() => navigate("/problems")}
+                            >
+                                Problems
+                            </Button>
+                        </>
+                    )}
+
                     <UserMenu />
                 </Box>
             </Toolbar>

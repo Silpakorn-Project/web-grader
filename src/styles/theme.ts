@@ -1,11 +1,11 @@
-import { alpha, createTheme } from "@mui/material";
+import { createTheme } from "@mui/material";
 
 export const theme = createTheme({
     colorSchemes: {
         dark: {
             palette: {
                 primary: {
-                    main: alpha("#019699", 0.8),
+                    main: "#019699",
                 },
                 success: {
                     main: "#2CBB5D",

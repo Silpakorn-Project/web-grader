@@ -63,7 +63,7 @@ const HomePage: FC<HomePageProps> = () => {
 
                                 <Button
                                     variant="outlined"
-                                    onClick={() => navigate("/")}
+                                    onClick={() => navigate("/online")}
                                 >
                                     Multiplayer
                                 </Button>

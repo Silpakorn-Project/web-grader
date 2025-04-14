@@ -3,6 +3,7 @@ import { StyledDataGrid } from "@/components/Datagrid/StyledDataGrid";
 import { useDebounce } from "@/hooks/useDebounce";
 import { client } from "@/services";
 import { getDifficultyColor } from "@/utilts/common";
+import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import {
@@ -174,7 +175,7 @@ const Problems: FC<ProblemTableProps> = () => {
                         Random
                     </Typography>
                 </Button>
-                {/* <Button
+                <Button
                     size="small"
                     variant="contained"
                     color="primary"
@@ -185,7 +186,7 @@ const Problems: FC<ProblemTableProps> = () => {
                     <Typography sx={{ color: "white" }} variant="subtitle2">
                         Create
                     </Typography>
-                </Button> */}
+                </Button>
             </Stack>
 
             <Stack direction="row" spacing={1} my={2}>
