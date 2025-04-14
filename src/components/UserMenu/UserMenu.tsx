@@ -1,4 +1,5 @@
 import { client } from "@/services";
+import { queryClient } from "@/services/query/queryClient";
 import { useAuthStore } from "@/store/AuthStore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Brightness4 from "@mui/icons-material/Brightness4";
@@ -18,6 +19,7 @@ import {
     Typography,
     useColorScheme,
 } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -38,6 +40,22 @@ const UserMenu: FC<UserMenuProps> = () => {
     const open = Boolean(anchorEl);
     const openAppearanceMenu = Boolean(appearanceAnchorEl);
 
+    const { data } = useQuery({
+        queryKey: ["user-ranking"],
+        queryFn: async () => {
+            if (!user) {
+                return null;
+            }
+
+            const response =
+                await client.graderService.leaderboard.getUserRanking(
+                    user.userId
+                );
+            return response.data;
+        },
+        enabled: !!user,
+    });
+
     const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -57,6 +75,7 @@ const UserMenu: FC<UserMenuProps> = () => {
     const handleLogout = async () => {
         handleCloseMenu();
         await client.graderService.authentication.logout();
+        queryClient.clear();
         clearCredentials();
         navigate("/login");
     };
@@ -107,7 +126,9 @@ const UserMenu: FC<UserMenuProps> = () => {
                         <Typography variant="body2" color="textSecondary">
                             {user?.email}
                         </Typography>
-                        <Typography variant="body2">Your score: </Typography>
+                        <Typography variant="body2">
+                            Your score: {data?.score}{" "}
+                        </Typography>
                     </Stack>
                 </Stack>
                 <Divider />

@@ -63,16 +63,19 @@ const Leaderboard: FC<LeaderboardProps> = () => {
     });
 
     const { data: currentUserRanking } = useQuery({
-        queryKey: ["current-user-ranking"],
+        queryKey: ["user-ranking"],
         queryFn: async () => {
-            if (currentUser) {
-                const response =
-                    await client.graderService.leaderboard.getUserRanking(
-                        currentUser?.userId
-                    );
-                return response.data;
+            if (!currentUser) {
+                return null;
             }
+
+            const response =
+                await client.graderService.leaderboard.getUserRanking(
+                    currentUser.userId
+                );
+            return response.data;
         },
+        enabled: !!currentUser,
     });
 
     useEffect(() => {
