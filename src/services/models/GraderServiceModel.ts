@@ -13,6 +13,7 @@ export interface ISubmitRequest {
     problemId: number;
     code: String;
     language: string;
+    saveSubmission?: boolean;
 }
 
 export interface ISubmitResponse {
@@ -55,6 +56,8 @@ export interface IProblemResponse {
     description: string;
     difficulty: string;
     type: string;
+    status: string;
+    score: number;
 }
 
 export interface IProblemsQueryParams extends PaginationQueryParams {
@@ -62,6 +65,8 @@ export interface IProblemsQueryParams extends PaginationQueryParams {
     description?: string;
     difficulty?: string;
     type?: string;
+    userId?: number;
+    status?: string;
 }
 
 export interface ITestCaseRequset {
@@ -87,6 +92,7 @@ export interface ISubmissionResponse {
     code: string;
     language: string;
     status: string;
+    score: number;
     createdAt: string;
     updatedAt: string;
 }

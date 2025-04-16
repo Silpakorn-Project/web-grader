@@ -2,11 +2,15 @@ import { DatagridPagination } from "@/components/Datagrid/CustomPagination";
 import { StyledDataGrid } from "@/components/Datagrid/StyledDataGrid";
 import { useDebounce } from "@/hooks/useDebounce";
 import { client } from "@/services";
+import { useAuthStore } from "@/store/AuthStore";
 import { getDifficultyColor } from "@/utilts/common";
 import AddIcon from "@mui/icons-material/Add";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import SearchIcon from "@mui/icons-material/Search";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import {
+    Box,
     Button,
     Chip,
     Container,
@@ -29,6 +33,45 @@ import ProblemsFilter from "../components/ProblemsFilter";
 type ProblemTableProps = {};
 
 const columns: GridColDef[] = [
+    {
+        field: "status",
+        headerName: "Status",
+        sortable: false,
+        renderCell: (params) => {
+            const value = params.value;
+    
+            if (value === "Passed") {
+                return (
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="start"
+                        width="100%"
+                        height="100%"
+                    >
+                        <CheckCircleOutlineIcon color="success" />
+                    </Box>
+                );
+            }
+    
+            if (value && value !== "Unattempted") {
+                return (
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="start"
+                        width="100%"
+                        height="100%"
+                    >
+                        <HighlightOffIcon color="warning" />
+                    </Box>
+                );
+            }
+    
+            return null;
+        },
+        disableColumnMenu: true,
+    },    
     { field: "title", headerName: "Title", flex: 1, disableColumnMenu: true },
     {
         field: "difficulty",
@@ -48,9 +91,11 @@ const columns: GridColDef[] = [
 
 const Problems: FC<ProblemTableProps> = () => {
     const navigate = useNavigate();
+    const { user } = useAuthStore();
     const [filters, setFilters] = useState<{
         difficulty?: string;
         type?: string;
+        status?: string;
     }>({});
     const [searchQuery, setSearchQuery] = useState("");
     const [paginationModel, setPaginationModel] = useState({
@@ -79,6 +124,8 @@ const Problems: FC<ProblemTableProps> = () => {
                 title: debouncedSearch,
                 type: filters.type,
                 difficulty: filters.difficulty,
+                status: filters.status,
+                userId: user?.userId,
                 offset: paginationModel.page + 1,
                 limit: paginationModel.pageSize,
                 sortBy: sortModel?.field,
@@ -97,7 +144,7 @@ const Problems: FC<ProblemTableProps> = () => {
     const handleRandomProblem = () => {
         if (problems && problems.data.length > 0) {
             const randomIndex = Math.floor(
-                Math.random() * problems.data.length
+                Math.random() * problems.totalRecords
             );
             navigate(`/problems/${problems.data[randomIndex].problemId}`);
         }

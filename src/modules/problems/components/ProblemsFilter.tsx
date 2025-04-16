@@ -15,8 +15,8 @@ import {
 import { FC, useState } from "react";
 
 type ProblemsFilterProps = {
-    onChange: (filters: { difficulty?: string; type?: string }) => void;
-    selectedFilters: { difficulty?: string; type?: string };
+    onChange: (filters: { difficulty?: string; type?: string ; status?: string}) => void;
+    selectedFilters: { difficulty?: string; type?: string; status?: string };
 };
 
 const ProblemsFilter: FC<ProblemsFilterProps> = ({
@@ -38,6 +38,24 @@ const ProblemsFilter: FC<ProblemsFilterProps> = ({
 
     return (
         <Stack direction="row" spacing={2} alignItems="center">
+            <FormControl variant="outlined" size="small" sx={{ minWidth: 120 }}>
+                <Select
+                    displayEmpty
+                    value=""
+                    onChange={(e) =>
+                        onChange({
+                            ...selectedFilters,
+                            status: e.target.value,
+                        })
+                    }
+                    renderValue={() => "Status"}
+                >
+                    <MenuItem value="Passed">Passed</MenuItem>
+                    <MenuItem value="Attempted">Attempted</MenuItem>
+                    <MenuItem value="Unattempted">Unattempted</MenuItem>
+                </Select>
+            </FormControl>
+
             <FormControl variant="outlined" size="small" sx={{ minWidth: 120 }}>
                 <Select
                     displayEmpty

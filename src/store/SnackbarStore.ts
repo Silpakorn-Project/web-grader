@@ -6,7 +6,7 @@ interface SnackbarPosition {
     horizontal: "left" | "center" | "right";
 }
 
-type SnackbarState = {
+interface SnackbarState {
     open: boolean;
     message: string;
     severity: "success" | "error" | "info" | "warning";
@@ -17,7 +17,7 @@ type SnackbarState = {
         position?: SnackbarPosition
     ) => void;
     closeSnackbar: () => void;
-};
+}
 
 export const useSnackbarStore = create<SnackbarState>((set) => ({
     open: false,

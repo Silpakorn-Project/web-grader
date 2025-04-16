@@ -27,13 +27,16 @@ export const AdminRoutes: FC = () => {
         }
     }, [user]);
 
-    if (!user) {
+    if (!user || user.role !== "ADMIN") {
         return null;
     }
 
     return (
         <RoutesWithFallback>
-            <Route path="/create" element={<LazyPage element={CreateProblemPage} />} />
+            <Route
+                path="/create"
+                element={<LazyPage element={CreateProblemPage} />}
+            />
         </RoutesWithFallback>
     );
 };
