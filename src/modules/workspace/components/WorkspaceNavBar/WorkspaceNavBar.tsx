@@ -54,7 +54,6 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
         onMutate: () => setIsSubmitting(true),
         onSuccess: (response) => {
             setSubmitResponse(response.data);
-            console.log("response", response.data);
 
             const passedTestCases = response.data.testcase_passed;
             const totalTestCases = response.data.testcase_total;
@@ -73,7 +72,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
         onSettled: () => setIsSubmitting(false),
     });
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (saveSubmission: boolean) => {
         //change problemid to room.problems if in play online
         if (
             location.pathname.startsWith("/online/play") &&
@@ -84,13 +83,17 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
 
         if (sourceCode && language && problemId && user) {
             setTestCasePanelView("test_result");
+            setSubmitResponse(null);
 
             const response = await submitCodeMutation([
                 {
                     code: sourceCode,
                     language: language.toUpperCase(),
-                    problemId: !location.pathname.startsWith("/online/play/") ? Number(problemId) : Number(room.problems),
+                    problemId: !location.pathname.startsWith("/online/play")
+                        ? Number(problemId)
+                        : Number(room.problems),
                     userId: user.userId,
+                    saveSubmission: saveSubmission,
                 },
             ]);
 
@@ -163,7 +166,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     color="inherit"
                     variant="contained"
                     startIcon={<PlayArrowIcon />}
-                    onClick={handleSubmit}
+                    onClick={() => handleSubmit(false)}
                     disabled={isSubmitting}
                     loading={isSubmitting}
                     loadingPosition="start"
@@ -174,7 +177,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     variant="contained"
                     color="success"
                     startIcon={<PublishIcon />}
-                    onClick={handleSubmit}
+                    onClick={() => handleSubmit(true)}
                     disabled={isSubmitting}
                     loading={isSubmitting}
                     loadingPosition="start"
