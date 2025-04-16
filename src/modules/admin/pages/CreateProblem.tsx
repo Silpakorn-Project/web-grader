@@ -12,11 +12,18 @@ import {
     Paper,
     Stack,
     TextField,
-    Typography
+    ToggleButton,
+    ToggleButtonGroup,
+    Typography,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
+
+type TestCase = {
+    inputData: string;
+    expectedOutput: string;
+};
 
 type FormValues = {
     title: string;
@@ -24,9 +31,12 @@ type FormValues = {
     difficulty: string;
     type: string;
     testCases: { inputData: string; expectedOutput: string }[];
+    jsonTestCases: string;
 };
 
 const CreateProblem: FC = () => {
+    const [inputMode, setInputMode] = useState<"manual" | "json">("manual");
+
     const {
         control,
         handleSubmit,
@@ -39,6 +49,7 @@ const CreateProblem: FC = () => {
             difficulty: "Easy",
             type: "Math",
             testCases: [{ inputData: "", expectedOutput: "" }],
+            jsonTestCases: "",
         },
     });
 
@@ -59,6 +70,33 @@ const CreateProblem: FC = () => {
 
     const onSubmit = async (data: FormValues) => {
         try {
+            let testCases: TestCase[] = [];
+
+            if (inputMode === "manual") {
+                testCases = data.testCases;
+            } else {
+                try {
+                    const parsed = JSON.parse(data.jsonTestCases);
+                    if (
+                        !Array.isArray(parsed) ||
+                        !parsed.every(
+                            (tc) =>
+                                typeof tc.inputData === "string" &&
+                                typeof tc.expectedOutput === "string"
+                        )
+                    ) {
+                        throw new Error();
+                    }
+                    testCases = parsed;
+                } catch {
+                    showSnackbar(
+                        "Invalid JSON format for test cases.",
+                        "error"
+                    );
+                    return;
+                }
+            }
+
             const { data: problemId } = await createProblemMutation({
                 title: data.title,
                 description: data.description,
@@ -67,8 +105,8 @@ const CreateProblem: FC = () => {
             });
 
             await createTestCasesMutation({
-                problemId: problemId,
-                testcases: data.testCases,
+                problemId,
+                testcases: testCases,
             });
 
             showSnackbar("Problem created successfully!", "success");
@@ -143,47 +181,86 @@ const CreateProblem: FC = () => {
                     </TextField>
 
                     <Typography variant="h6">Test Cases</Typography>
-                    {fields.map((field, index) => (
-                        <Stack key={field.id} spacing={1}>
-                            <TextField
-                                label={`Input #${index + 1}`}
-                                {...register(`testCases.${index}.inputData`, {
-                                    required: true,
-                                })}
-                                multiline
-                                error={!!errors.testCases?.[index]?.inputData}
-                            />
-                            <TextField
-                                label={`Output #${index + 1}`}
-                                {...register(
-                                    `testCases.${index}.expectedOutput`,
-                                    { required: true }
-                                )}
-                                multiline
-                                error={
-                                    !!errors.testCases?.[index]?.expectedOutput
-                                }
-                            />
-                            <Box display="flex" justifyContent="flex-end">
-                                <IconButton
-                                    onClick={() => remove(index)}
-                                    disabled={fields.length === 1}
-                                >
-                                    <Delete />
-                                </IconButton>
-                            </Box>
-                        </Stack>
-                    ))}
 
-                    <Button
-                        variant="outlined"
-                        onClick={() =>
-                            append({ inputData: "", expectedOutput: "" })
-                        }
-                        startIcon={<Add />}
+                    <ToggleButtonGroup
+                        value={inputMode}
+                        exclusive
+                        onChange={(_, val) => val && setInputMode(val)}
+                        fullWidth
                     >
-                        Add Test Case
-                    </Button>
+                        <ToggleButton value="manual">Manual Input</ToggleButton>
+                        <ToggleButton value="json">JSON Input</ToggleButton>
+                    </ToggleButtonGroup>
+
+                    {inputMode === "manual" ? (
+                        <>
+                            {fields.map((field, index) => (
+                                <Stack key={field.id} spacing={1}>
+                                    <TextField
+                                        label={`Input #${index + 1}`}
+                                        {...register(
+                                            `testCases.${index}.inputData`,
+                                            {
+                                                required: true,
+                                            }
+                                        )}
+                                        multiline
+                                        error={
+                                            !!errors.testCases?.[index]
+                                                ?.inputData
+                                        }
+                                    />
+                                    <TextField
+                                        label={`Output #${index + 1}`}
+                                        {...register(
+                                            `testCases.${index}.expectedOutput`,
+                                            { required: true }
+                                        )}
+                                        multiline
+                                        error={
+                                            !!errors.testCases?.[index]
+                                                ?.expectedOutput
+                                        }
+                                    />
+                                    <Box
+                                        display="flex"
+                                        justifyContent="flex-end"
+                                    >
+                                        <IconButton
+                                            onClick={() => remove(index)}
+                                            disabled={fields.length === 1}
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </Box>
+                                </Stack>
+                            ))}
+                            <Button
+                                variant="outlined"
+                                onClick={() =>
+                                    append({
+                                        inputData: "",
+                                        expectedOutput: "",
+                                    })
+                                }
+                                startIcon={<Add />}
+                            >
+                                Add Test Case
+                            </Button>
+                        </>
+                    ) : (
+                        <TextField
+                            label="Test Cases (JSON Format)"
+                            {...register("jsonTestCases", {
+                                required: inputMode === "json",
+                            })}
+                            error={!!errors.jsonTestCases}
+                            fullWidth
+                            multiline
+                            rows={8}
+                            placeholder={`Example:\n[\n  {\n    "inputData": "3\\n5",\n    "expectedOutput": "8"\n  }\n]`}
+                        />
+                    )}
 
                     <Button type="submit" variant="contained">
                         Submit
