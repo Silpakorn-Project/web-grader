@@ -228,7 +228,7 @@ const Submissions: FC<SubmissionsProps> = () => {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={3} align="center">
+                            <TableCell colSpan={3} align="center" sx={{py: 10}}>
                                 <NoDataPlaceholder />
                             </TableCell>
                         </TableRow>

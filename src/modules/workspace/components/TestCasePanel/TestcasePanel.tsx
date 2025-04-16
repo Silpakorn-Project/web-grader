@@ -1,6 +1,6 @@
 import DomainVerificationIcon from "@mui/icons-material/DomainVerification";
 import TerminalIcon from "@mui/icons-material/Terminal";
-import { Box, Button } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { FC, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useWorkspace } from "../../context/WorkspaceContext";
@@ -43,11 +43,15 @@ const TestCasePanel: FC<TestCaseProps> = () => {
                 <Button
                     color="inherit"
                     variant="text"
-                    startIcon={<TerminalIcon color="success" />}
+                    startIcon={
+                        isSubmitting ? (
+                            <CircularProgress color="inherit" size={16}/>
+                        ) : (
+                            <TerminalIcon color="success" />
+                        )
+                    }
                     size="small"
                     onClick={() => setTestCasePanelView("test_result")}
-                    loading={isSubmitting}
-                    loadingPosition="start"
                     sx={{
                         opacity: testCasePanelView === "test_result" ? 1 : 0.5,
                     }}

@@ -1,6 +1,7 @@
 import { client } from "@/services";
 import { useSocketStore } from "@/store/SocketStore";
-import { Box, Skeleton, Typography } from "@mui/material";
+import { getDifficultyColor } from "@/utilts/common";
+import { Box, Chip, Skeleton, Stack, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { FC, useEffect } from "react";
@@ -11,7 +12,6 @@ type ProblemDescriptionProps = {};
 
 const ProblemDescription: FC<ProblemDescriptionProps> = () => {
     const { id } = useParams();
-    // const problemId = Number(id);
     const navigate = useNavigate();
     const { room } = useSocketStore();
     let problemId = Number(id);
@@ -56,11 +56,20 @@ const ProblemDescription: FC<ProblemDescriptionProps> = () => {
                 </>
             ) : problem ? (
                 <>
-                    <Typography variant="h4">{problem.title}</Typography>
-                    <ReactMarkdown children={problem.description} />
+                    <Typography variant="h4" gutterBottom>
+                        {problem.title}
+                    </Typography>
+
+                    <Stack direction="row" spacing={1} mb={2}>
+                        <Chip label={problem.difficulty} variant="filled" color={getDifficultyColor(problem.difficulty)} size="small" />
+                        <Chip label={problem.type} variant="filled" size="small" />
+                    </Stack>
+
+                    <ReactMarkdown>{problem.description}</ReactMarkdown>
                 </>
             ) : null}
         </Box>
     );
 };
+
 export default ProblemDescription;
