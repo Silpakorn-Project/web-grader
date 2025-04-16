@@ -21,6 +21,11 @@ export class ProblemApi extends BaseApi {
         return response.data;
     }
 
+    public async getRandomProblem() {
+        const response = await this.httpClient.get<BaseResponse<number>>("/api/problems/randomId");
+        return response.data
+    }
+
     public async createProblem(problemRequest: IProblemRequest) {
         const response = await this.httpClient.post<IProblemRequest, BaseResponse<number>>(
             "/api/problems",

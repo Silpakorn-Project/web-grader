@@ -141,12 +141,10 @@ const Problems: FC<ProblemTableProps> = () => {
         }
     }, [problems]);
 
-    const handleRandomProblem = () => {
-        if (problems && problems.data.length > 0) {
-            const randomIndex = Math.floor(
-                Math.random() * problems.totalRecords
-            );
-            navigate(`/problems/${randomIndex}`);
+    const handleRandomProblem = async () => {
+        const response = await client.graderService.problems.getRandomProblem();
+        if (response.data) {
+            navigate(`/problems/${response.data}`);
         }
     };
 
