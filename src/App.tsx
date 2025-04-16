@@ -3,7 +3,8 @@ import { ThemeProvider } from "@mui/material/styles";
 import { useQuery } from "@tanstack/react-query";
 import { FC } from "react";
 import { RouterProvider } from "react-router-dom";
-import GlobalSnackbar from "./components/Snackbar";
+import GlobalCountdownWatcher from "./components/GlobalCountdownWatcher";
+import GlobalSnackbar from "./components/GlobalSnackbar";
 import { router } from "./rounter/rounter";
 import { client } from "./services";
 import { useAuthStore } from "./store/AuthStore";
@@ -36,6 +37,7 @@ const App: FC = () => {
             <CssBaseline />
             <GlobalScrollbarStyles />
             <GlobalSnackbar />
+            <GlobalCountdownWatcher />
             <RouterProvider router={router} />
         </ThemeProvider>
     );
