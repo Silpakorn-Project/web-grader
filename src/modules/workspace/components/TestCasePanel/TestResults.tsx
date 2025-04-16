@@ -133,9 +133,6 @@ const TestResults: FC<TestResultsProps> = () => {
 
                         <TestCaseDetail
                             label="Expected"
-                            fontColor={
-                                selectedTestCase?.passed! ? "" : "success"
-                            }
                             content={selectedTestCase?.expected!}
                         />
                     </Stack>

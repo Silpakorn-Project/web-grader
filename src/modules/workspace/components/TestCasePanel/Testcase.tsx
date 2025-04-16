@@ -1,3 +1,4 @@
+import { useWorkspaceMode } from "@/hooks/useRouteMode";
 import { client } from "@/services";
 import { ITestCaseResponse } from "@/services/models/GraderServiceModel";
 import { useSocketStore } from "@/store/SocketStore";
@@ -14,12 +15,13 @@ const TestCase: FC<TestCaseProps> = () => {
     const { room } = useSocketStore();
     const [selectedTestCase, setSelectedTestCase] =
         useState<ITestCaseResponse | null>(null);
+    const {isStandardMode} = useWorkspaceMode();
 
     const { data: testCases } = useQuery({
         queryKey: ["testcases", problemId],
         queryFn: async () => {
             const response = await client.graderService.testCase.getTestCases({
-                problemId: !location.pathname.startsWith("/online/play")
+                problemId: isStandardMode
                     ? Number(problemId)
                     : Number(room.problems),
                 offset: 1,

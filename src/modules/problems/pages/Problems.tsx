@@ -39,7 +39,7 @@ const columns: GridColDef[] = [
         sortable: false,
         renderCell: (params) => {
             const value = params.value;
-    
+
             if (value === "Passed") {
                 return (
                     <Box
@@ -53,7 +53,7 @@ const columns: GridColDef[] = [
                     </Box>
                 );
             }
-    
+
             if (value && value !== "Unattempted") {
                 return (
                     <Box
@@ -67,11 +67,11 @@ const columns: GridColDef[] = [
                     </Box>
                 );
             }
-    
+
             return null;
         },
         disableColumnMenu: true,
-    },    
+    },
     { field: "title", headerName: "Title", flex: 1, disableColumnMenu: true },
     {
         field: "difficulty",
@@ -106,7 +106,7 @@ const Problems: FC<ProblemTableProps> = () => {
     const [sortModel, setSortModel] = useState<{
         field: string;
         sort: "asc" | "desc";
-    } | null>(null);
+    } | null>({ field: "problemId", sort: "asc" });
 
     const debouncedSearch = useDebounce(searchQuery);
 
@@ -146,7 +146,7 @@ const Problems: FC<ProblemTableProps> = () => {
             const randomIndex = Math.floor(
                 Math.random() * problems.totalRecords
             );
-            navigate(`/problems/${problems.data[randomIndex].problemId}`);
+            navigate(`/problems/${randomIndex}`);
         }
     };
 
