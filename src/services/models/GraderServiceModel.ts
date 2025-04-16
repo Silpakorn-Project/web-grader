@@ -1,3 +1,5 @@
+import { PaginationQueryParams } from "./PaginationQueryParams";
+
 export interface ITestResultResponse {
     passed: boolean;
     input: string;
@@ -11,6 +13,7 @@ export interface ISubmitRequest {
     problemId: number;
     code: String;
     language: string;
+    saveSubmission?: boolean;
 }
 
 export interface ISubmitResponse {
@@ -29,7 +32,9 @@ export interface ILoginRequest {
 export interface IUserTokenResponse {
     userId: number;
     username: string;
+    email: string;
     token: string;
+    role: string;
 }
 
 export interface IRegisterRequest {
@@ -38,12 +43,35 @@ export interface IRegisterRequest {
     email: string;
 }
 
+export interface IProblemRequest {
+    title: string;
+    description: string;
+    difficulty: string;
+    type: string;
+}
+
 export interface IProblemResponse {
     problemId: number;
     title: string;
     description: string;
     difficulty: string;
     type: string;
+    status: string;
+    score: number;
+}
+
+export interface IProblemsQueryParams extends PaginationQueryParams {
+    title?: string;
+    description?: string;
+    difficulty?: string;
+    type?: string;
+    userId?: number;
+    status?: string;
+}
+
+export interface ITestCaseRequset {
+    problemId: number;
+    testcases: { inputData: string; expectedOutput: string }[];
 }
 
 export interface ITestCaseResponse {
@@ -53,7 +81,7 @@ export interface ITestCaseResponse {
     expectedOutput: string;
 }
 
-export interface ITestCasesQueryParams {
+export interface ITestCasesQueryParams extends PaginationQueryParams {
     problemId?: number;
 }
 
@@ -64,10 +92,34 @@ export interface ISubmissionResponse {
     code: string;
     language: string;
     status: string;
+    score: number;
     createdAt: string;
     updatedAt: string;
 }
 
-export interface ISubmissionsQueryParams {
+export interface ISubmissionsQueryParams extends PaginationQueryParams {
+    userId?: number;
     problemId?: number;
+    language?: string;
+    status?: string;
+}
+
+export interface IUserResponse {
+    id: number;
+    username: string;
+    email: string;
+    score: number;
+}
+
+export interface ILeaderboardRequest {
+    offset: number;
+    limit: number;
+    filteredUserIds: number;
+}
+
+export interface ILeaderboardResponse {
+    id: number;
+    username: string;
+    score: number;
+    rank: number;
 }

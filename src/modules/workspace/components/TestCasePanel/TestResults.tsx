@@ -1,13 +1,13 @@
 import { ITestResultResponse } from "@/services/models/GraderServiceModel";
-import { Box, Button, Paper, Skeleton, Stack, Typography } from "@mui/material";
+import { Box, Button, Skeleton, Stack, Typography } from "@mui/material";
 import { FC, useEffect, useState } from "react";
-import { useWorkspaceStore } from "../../store/WorkspaceStore";
+import { useWorkspace } from "../../context/WorkspaceContext";
 import TestCaseDetail from "./TestCaseDetail";
 
 type TestResultsProps = {};
 
 const TestResults: FC<TestResultsProps> = () => {
-    const { isSubmitting, submitResponse } = useWorkspaceStore();
+    const { isSubmitting, submitResponse } = useWorkspace();
     const [selectedTestCase, setSelectedTestCase] =
         useState<ITestResultResponse | null>(null);
 
@@ -74,13 +74,9 @@ const TestResults: FC<TestResultsProps> = () => {
                     <Stack direction="row" spacing={2} alignItems="center">
                         <Typography
                             variant="h5"
-                            fontWeight="bold"
                             color={submitResponse.passed ? "success" : "error"}
                         >
                             {submitResponse.passed ? "Passed" : "Failed"}
-                        </Typography>
-                        <Typography variant="subtitle2" color="textSecondary">
-                            Runtime: 0 ms
                         </Typography>
                     </Stack>
 
@@ -118,13 +114,10 @@ const TestResults: FC<TestResultsProps> = () => {
 
                     <Stack spacing={2}>
                         {selectedTestCase?.error && (
-                            <Paper>
-                                <Typography color="error" px={2}>
-                                    <pre className="whitespace-pre-wrap">
-                                        {selectedTestCase.error}
-                                    </pre>
-                                </Typography>
-                            </Paper>
+                            <TestCaseDetail
+                                content={selectedTestCase.error}
+                                fontColor="error"
+                            />
                         )}
 
                         <TestCaseDetail
@@ -134,6 +127,7 @@ const TestResults: FC<TestResultsProps> = () => {
 
                         <TestCaseDetail
                             label="Output"
+                            fontColor={selectedTestCase?.passed! ? "" : "error"}
                             content={selectedTestCase?.actual!}
                         />
 

@@ -1,23 +1,30 @@
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography, TypographyOwnProps } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { FC } from "react";
 
 type TestCaseDetailProps = {
-    label: string;
     content: string;
-    color?: string;
+    label?: string;
+    fontColor?: TypographyOwnProps["color"];
 };
 
-const TestCaseDetail: FC<TestCaseDetailProps> = ({ label, content, color }) => {
+const TestCaseDetail: FC<TestCaseDetailProps> = ({
+    label,
+    content,
+    fontColor,
+}) => {
+    if (!content) return null;
+
     return (
         <Box>
-            <Typography variant="subtitle1" gutterBottom>
+            <Typography variant="subtitle2" gutterBottom>
                 {label}
             </Typography>
             <Paper
+                elevation={0}
                 sx={[
                     {
-                        backgroundColor: grey[50],
+                        backgroundColor: grey[100],
                     },
                     (theme) =>
                         theme.applyStyles("dark", {
@@ -25,7 +32,16 @@ const TestCaseDetail: FC<TestCaseDetailProps> = ({ label, content, color }) => {
                         }),
                 ]}
             >
-                <Typography color={color} py={1} px={2}>
+                <Typography
+                    color={fontColor}
+                    component="pre"
+                    sx={{
+                        py: 1,
+                        px: 2,
+                        fontFamily: "monospace",
+                        whiteSpace: "pre-wrap",
+                    }}
+                >
                     {content}
                 </Typography>
             </Paper>

@@ -1,28 +1,36 @@
 import { client } from "@/services";
+import { queryClient } from "@/services/query/queryClient";
 import { useAuthStore } from "@/store/AuthStore";
-import { Brightness4, Brightness7, Computer } from "@mui/icons-material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import Brightness4 from "@mui/icons-material/Brightness4";
+import Brightness7 from "@mui/icons-material/Brightness7";
+import Computer from "@mui/icons-material/Computer";
 import {
+    Avatar,
     Box,
-    IconButton,
+    Button,
+    Divider,
     ListItemIcon,
     ListItemText,
     Menu,
     MenuItem,
+    Stack,
     SxProps,
+    Typography,
     useColorScheme,
 } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 type UserMenuProps = {
-    sx?: SxProps
+    sx?: SxProps;
 };
 
-const UserMenu: FC<UserMenuProps> = ({ sx }) => {
+const UserMenu: FC<UserMenuProps> = () => {
     const navigate = useNavigate();
-    const { token } = useAuthStore();
     const { setMode } = useColorScheme();
+
+    const { user, clearCredentials } = useAuthStore();
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [appearanceAnchorEl, setAppearanceAnchorEl] =
@@ -30,6 +38,22 @@ const UserMenu: FC<UserMenuProps> = ({ sx }) => {
 
     const open = Boolean(anchorEl);
     const openAppearanceMenu = Boolean(appearanceAnchorEl);
+
+    const { data } = useQuery({
+        queryKey: ["user-ranking"],
+        queryFn: async () => {
+            if (!user) {
+                return null;
+            }
+
+            const response =
+                await client.graderService.leaderboard.getUserRanking(
+                    user.userId
+                );
+            return response.data;
+        },
+        enabled: !!user,
+    });
 
     const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -50,7 +74,8 @@ const UserMenu: FC<UserMenuProps> = ({ sx }) => {
     const handleLogout = async () => {
         handleCloseMenu();
         await client.graderService.authentication.logout();
-        useAuthStore.getState().clearCredentials();
+        queryClient.clear();
+        clearCredentials();
         navigate("/login");
     };
 
@@ -59,18 +84,78 @@ const UserMenu: FC<UserMenuProps> = ({ sx }) => {
         handleCloseAppearanceMenu();
     };
 
-    if (!token) return null;
+    const isActive = (path: string) =>
+        location.pathname === path ? "primary" : "inherit";
+
+    if (!user)
+        return (
+            <Box>
+                <Button
+                    color={isActive("/login")}
+                    onClick={() => {
+                        navigate("/login");
+                    }}
+                >
+                    Login
+                </Button>
+            </Box>
+        );
 
     return (
-        <Box sx={sx}>
-            <IconButton color="inherit" onClick={handleMenuClick}>
-                <AccountCircleIcon fontSize="large" />
-            </IconButton>
-            <Menu anchorEl={anchorEl} open={open} onClose={handleCloseMenu}>
+        <Box>
+            <Avatar
+                onClick={handleMenuClick}
+                sx={{
+                    ml: 1,
+                    cursor: "pointer",
+                    bgcolor: "primary.main",
+                }}
+            >
+                {user.username[0].toUpperCase()}
+            </Avatar>
+
+            <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleCloseMenu}
+                sx={{ mt: 1 }}
+            >
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={2}
+                    px={2}
+                    py={1}
+                >
+                    <Avatar
+                        onClick={handleMenuClick}
+                        sx={{
+                            ml: 1,
+                            cursor: "pointer",
+                            bgcolor: "primary.main",
+                        }}
+                    >
+                        {user.username[0].toUpperCase()}
+                    </Avatar>
+                    <Stack>
+                        <Typography fontWeight="bold">
+                            {user?.username}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                            {user?.email}
+                        </Typography>
+                        <Typography variant="body2">
+                            Your score: {data?.score}{" "}
+                        </Typography>
+                    </Stack>
+                </Stack>
+                <Divider />
                 <MenuItem onClick={handleAppearanceClick}>
                     <ListItemText primary="Appearance" />
                 </MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                <MenuItem onClick={handleLogout}>
+                    <ListItemText primary="Logout" />
+                </MenuItem>
             </Menu>
 
             <Menu

@@ -1,34 +1,32 @@
-import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
-import Navbar from "@/components/NavBar/NavBar";
-import HomePage from "@/modules/homepage/Homepage";
+import Layout from "@/components/Layout/Layout";
+import { LazyPage } from "@/components/LazyPage";
+import { AdminRoutes } from "@/modules/admin";
 import { LoginRoutes } from "@/modules/login";
+import { OnlineRoutes } from "@/modules/online";
 import { ProblemsRoutes } from "@/modules/problems";
 import { SignupRoutes } from "@/modules/signup";
 import { WorkspaceRoutes } from "@/modules/workspace";
-import OnlinePage from "@/pages/OnlinePage";
-import { Box } from "@mui/material";
 import { lazy } from "react";
-import { createBrowserRouter, Outlet } from "react-router-dom";
-// import PlayOnlinePage from "@/pages/PlayOnlinePage";
-const PlayOnlinePage = lazy(() => import("@/pages/PlayOnlinePage"));
+import { createBrowserRouter } from "react-router-dom";
+
+const HomePage = lazy(() => import("@/modules/homepage/Homepage"));
+const ErrorBoundaryPage = lazy(
+    () => import("@/components/ErrorBoundary/ErrorBoundary")
+);
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        errorElement: <ErrorBoundary />,
-        element: <NavbarWrapper />,
+        errorElement: <ErrorBoundaryPage />,
+        element: <Layout />,
         children: [
             {
                 path: "/",
-                element: <HomePage />,
+                element: <LazyPage element={HomePage} />,
             },
             {
-                path: "/online",
-                element: <OnlinePage />,
-            },
-            {
-                path: "/play-online",
-                element: <PlayOnlinePage />,
+                path: "/online/*",
+                element: <OnlineRoutes />,
             },
             {
                 path: "/login/*",
@@ -46,15 +44,14 @@ export const router = createBrowserRouter([
                 path: "/problems/:id/*",
                 element: <WorkspaceRoutes />,
             },
+            {
+                path: "/admin/*",
+                element: <AdminRoutes />,
+            },
+            {
+                path: "/error",
+                element: <ErrorBoundaryPage />,
+            },
         ],
     },
 ]);
-
-function NavbarWrapper() {
-    return (
-        <Box>
-            <Navbar />
-            <Outlet />
-        </Box>
-    );
-}

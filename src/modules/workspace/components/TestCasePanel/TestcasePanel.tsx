@@ -1,9 +1,9 @@
-import { useWorkspaceStore } from "@/modules/workspace/store/WorkspaceStore";
 import DomainVerificationIcon from "@mui/icons-material/DomainVerification";
 import TerminalIcon from "@mui/icons-material/Terminal";
-import { Box, Button } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { FC, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useWorkspace } from "../../context/WorkspaceContext";
 import WorkspaceBox from "../WorkspaceBox/WorkspaceBox";
 import WorkspaceBoxTopBar from "../WorkspaceBox/WorkspaceBoxTopBar";
 import TestResults from "./TestResults";
@@ -13,8 +13,12 @@ type TestCaseProps = {};
 
 const TestCasePanel: FC<TestCaseProps> = () => {
     const { id: problemId } = useParams();
-    const { isSubmitting, currentView, setCurrentView, setSubmitResponse } =
-        useWorkspaceStore();
+    const {
+        isSubmitting,
+        testCasePanelView,
+        setTestCasePanelView,
+        setSubmitResponse,
+    } = useWorkspace();
 
     useEffect(() => {
         setSubmitResponse(null);
@@ -28,9 +32,9 @@ const TestCasePanel: FC<TestCaseProps> = () => {
                     variant="text"
                     startIcon={<DomainVerificationIcon color="success" />}
                     size="small"
-                    onClick={() => setCurrentView("test_case")}
+                    onClick={() => setTestCasePanelView("test_case")}
                     sx={{
-                        opacity: currentView === "test_case" ? 1 : 0.5,
+                        opacity: testCasePanelView === "test_case" ? 1 : 0.5,
                     }}
                 >
                     Testcase
@@ -39,13 +43,17 @@ const TestCasePanel: FC<TestCaseProps> = () => {
                 <Button
                     color="inherit"
                     variant="text"
-                    startIcon={<TerminalIcon color="success" />}
+                    startIcon={
+                        isSubmitting ? (
+                            <CircularProgress color="inherit" size={16}/>
+                        ) : (
+                            <TerminalIcon color="success" />
+                        )
+                    }
                     size="small"
-                    onClick={() => setCurrentView("test_result")}
-                    loading={isSubmitting}
-                    loadingPosition="start"
+                    onClick={() => setTestCasePanelView("test_result")}
                     sx={{
-                        opacity: currentView === "test_result" ? 1 : 0.5,
+                        opacity: testCasePanelView === "test_result" ? 1 : 0.5,
                     }}
                 >
                     Test Result
@@ -58,8 +66,8 @@ const TestCasePanel: FC<TestCaseProps> = () => {
                     height: "100%",
                 }}
             >
-                {currentView === "test_case" && <TestCase />}
-                {currentView === "test_result" && <TestResults />}
+                {testCasePanelView === "test_case" && <TestCase />}
+                {testCasePanelView === "test_result" && <TestResults />}
             </Box>
         </WorkspaceBox>
     );

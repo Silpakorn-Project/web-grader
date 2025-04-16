@@ -9,6 +9,7 @@ import {
     Typography,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import { FC, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -35,8 +36,16 @@ const Signup: FC<SignUpProps> = () => {
         onSuccess: () => {
             navigate("/signup/success");
         },
-        onError: () => {
-            setErrorMessage("Something went wrong, please try again.");
+        onError: (error) => {
+            let errorMsg = "Something went wrong; please try again.";
+
+            if (isAxiosError(error)) {
+                if (error?.response?.status === 409) {
+                    errorMsg = error.response.data.message;
+                }
+            }
+
+            setErrorMessage(errorMsg);
         },
     });
 
