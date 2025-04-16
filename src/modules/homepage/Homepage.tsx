@@ -46,7 +46,7 @@ const HomePage: FC<HomePageProps> = () => {
 
                             <Typography variant="body1" sx={{ mb: 3 }}>
                                 Master algorithms, ace technical interviews, and
-                                build your problem-solving toolkit through
+                                compete with each other through
                                 interactive challenges.
                             </Typography>
 

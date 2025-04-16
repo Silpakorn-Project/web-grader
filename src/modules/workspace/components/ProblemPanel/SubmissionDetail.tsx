@@ -106,9 +106,9 @@ const SubmissionDetail: FC<SubmissionDetailProps> = ({
                 startIcon={<ArrowBackIcon />}
                 size="small"
                 onClick={() => setViewingSubmission(null)}
-                sx={{ p: 1 }}
+                sx={{ p: 1}}
             >
-                <Typography>Back</Typography>
+                Back
             </Button>
             <Divider />
             <Stack display="flex" direction="column" gap={2} p={2}>

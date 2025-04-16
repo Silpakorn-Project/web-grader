@@ -48,9 +48,13 @@ export const theme = createTheme({
     components: {
         MuiButton: {
             styleOverrides: {
-                root: {
+                root: ({ ownerState }) => ({
                     overflow: "hidden",
-                },
+                    ...(ownerState.color === "success" &&
+                        ownerState.variant === "contained" && {
+                            color: "#ffffff",
+                        }),
+                }),
             },
         },
         MuiAutocomplete: {
@@ -60,6 +64,16 @@ export const theme = createTheme({
                         elevation: 6,
                     },
                 },
+            },
+        },
+        MuiChip: {
+            styleOverrides: {
+                root: ({ ownerState }) => ({
+                    ...(ownerState.color === "success" &&
+                        ownerState.variant !== "outlined" && {
+                            color: "#ffffff",
+                        }),
+                }),
             },
         },
     },

@@ -152,9 +152,6 @@ const Leaderboard: FC<LeaderboardProps> = () => {
                 disableColumnSorting
                 disableColumnMenu
                 slots={{ pagination: DatagridPagination }}
-                getRowClassName={(params) =>
-                    params.row.isCurrentUser ? "highlighted-row" : ""
-                }
                 sx={{
                     height: 500,
                     opacity: isFetching ? 0.5 : 1,

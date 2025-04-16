@@ -1,15 +1,14 @@
 import { client } from "@/services";
 import { queryClient } from "@/services/query/queryClient";
 import { useAuthStore } from "@/store/AuthStore";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Brightness4 from "@mui/icons-material/Brightness4";
 import Brightness7 from "@mui/icons-material/Brightness7";
 import Computer from "@mui/icons-material/Computer";
 import {
+    Avatar,
     Box,
     Button,
     Divider,
-    IconButton,
     ListItemIcon,
     ListItemText,
     Menu,
@@ -85,11 +84,14 @@ const UserMenu: FC<UserMenuProps> = () => {
         handleCloseAppearanceMenu();
     };
 
+    const isActive = (path: string) =>
+        location.pathname === path ? "primary" : "inherit";
+
     if (!user)
         return (
             <Box>
                 <Button
-                    color="inherit"
+                    color={isActive("/login")}
                     onClick={() => {
                         navigate("/login");
                     }}
@@ -101,9 +103,16 @@ const UserMenu: FC<UserMenuProps> = () => {
 
     return (
         <Box>
-            <IconButton color="inherit" onClick={handleMenuClick}>
-                <AccountCircleIcon fontSize="large" />
-            </IconButton>
+            <Avatar
+                onClick={handleMenuClick}
+                sx={{
+                    ml: 1,
+                    cursor: "pointer",
+                    bgcolor: "primary.main",
+                }}
+            >
+                {user.username[0].toUpperCase()}
+            </Avatar>
 
             <Menu
                 anchorEl={anchorEl}
@@ -118,7 +127,16 @@ const UserMenu: FC<UserMenuProps> = () => {
                     px={2}
                     py={1}
                 >
-                    <AccountCircleIcon fontSize="large" />
+                    <Avatar
+                        onClick={handleMenuClick}
+                        sx={{
+                            ml: 1,
+                            cursor: "pointer",
+                            bgcolor: "primary.main",
+                        }}
+                    >
+                        {user.username[0].toUpperCase()}
+                    </Avatar>
                     <Stack>
                         <Typography fontWeight="bold">
                             {user?.username}
