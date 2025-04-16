@@ -1,33 +1,26 @@
 import UserMenu from "@/components/UserMenu/UserMenu";
+import { useWorkspaceMode } from "@/hooks/useRouteMode";
 import { client } from "@/services";
-import { IProblemResponse } from "@/services/models/GraderServiceModel";
 import { queryClient } from "@/services/query/queryClient";
 import { useAuthStore } from "@/store/AuthStore";
+import { useSnackbarStore } from "@/store/SnackbarStore";
 import { useSocketStore } from "@/store/SocketStore";
 import MenuIcon from "@mui/icons-material/Menu";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PublishIcon from "@mui/icons-material/Publish";
-import {
-    Box,
-    Button,
-    Divider,
-    Drawer,
-    IconButton,
-    List,
-    ListItemButton,
-    ListItemText,
-    Typography,
-} from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import { FC, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useWorkspace } from "../../context/WorkspaceContext";
+import ProblemsDrawer from "./ProblemsDrawer";
 
 type WorkspaceNavBarProps = {};
 
 const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
+    const { showSnackbar } = useSnackbarStore();
     const {
         language,
         isSubmitting,
@@ -38,21 +31,14 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
     } = useWorkspace();
     let { id: problemId } = useParams();
     const { room, getRoomKey, updatePercentage } = useSocketStore();
+    const { isOnlineMode, isStandardMode } = useWorkspaceMode();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
-
-    const { data: problems } = useQuery({
-        queryKey: ["problems"],
-        queryFn: async () => {
-            const response = await client.graderService.problems.getProblems();
-            return response.data;
-        },
-    });
 
     const { mutateAsync: submitCodeMutation } = useMutation({
         mutationFn: client.graderService.submission.submit.mutation,
         onMutate: () => setIsSubmitting(true),
-        onSuccess: (response) => {
+        onSuccess: (response, variables) => {
             setSubmitResponse(response.data);
 
             const passedTestCases = response.data.testcase_passed;
@@ -67,17 +53,23 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                 percentage: percentagePassed,
             };
 
+            const isSubmit = variables[0].saveSubmission;
+
+            if (response.data.passed && isSubmit && isOnlineMode) {
+                navigate("/");
+                showSnackbar("Congratulation, You won!", "success", {
+                    vertical: "top",
+                    horizontal: "center",
+                });
+            }
+
             updatePercentage(userPercentage);
         },
         onSettled: () => setIsSubmitting(false),
     });
 
     const handleSubmit = async (saveSubmission: boolean) => {
-        //change problemid to room.problems if in play online
-        if (
-            location.pathname.startsWith("/online/play") &&
-            room.problems !== null
-        ) {
+        if (isOnlineMode && room.problems !== null) {
             problemId = room.problems.toString();
         }
 
@@ -89,7 +81,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                 {
                     code: sourceCode,
                     language: language.toUpperCase(),
-                    problemId: !location.pathname.startsWith("/online/play")
+                    problemId: isStandardMode
                         ? Number(problemId)
                         : Number(room.problems),
                     userId: user.userId,
@@ -113,28 +105,12 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
             justifyContent="space-between"
             p={1}
         >
-            <Drawer
-                anchor="left"
-                open={drawerOpen}
-                onClose={() => setDrawerOpen(false)}
-            >
-                <Box width={250} p={2}>
-                    <Typography variant="h6">Problem List</Typography>
-                    <List>
-                        {problems?.map((problem: IProblemResponse) => (
-                            <ListItemButton
-                                key={problem.problemId}
-                                onClick={() => {
-                                    navigate(`/problems/${problem.problemId}`);
-                                    setDrawerOpen(false);
-                                }}
-                            >
-                                <ListItemText primary={problem.title} />
-                            </ListItemButton>
-                        ))}
-                    </List>
-                </Box>
-            </Drawer>
+            {isStandardMode && (
+                <ProblemsDrawer
+                    open={drawerOpen}
+                    onClose={() => setDrawerOpen(false)}
+                />
+            )}
 
             <Box display="flex">
                 <Button onClick={() => navigate("/")}>
@@ -142,18 +118,20 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                 </Button>
 
                 <Divider orientation="vertical" flexItem />
-                <IconButton
-                    color="inherit"
-                    onClick={() => setDrawerOpen(true)}
-                    sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                    }}
-                >
-                    <MenuIcon />
-                    <Typography variant="h6">Problems List</Typography>
-                </IconButton>
+                {isStandardMode && (
+                    <IconButton
+                        color="inherit"
+                        onClick={() => setDrawerOpen(true)}
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                        }}
+                    >
+                        <MenuIcon />
+                        <Typography variant="h6">Problems List</Typography>
+                    </IconButton>
+                )}
             </Box>
 
             <Box
@@ -168,8 +146,6 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     startIcon={<PlayArrowIcon />}
                     onClick={() => handleSubmit(false)}
                     disabled={isSubmitting}
-                    loading={isSubmitting}
-                    loadingPosition="start"
                 >
                     Run
                 </Button>
@@ -179,8 +155,6 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     startIcon={<PublishIcon />}
                     onClick={() => handleSubmit(true)}
                     disabled={isSubmitting}
-                    loading={isSubmitting}
-                    loadingPosition="start"
                 >
                     Submit
                 </Button>
