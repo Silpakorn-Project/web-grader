@@ -1,195 +1,262 @@
 import { useAuthStore } from "@/store/AuthStore";
 import { useSocketStore } from "@/store/SocketStore";
-import { Box, Button, CircularProgress, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { useEffect } from "react";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import PersonIcon from "@mui/icons-material/Person";
+import TimerIcon from "@mui/icons-material/Timer";
+import {
+    Avatar,
+    Box,
+    Button,
+    Chip,
+    CircularProgress,
+    Grid2,
+    LinearProgress,
+    Paper,
+    Skeleton,
+    Tooltip,
+    Typography
+} from "@mui/material";
+import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const OnlinePage: React.FC = () => {
-    const { isConnected, room, countdown, serverTime, redirectToHome, redirectToPlayOnline,
-        connectSocket, handleLeaveGame, resetRedirectToHome, resetRedirectToPlayOnline } = useSocketStore();
+const OnlinePage: FC = () => {
+    const {
+        isConnected,
+        room,
+        countdown,
+        serverTime,
+        redirectToHome,
+        redirectToPlayOnline,
+        connectSocket,
+        handleLeaveGame,
+        resetRedirectToHome,
+        resetRedirectToPlayOnline,
+    } = useSocketStore();
     const { user } = useAuthStore();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const isTablet = useMediaQuery(theme.breakpoints.down('md'));
-    
+
     const navigate = useNavigate();
 
     useEffect(() => {
-        connectSocket(user?.userId || -1, user?.username || "null")
-        return () => {
-        };
+        connectSocket(user?.userId || -1, user?.username || "null");
+        return () => {};
     }, []);
 
     useEffect(() => {
         if (redirectToHome) {
-            navigate("/")
+            navigate("/");
             resetRedirectToHome();
         }
 
         if (redirectToPlayOnline) {
-            navigate("/online/play")
+            navigate("/online/play");
             resetRedirectToPlayOnline();
         }
-    
     }, [redirectToHome, redirectToPlayOnline]);
 
     return (
-        <>
-        {/* {test.players.length} */}
-        { room.players.length }
-        <Box sx={{ padding: { xs: 1, sm: 2, md: 3 }, width: "100%" }}>
-            <Box sx={{ width: "100%" }}>
-                <Typography 
-                    variant={isMobile ? "body1" : "h5"} 
-                    color="primary" 
-                    textAlign="right"
-                    sx={{ 
-                        fontSize: { 
-                            xs: '0.9rem', 
-                            sm: '1.1rem', 
-                            md: '1.5rem' 
-                        },
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
-                    }}
-                >
-                    {isConnected ? "🟢 Connected" : "🔴 Disconnected"} | {serverTime}
-                </Typography>
-                <Typography 
-                    variant={isMobile ? "body1" : "h5"} 
-                    color="primary" 
-                    textAlign="right"
-                    sx={{ 
-                        fontSize: { 
-                            xs: '0.9rem', 
-                            sm: '1.1rem', 
-                            md: '1.5rem' 
-                        },
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '100%'
-                    }}
-                >
-                    {/* {isConnected ? "🟢 Connected" : "🔴 Disconnected"} | {message} */}
-                    {isConnected ? "🟢 Connected" : "🔴 Disconnected"} | { JSON.stringify(room.players) }
-                </Typography>
-            </Box>
-            
+        <Box
+            sx={{
+                p: 4,
+                maxWidth: "1400px",
+                mx: "auto",
+                minHeight: "100vh",
+            }}
+        >
             <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                flexDirection="column"
-                sx={{ 
-                    height: { xs: 'auto', sm: '80vh' },
-                    marginTop: { xs: 4, sm: 0 },
-                    padding: { xs: 1, sm: 2 }
+                sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    mb: 4,
+                    gap: 2,
                 }}
             >
-                <Box
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    flexDirection="column"
-                    sx={{ 
-                        marginTop: { xs: 0, sm: -10, md: -25 },
-                        width: '100%',
-                        textAlign: 'center'
-                    }}
-                >
-                    <Typography 
-                        variant={isMobile ? "h4" : "h3"} 
+                <Chip
+                    icon={
+                        isConnected ? (
+                            <CheckCircleIcon color="success" />
+                        ) : (
+                            <CancelIcon color="error" />
+                        )
+                    }
+                    label={isConnected ? "Connected" : "Disconnected"}
+                    color={isConnected ? "success" : "error"}
+                    variant="outlined"
+                />
+                <Chip
+                    icon={<AccessTimeIcon />}
+                    label={serverTime}
+                    variant="outlined"
+                />
+            </Box>
+
+            <Paper
+                elevation={3}
+                sx={{
+                    p: 4,
+                    borderRadius: 4,
+                }}
+            >
+                <Box sx={{ textAlign: "center", mb: 6 }}>
+                    <Typography
+                        variant="h3"
                         color="primary"
-                        sx={{ 
-                            fontSize: { 
-                                xs: '1.8rem', 
-                                sm: '2.5rem', 
-                                md: '3rem' 
-                            }
-                        }}
+                        fontWeight="bold"
+                        sx={{ mb: 2 }}
                     >
                         Online Mode
                     </Typography>
-                    <Typography 
-                        variant={isMobile ? "h5" : "h3"} 
-                        color="primary" 
-                        sx={{ 
-                            fontSize: { 
-                                xs: '1.5rem', 
-                                sm: '2rem', 
-                                md: '2.5rem' 
-                            },
-                            mt: 1
+
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            gap: 2,
                         }}
                     >
-                        Cool down {"-->"} {countdown} seconds
+                        <Tooltip title="Time remaining">
+                            <Chip
+                                icon={<TimerIcon />}
+                                label={`${countdown} seconds`}
+                                color="primary"
+                                sx={{ fontSize: "1.1rem", py: 1 }}
+                            />
+                        </Tooltip>
+
+                        <Button
+                            color="error"
+                            variant="contained"
+                            startIcon={<ExitToAppIcon />}
+                            onClick={handleLeaveGame}
+                            sx={{ borderRadius: 2 }}
+                        >
+                            Leave Game
+                        </Button>
+                    </Box>
+                </Box>
+
+                <Box sx={{ mt: 4 }}>
+                    <Typography variant="h5" fontWeight="500" sx={{ mb: 3 }}>
+                        Players
                     </Typography>
-                    <Button 
-                        color="error" 
-                        variant="contained" 
-                        size={isMobile ? "medium" : "large"} 
-                        onClick={handleLeaveGame}
-                        sx={{ mt: 2 }}
-                    >
-                        Leave Game
-                    </Button>
-                </Box>
-                
-                <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                        gap: { xs: 2, sm: 3, md: 5 },
-                        mt: { xs: 4, sm: 6 }
-                    }}
-                >
-                    {[...Array(4)].map((_, i) => {
-                        return (
-                            <Box 
-                                key={i} 
-                                sx={{ 
-                                    textAlign: "center", 
-                                    padding: { xs: 1, sm: 2, md: 3 },
-                                    width: { xs: '40%', sm: 'auto' }
-                                }}
-                            >
-                                <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s"
-                                    alt="Player avatar"
-                                    style={{ 
-                                        width: isMobile ? 60 : isTablet ? 75 : 90,
-                                        height: 'auto'
+
+                    <Grid2 container spacing={3}>
+                        {[...Array(4)].map((_, i) => (
+                            <Grid2 size={{ xs: 12, sm: 6 }} key={i}>
+                                <Paper
+                                    elevation={2}
+                                    sx={{
+                                        p: 3,
+                                        borderRadius: 3,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 2,
+                                        height: "100%",
+                                        position: "relative",
+                                        overflow: "hidden",
+                                        borderLeft: room.players[i]?.username
+                                            ? "4px solid #3f51b5"
+                                            : "4px solid #e0e0e0",
+                                        transition: "all 0.3s ease",
+                                        "&:hover": {
+                                            transform: "translateY(-5px)",
+                                            boxShadow: 4,
+                                        },
                                     }}
-                                />
-                                <Box sx={{ mt: 1 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                                        {/* {test.players[i]?.username ? '' : <CircularProgress size={isMobile ? 16 : 20} />} */}
-                                        {room.players[i]?.username ? '' : <CircularProgress size={isMobile ? 16 : 20} />}
-                                        <Typography 
-                                            variant={isMobile ? "body1" : "h6"} 
-                                            color="primary"
-                                            sx={{ 
-                                                fontSize: { 
-                                                    xs: '0.9rem', 
-                                                    sm: '1.1rem', 
-                                                    md: '1.25rem' 
-                                                }
-                                            }}
-                                        >
-                                            {/* {test.players[i]?.username || "Loading..."}  */}
-                                            {room.players[i]?.username || "Loading..."} 
-                                        </Typography>
+                                >
+                                    <Avatar
+                                        sx={{
+                                            width: 56,
+                                            height: 56,
+                                            bgcolor: room.players[i]?.username
+                                                ? "primary.main"
+                                                : "grey.300",
+                                        }}
+                                    >
+                                        {room.players[i]?.username ? (
+                                            room.players[
+                                                i
+                                            ].username[0].toUpperCase()
+                                        ) : (
+                                            <PersonIcon />
+                                        )}
+                                    </Avatar>
+
+                                    <Box sx={{ flex: 1 }}>
+                                        {!room.players[i]?.username ? (
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 1,
+                                                }}
+                                            >
+                                                <Skeleton
+                                                    variant="text"
+                                                    width="70%"
+                                                />
+                                                <CircularProgress size={18} />
+                                            </Box>
+                                        ) : (
+                                            <Typography
+                                                variant="h6"
+                                                fontWeight="500"
+                                            >
+                                                {room.players[i].username}
+                                            </Typography>
+                                        )}
+
+                                        {room.players[i]?.percentage !==
+                                            undefined && (
+                                            <Box sx={{ mt: 1, width: "100%" }}>
+                                                <LinearProgress
+                                                    variant="determinate"
+                                                    value={
+                                                        room.players[i]
+                                                            .percentage
+                                                    }
+                                                    sx={{
+                                                        height: 8,
+                                                        borderRadius: 4,
+                                                    }}
+                                                />
+                                                <Typography
+                                                    variant="caption"
+                                                    sx={{
+                                                        mt: 0.5,
+                                                        display: "block",
+                                                    }}
+                                                >
+                                                    {room.players[i].percentage}
+                                                    % Complete
+                                                </Typography>
+                                            </Box>
+                                        )}
                                     </Box>
-                                </Box>
-                            </Box>
-                        );
-                    })}
+
+                                    {room.players[i]?.username && (
+                                        <Tooltip title="Player Status">
+                                            <Chip
+                                                size="small"
+                                                label="Active"
+                                                color="success"
+                                                sx={{
+                                                    position: "absolute",
+                                                    top: 10,
+                                                    right: 10,
+                                                }}
+                                            />
+                                        </Tooltip>
+                                    )}
+                                </Paper>
+                            </Grid2>
+                        ))}
+                    </Grid2>
                 </Box>
-            </Box>
+            </Paper>
         </Box>
-        </>
     );
 };
 
