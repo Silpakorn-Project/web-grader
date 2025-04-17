@@ -5,6 +5,7 @@ import { FC, lazy, useEffect } from "react";
 import { Route, useNavigate } from "react-router-dom";
 
 const CreateProblemPage = lazy(() => import("./pages/CreateProblem"));
+const EditProblemPage = lazy(() => import("./pages/EditProblem"));
 
 export const AdminRoutes: FC = () => {
     const navigate = useNavigate();
@@ -34,8 +35,12 @@ export const AdminRoutes: FC = () => {
     return (
         <RoutesWithFallback>
             <Route
-                path="/create"
+                path="/problems/create"
                 element={<LazyPage element={CreateProblemPage} />}
+            />
+            <Route
+                path="/problems/edit/:id"
+                element={<LazyPage element={EditProblemPage} />}
             />
         </RoutesWithFallback>
     );

@@ -10,7 +10,10 @@ export const SignupRoutes: FC = () => {
     return (
         <RoutesWithFallback>
             <Route path="" element={<LazyPage element={SignUpPage} />} />
-            <Route path="/success" element={<LazyPage element={SignUpSuccessPage} />} />
+            <Route
+                path="/success"
+                element={<LazyPage element={SignUpSuccessPage} />}
+            />
         </RoutesWithFallback>
     );
 };

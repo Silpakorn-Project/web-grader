@@ -4,10 +4,14 @@ import { useAuthStore } from "@/store/AuthStore";
 import Brightness4 from "@mui/icons-material/Brightness4";
 import Brightness7 from "@mui/icons-material/Brightness7";
 import Computer from "@mui/icons-material/Computer";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PaletteIcon from "@mui/icons-material/Palette";
 import {
     Avatar,
     Box,
     Button,
+    Chip,
     Divider,
     ListItemIcon,
     ListItemText,
@@ -17,6 +21,7 @@ import {
     SxProps,
     Typography,
     useColorScheme,
+    useTheme
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { FC, useState } from "react";
@@ -29,6 +34,7 @@ type UserMenuProps = {
 const UserMenu: FC<UserMenuProps> = () => {
     const navigate = useNavigate();
     const { setMode } = useColorScheme();
+    const theme = useTheme();
 
     const { user, clearCredentials } = useAuthStore();
 
@@ -87,14 +93,25 @@ const UserMenu: FC<UserMenuProps> = () => {
     const isActive = (path: string) =>
         location.pathname === path ? "primary" : "inherit";
 
+    // Function to determine badge color based on rank
+    const getBadgeColor = (rank?: number) => {
+        if (!rank) return "default";
+        if (rank === 1) return "success";
+        if (rank <= 3) return "primary";
+        if (rank <= 10) return "secondary";
+        return "default";
+    };
+
     if (!user)
         return (
             <Box>
                 <Button
+                    variant="contained"
                     color={isActive("/login")}
                     onClick={() => {
                         navigate("/login");
                     }}
+                    sx={{ borderRadius: 4, px: 3 }}
                 >
                     Login
                 </Button>
@@ -106,9 +123,15 @@ const UserMenu: FC<UserMenuProps> = () => {
             <Avatar
                 onClick={handleMenuClick}
                 sx={{
-                    ml: 1,
                     cursor: "pointer",
                     bgcolor: "primary.main",
+                    width: 40,
+                    height: 40,
+                    transition: "transform 0.2s",
+                    "&:hover": {
+                        transform: "scale(1.1)",
+                        boxShadow: theme.shadows[3],
+                    },
                 }}
             >
                 {user.username[0].toUpperCase()}
@@ -118,42 +141,77 @@ const UserMenu: FC<UserMenuProps> = () => {
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleCloseMenu}
-                sx={{ mt: 1 }}
+                sx={{
+                    mt: 1,
+                    "& .MuiPaper-root": {
+                        width: 300,
+                        overflow: "visible",
+                        borderRadius: 2,
+                        mt: 1.5,
+                        boxShadow: theme.shadows[4],
+                    },
+                }}
+                transformOrigin={{ horizontal: "right", vertical: "top" }}
+                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             >
-                <Stack
-                    direction="row"
-                    alignItems="center"
-                    spacing={2}
-                    px={2}
-                    py={1}
-                >
-                    <Avatar
-                        onClick={handleMenuClick}
-                        sx={{
-                            ml: 1,
-                            cursor: "pointer",
-                            bgcolor: "primary.main",
-                        }}
-                    >
-                        {user.username[0].toUpperCase()}
-                    </Avatar>
-                    <Stack>
-                        <Typography fontWeight="bold">
-                            {user?.username}
-                        </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                            {user?.email}
-                        </Typography>
-                        <Typography variant="body2">
-                            Your score: {data?.score}{" "}
-                        </Typography>
+                <Box position="relative" px={3} py={2}>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <Avatar
+                            sx={{
+                                bgcolor: "primary.main",
+                                width: 50,
+                                height: 50,
+                            }}
+                        >
+                            {user.username[0].toUpperCase()}
+                        </Avatar>
+                        <Stack>
+                            <Typography variant="h6" fontWeight="bold">
+                                {user?.username}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {user?.email}
+                            </Typography>
+                        </Stack>
                     </Stack>
-                </Stack>
+
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{ mt: 2 }}
+                        justifyContent="space-between"
+                    >
+                        <Stack direction="row" spacing={1} alignItems="center">
+                            <EmojiEventsIcon color="primary" />
+                            <Typography variant="body2" fontWeight="medium">
+                                Score: <strong>{data?.score || 0}</strong>
+                            </Typography>
+                        </Stack>
+
+                        {data?.rank && (
+                            <Chip
+                                label={`Rank #${data.rank}`}
+                                color={getBadgeColor(data.rank)}
+                                size="small"
+                                sx={{ fontWeight: "bold" }}
+                            />
+                        )}
+                    </Stack>
+                </Box>
+
                 <Divider />
-                <MenuItem onClick={handleAppearanceClick}>
+
+                <MenuItem onClick={handleAppearanceClick} sx={{ py: 1.5 }}>
+                    <ListItemIcon>
+                        <PaletteIcon fontSize="small" />
+                    </ListItemIcon>
                     <ListItemText primary="Appearance" />
                 </MenuItem>
-                <MenuItem onClick={handleLogout}>
+
+                <MenuItem onClick={handleLogout} sx={{ py: 1.5 }}>
+                    <ListItemIcon>
+                        <LogoutIcon fontSize="small" color="error" />
+                    </ListItemIcon>
                     <ListItemText primary="Logout" />
                 </MenuItem>
             </Menu>
@@ -170,22 +228,38 @@ const UserMenu: FC<UserMenuProps> = () => {
                     vertical: "top",
                     horizontal: "right",
                 }}
+                sx={{
+                    "& .MuiPaper-root": {
+                        borderRadius: 2,
+                        minWidth: 180,
+                        boxShadow: theme.shadows[4],
+                    },
+                }}
             >
-                <MenuItem onClick={() => handleModeChange("system")}>
+                <MenuItem
+                    onClick={() => handleModeChange("system")}
+                    sx={{ py: 1.5 }}
+                >
                     <ListItemIcon>
-                        <Computer />
+                        <Computer fontSize="small" />
                     </ListItemIcon>
                     <ListItemText primary="System" />
                 </MenuItem>
-                <MenuItem onClick={() => handleModeChange("light")}>
+                <MenuItem
+                    onClick={() => handleModeChange("light")}
+                    sx={{ py: 1.5 }}
+                >
                     <ListItemIcon>
-                        <Brightness7 />
+                        <Brightness7 fontSize="small" />
                     </ListItemIcon>
                     <ListItemText primary="Light" />
                 </MenuItem>
-                <MenuItem onClick={() => handleModeChange("dark")}>
+                <MenuItem
+                    onClick={() => handleModeChange("dark")}
+                    sx={{ py: 1.5 }}
+                >
                     <ListItemIcon>
-                        <Brightness4 />
+                        <Brightness4 fontSize="small" />
                     </ListItemIcon>
                     <ListItemText primary="Dark" />
                 </MenuItem>

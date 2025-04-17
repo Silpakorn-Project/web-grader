@@ -11,19 +11,19 @@ import TestCaseDetail from "./TestCaseDetail";
 type TestCaseProps = {};
 
 const TestCase: FC<TestCaseProps> = () => {
-    const { id: problemId } = useParams();
+    const { id } = useParams();
     const { room } = useSocketStore();
     const [selectedTestCase, setSelectedTestCase] =
         useState<ITestCaseResponse | null>(null);
-    const {isStandardMode} = useWorkspaceMode();
+    const { isOnlineMode } = useWorkspaceMode();
+
+    const problemId = Number(isOnlineMode ? room.problems : id);
 
     const { data: testCases } = useQuery({
         queryKey: ["testcases", problemId],
         queryFn: async () => {
             const response = await client.graderService.testCase.getTestCases({
-                problemId: isStandardMode
-                    ? Number(problemId)
-                    : Number(room.problems),
+                problemId: problemId,
                 offset: 1,
                 limit: 3,
             });
@@ -38,7 +38,7 @@ const TestCase: FC<TestCaseProps> = () => {
             setSelectedTestCase(null);
         }
     }, [problemId, testCases]);
-
+    
     if (!testCases) {
         return null;
     }

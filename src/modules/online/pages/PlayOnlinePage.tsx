@@ -9,14 +9,11 @@ const PlayOnlinePage: React.FC = () => {
     useEffect(() => {
         //fix strict mode when you use developer mode because mount unmount twice
         // and then you will disconnect socket but i don't want to disconnect socket
+
         if (!mounted.current) {
             mounted.current = true;
             return;
         }
-
-        return () => {
-            disconnectSocket();
-        };
     }, []);
 
     return <Workspace />;
