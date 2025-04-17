@@ -1,3 +1,4 @@
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { useWorkspaceMode } from "@/hooks/useRouteMode";
 import { client } from "@/services";
 import { useSocketStore } from "@/store/SocketStore";
@@ -6,7 +7,6 @@ import { Box, Chip, Skeleton, Stack, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { FC, useEffect } from "react";
-import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
 
 type ProblemDescriptionProps = {};
@@ -17,15 +17,17 @@ const ProblemDescription: FC<ProblemDescriptionProps> = () => {
     const { room } = useSocketStore();
     const { isOnlineMode } = useWorkspaceMode();
 
+    const problemId = Number(isOnlineMode ? room.problems : id);
+
     const {
         data: problem,
         error,
         isLoading,
     } = useQuery({
-        queryKey: ["problems", id],
+        queryKey: ["problem", problemId],
         queryFn: async () => {
             const response = await client.graderService.problems.getProblemById(
-                isOnlineMode ? Number(room.problems) : Number(id)
+                problemId
             );
             return response.data;
         },
@@ -71,7 +73,7 @@ const ProblemDescription: FC<ProblemDescriptionProps> = () => {
                         />
                     </Stack>
 
-                    <ReactMarkdown>{problem.description}</ReactMarkdown>
+                    <MarkdownRenderer content={problem.description} />
                 </>
             ) : null}
         </Box>
