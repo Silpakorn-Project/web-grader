@@ -12,15 +12,18 @@ import {
     Paper,
     Stack,
     Typography,
+    useTheme,
 } from "@mui/material";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
+import CodeIllustration from "./components/CodeIllustration";
 
 type HomePageProps = {};
 
 const HomePage: FC<HomePageProps> = () => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
+    const theme = useTheme();
 
     // TODO: REFACTOR
     return (
@@ -36,18 +39,18 @@ const HomePage: FC<HomePageProps> = () => {
                     <Grid2 container spacing={3} alignItems="center">
                         <Grid2 size={{ xs: 12, md: 6 }}>
                             <Typography
+                                variant="h3"
                                 color="primary"
-                                variant="h4"
                                 fontWeight="bold"
-                                mb={2}
+                                sx={{ mb: 2 }}
                             >
                                 Level Up Your Coding Skills
                             </Typography>
 
-                            <Typography variant="body1" sx={{ mb: 3 }}>
+                            <Typography variant="h6" sx={{ mb: 3 }}>
                                 Master algorithms, ace technical interviews, and
-                                compete with each other through
-                                interactive challenges.
+                                compete with each other through interactive
+                                challenges.
                             </Typography>
 
                             <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
@@ -57,6 +60,7 @@ const HomePage: FC<HomePageProps> = () => {
                                         navigate(user ? "/problems" : "/login")
                                     }
                                     startIcon={<Code />}
+                                    size="large"
                                 >
                                     Start Coding Now
                                 </Button>
@@ -64,6 +68,7 @@ const HomePage: FC<HomePageProps> = () => {
                                 <Button
                                     variant="outlined"
                                     onClick={() => navigate("/online")}
+                                    size="large"
                                 >
                                     Multiplayer
                                 </Button>
@@ -74,17 +79,7 @@ const HomePage: FC<HomePageProps> = () => {
                             size={{ xs: 12, md: 6 }}
                             sx={{ display: { xs: "none", md: "block" } }}
                         >
-                            <Box sx={{ textAlign: "center" }}>
-                                <img
-                                    src="https://static.vecteezy.com/system/resources/previews/005/611/079/non_2x/businessman-designing-a-website-by-coding-on-a-desktop-computer-images-for-web-banners-free-vector.jpg"
-                                    style={{
-                                        width: "100%",
-                                        maxWidth: "500px",
-                                        borderRadius: "8px",
-                                    }}
-                                    alt="Programmer coding on computer"
-                                />
-                            </Box>
+                            <CodeIllustration />
                         </Grid2>
                     </Grid2>
                 </Container>
@@ -102,7 +97,7 @@ const HomePage: FC<HomePageProps> = () => {
                         }}
                     >
                         <Typography
-                            variant="h5"
+                            variant="h4"
                             fontWeight="bold"
                             color="primary"
                         >

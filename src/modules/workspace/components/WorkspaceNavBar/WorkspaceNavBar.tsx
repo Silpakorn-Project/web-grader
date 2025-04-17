@@ -40,7 +40,10 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
         onSuccess: (response, variables) => {
             setSubmitResponse(response.data);
             queryClient.invalidateQueries({
-                queryKey: ["submissions", "problems"],
+                queryKey: ["submissions"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["problems"],
             });
 
             if (isOnlineMode) {
