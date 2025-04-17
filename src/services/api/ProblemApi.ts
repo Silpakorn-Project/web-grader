@@ -22,15 +22,31 @@ export class ProblemApi extends BaseApi {
     }
 
     public async getRandomProblem() {
-        const response = await this.httpClient.get<BaseResponse<number>>("/api/problems/randomId");
-        return response.data
+        const response = await this.httpClient.get<BaseResponse<number>>(
+            "/api/problems/randomId"
+        );
+        return response.data;
     }
 
     public async createProblem(problemRequest: IProblemRequest) {
-        const response = await this.httpClient.post<IProblemRequest, BaseResponse<number>>(
-            "/api/problems",
+        const response = await this.httpClient.post<
+            IProblemRequest,
+            BaseResponse<number>
+        >("/api/problems", problemRequest);
+        return response.data;
+    }
+
+    public async updateProblem(
+        problemRequest: IProblemRequest,
+        problemId: number
+    ) {
+        await this.httpClient.put<IProblemRequest>(
+            `/api/problems/${problemId}`,
             problemRequest
         );
-        return response.data;
+    }
+
+    public async deleteProblem(problemId: number) {
+        await this.httpClient.delete(`/api/problems/${problemId}`);
     }
 }

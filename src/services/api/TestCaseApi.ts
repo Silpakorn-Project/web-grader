@@ -1,9 +1,10 @@
 import { BaseApi } from "../BaseApi";
 import { BasePaginationResponse } from "../models/BaseResponse";
 import {
-    ITestCaseRequset,
     ITestCaseResponse,
     ITestCasesQueryParams,
+    ITestCasesRequset,
+    ITestCaseUpdateRequest,
 } from "../models/GraderServiceModel";
 
 export class TestCaseApi extends BaseApi {
@@ -14,7 +15,21 @@ export class TestCaseApi extends BaseApi {
         return response.data;
     }
 
-    public async createTestcases(testCases: ITestCaseRequset) {
+    public async createTestcases(testCases: ITestCasesRequset) {
         await this.httpClient.post("/api/testcases", testCases);
+    }
+
+    public async updateTestcase(
+        testCase: ITestCaseUpdateRequest,
+        testCaseId: number
+    ) {
+        await this.httpClient.put<ITestCaseUpdateRequest>(
+            `/api/testcases/${testCaseId}`,
+            testCase
+        );
+    }
+
+    public async deleteTestcase(testCaseId: number) {
+        await this.httpClient.delete(`/api/testcases/${testCaseId}`);
     }
 }

@@ -69,9 +69,14 @@ export interface IProblemsQueryParams extends PaginationQueryParams {
     status?: string;
 }
 
-export interface ITestCaseRequset {
+export interface ITestCasesRequset {
     problemId: number;
     testcases: { inputData: string; expectedOutput: string }[];
+}
+
+export interface ITestCaseUpdateRequest {
+    inputData: string;
+    expectedOutput: string;
 }
 
 export interface ITestCaseResponse {

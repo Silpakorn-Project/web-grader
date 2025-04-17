@@ -16,7 +16,7 @@ import {
     ToggleButtonGroup,
     Typography,
 } from "@mui/material";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FC, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 
@@ -35,12 +35,14 @@ type FormValues = {
 };
 
 const CreateProblem: FC = () => {
+    const queryClient = useQueryClient();
     const [inputMode, setInputMode] = useState<"manual" | "json">("manual");
 
     const {
         control,
         handleSubmit,
         register,
+        reset,
         formState: { errors },
     } = useForm<FormValues>({
         defaultValues: {
@@ -60,10 +62,20 @@ const CreateProblem: FC = () => {
 
     const { mutateAsync: createProblemMutation } = useMutation({
         mutationFn: client.graderService.problems.createProblem,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["problems"],
+            });
+        },
     });
 
     const { mutateAsync: createTestCasesMutation } = useMutation({
         mutationFn: client.graderService.testCase.createTestcases,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["testcases"],
+            });
+        },
     });
 
     const { showSnackbar } = useSnackbarStore();
@@ -109,6 +121,14 @@ const CreateProblem: FC = () => {
                 testcases: testCases,
             });
 
+            reset({
+                title: "",
+                description: "",
+                difficulty: "Easy",
+                type: "Math",
+                testCases: [{ inputData: "", expectedOutput: "" }],
+                jsonTestCases: "",
+            });
             showSnackbar("Problem created successfully!", "success");
         } catch (error) {
             showSnackbar(
@@ -121,7 +141,7 @@ const CreateProblem: FC = () => {
     return (
         <Box display="flex" justifyContent="center" mt={4}>
             <Paper sx={{ p: 4, width: "100%", maxWidth: 700 }}>
-                <Typography variant="h5" gutterBottom>
+                <Typography variant="h5" mb={4} gutterBottom>
                     Create New Problem
                 </Typography>
                 <Stack
@@ -160,6 +180,9 @@ const CreateProblem: FC = () => {
                                     <TextField
                                         {...params}
                                         label="Type"
+                                        slotProps={{
+                                            inputLabel: { shrink: true },
+                                        }}
                                         error={!!errors.type}
                                     />
                                 )}
@@ -170,6 +193,7 @@ const CreateProblem: FC = () => {
                     <TextField
                         select
                         label="Difficulty"
+                        slotProps={{ inputLabel: { shrink: true } }}
                         defaultValue="Easy"
                         fullWidth
                         {...register("difficulty", { required: true })}
