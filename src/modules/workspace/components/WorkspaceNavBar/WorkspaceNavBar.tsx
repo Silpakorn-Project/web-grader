@@ -1,7 +1,6 @@
 import UserMenu from "@/components/UserMenu/UserMenu";
 import { useWorkspaceMode } from "@/hooks/useRouteMode";
 import { client } from "@/services";
-import { queryClient } from "@/services/query/queryClient";
 import { useAuthStore } from "@/store/AuthStore";
 import { useSnackbarStore } from "@/store/SnackbarStore";
 import { useSocketStore } from "@/store/SocketStore";
@@ -9,7 +8,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PublishIcon from "@mui/icons-material/Publish";
 import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FC, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useWorkspace } from "../../context/WorkspaceContext";
@@ -32,38 +31,44 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
     let { id: problemId } = useParams();
     const { room, getRoomKey, updatePercentage } = useSocketStore();
     const { isOnlineMode, isStandardMode } = useWorkspaceMode();
-
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const queryClient = useQueryClient();
 
     const { mutateAsync: submitCodeMutation } = useMutation({
         mutationFn: client.graderService.submission.submit.mutation,
         onMutate: () => setIsSubmitting(true),
         onSuccess: (response, variables) => {
             setSubmitResponse(response.data);
+            queryClient.invalidateQueries({
+                queryKey: ["submissions", "problems"],
+            });
 
-            const passedTestCases = response.data.testcase_passed;
-            const totalTestCases = response.data.testcase_total;
-            const percentagePassed = (passedTestCases / totalTestCases) * 100;
+            if (isOnlineMode) {
+                const passedTestCases = response.data.testcase_passed;
+                const totalTestCases = response.data.testcase_total;
+                const percentagePassed =
+                    (passedTestCases / totalTestCases) * 100;
 
-            const roomKey = getRoomKey();
+                const roomKey = getRoomKey();
 
-            const userPercentage = {
-                roomKey: roomKey,
-                userId: user?.userId || -1,
-                percentage: percentagePassed,
-            };
+                const userPercentage = {
+                    roomKey: roomKey,
+                    userId: user?.userId || -1,
+                    percentage: percentagePassed,
+                };
 
-            const isSubmit = variables[0].saveSubmission;
+                const isSubmit = variables[0].saveSubmission;
 
-            if (response.data.passed && isSubmit && isOnlineMode) {
-                navigate("/");
-                showSnackbar("Congratulation, You won!", "success", {
-                    vertical: "top",
-                    horizontal: "center",
-                });
+                if (response.data.passed && isSubmit) {
+                    navigate("/");
+                    showSnackbar("Congratulation, You won!", "success", {
+                        vertical: "top",
+                        horizontal: "center",
+                    });
+                }
+
+                updatePercentage(userPercentage);
             }
-
-            updatePercentage(userPercentage);
         },
         onSettled: () => setIsSubmitting(false),
     });
@@ -90,9 +95,6 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
             ]);
 
             if (response.data) {
-                queryClient.invalidateQueries({
-                    queryKey: ["submissions"],
-                });
             }
         }
     };

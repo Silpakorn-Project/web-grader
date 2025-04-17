@@ -17,7 +17,7 @@ import {
     Paper,
     Skeleton,
     Tooltip,
-    Typography
+    Typography,
 } from "@mui/material";
 import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";

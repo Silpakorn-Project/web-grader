@@ -54,7 +54,7 @@ const ProblemDescription: FC<ProblemDescriptionProps> = () => {
             ) : problem ? (
                 <>
                     <Typography variant="h4" gutterBottom>
-                        {problem.problemId}. {problem.title}
+                        {problem.title}
                     </Typography>
 
                     <Stack direction="row" spacing={1} mb={2}>

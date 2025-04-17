@@ -10,12 +10,18 @@ interface IUserStore {
 
 interface AuthState {
     user: IUserStore | null;
+    isAdmin: boolean;
     setCredential: (credentials: IUserStore) => void;
     clearCredentials: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
     user: null,
-    setCredential: (credentials) => set({ user: credentials }),
-    clearCredentials: () => set({ user: null }),
+    isAdmin: false,
+    setCredential: (credentials) =>
+        set({
+            user: credentials,
+            isAdmin: credentials.role === "ADMIN",
+        }),
+    clearCredentials: () => set({ user: null, isAdmin: false }),
 }));
