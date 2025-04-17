@@ -55,6 +55,7 @@ const Login: FC<LoginProps> = () => {
 
     const onSubmit: SubmitHandler<ILoginForm> = async (data) => {
         setErrorMessage("");
+        
         await loginMutation({
             username: data.username,
             password: data.password,

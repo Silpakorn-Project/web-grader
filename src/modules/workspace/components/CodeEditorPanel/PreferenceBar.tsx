@@ -1,4 +1,4 @@
-import { LANGUAGE } from "@/constants/languages";
+import { LANGUAGE } from "@/constants/common";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Box, Button, Menu, MenuItem } from "@mui/material";
 import React, { useState } from "react";

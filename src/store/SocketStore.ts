@@ -88,7 +88,6 @@ export const useSocketStore = create<SocketStore>((set, get) => ({
                 return { room: { ...state.room, players: updatedPlayers } };
             });
 
-            console.log("percentupdate" + players);
         });
 
         socket.on("countdown", (count: number) => {
@@ -97,7 +96,6 @@ export const useSocketStore = create<SocketStore>((set, get) => ({
 
         socket.on("gameStart", () => {
             // ให้ไป redirect หน้าอื่นจาก component ที่ใช้งาน
-            console.log("✅ Game started!");
             set({redirectToPlayOnline: true})
         });
 

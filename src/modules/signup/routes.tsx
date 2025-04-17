@@ -1,13 +1,19 @@
-import { FC } from "react";
-import { Route, Routes } from "react-router-dom";
-import Signup from "./pages/SignUp";
-import SignupSuccess from "./pages/SignupSuccess";
+import { LazyPage } from "@/components/LazyPage";
+import RoutesWithFallback from "@/components/RoutesWithFallback";
+import { FC, lazy } from "react";
+import { Route } from "react-router-dom";
+
+const SignUpPage = lazy(() => import("./pages/SignUp"));
+const SignUpSuccessPage = lazy(() => import("./pages/SignupSuccess"));
 
 export const SignupRoutes: FC = () => {
     return (
-        <Routes>
-            <Route path="" element={<Signup />} />
-            <Route path="/success" element={<SignupSuccess />} />
-        </Routes>
+        <RoutesWithFallback>
+            <Route path="" element={<LazyPage element={SignUpPage} />} />
+            <Route
+                path="/success"
+                element={<LazyPage element={SignUpSuccessPage} />}
+            />
+        </RoutesWithFallback>
     );
 };

@@ -1,152 +1,225 @@
 import UserMenu from "@/components/UserMenu/UserMenu";
-import { useWorkspaceStore } from "@/modules/workspace/store/WorkspaceStore";
+import { useWorkspaceMode } from "@/hooks/useRouteMode";
 import { client } from "@/services";
-import { IProblemResponse } from "@/services/models/GraderServiceModel";
 import { useAuthStore } from "@/store/AuthStore";
+import { useSnackbarStore } from "@/store/SnackbarStore";
 import { useSocketStore } from "@/store/SocketStore";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import MenuIcon from "@mui/icons-material/Menu";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PublishIcon from "@mui/icons-material/Publish";
+import ShuffleIcon from "@mui/icons-material/Shuffle";
 import {
     Box,
     Button,
     Divider,
-    Drawer,
     IconButton,
-    List,
-    ListItemButton,
-    ListItemText,
+    Stack,
     Typography,
 } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { FC, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useWorkspace } from "../../context/WorkspaceContext";
+import ProblemsDrawer from "./ProblemsDrawer";
 
 type WorkspaceNavBarProps = {};
 
 const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
     const navigate = useNavigate();
-    const { userId } = useAuthStore();
+    const { user } = useAuthStore();
+    const { showSnackbar } = useSnackbarStore();
     const {
-        editorInstance,
         language,
         isSubmitting,
+        sourceCode,
         setIsSubmitting,
         setSubmitResponse,
-        setCurrentView,
-    } = useWorkspaceStore();
-    let { id: problemId } = useParams();
+        setTestCasePanelView,
+    } = useWorkspace();
+    let { id } = useParams();
     const { room, getRoomKey, updatePercentage } = useSocketStore();
-
+    const { isOnlineMode, isStandardMode } = useWorkspaceMode();
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const queryClient = useQueryClient();
 
-    const { data: problems } = useQuery({
-        queryKey: ["problems"],
+    const { mutateAsync: increaseScoreMutation } = useMutation({
+        mutationFn: client.graderService.user.increaseScore.mutation,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["user-ranking"] });
+        },
+    });
+
+    const { mutateAsync: runTestsMutation } = useMutation({
+        mutationFn: client.graderService.submission.runTests,
+        onMutate: () => setIsSubmitting(true),
+        onSettled: () => setIsSubmitting(false),
+        onSuccess: (response) => {
+            setSubmitResponse(response.data);
+        },
+    });
+
+    const problemId = Number(isOnlineMode ? room.problems : id);
+
+    const { mutateAsync: submitCodeMutation } = useMutation({
+        mutationFn: client.graderService.submission.submit,
+        onMutate: () => setIsSubmitting(true),
+        onSettled: () => setIsSubmitting(false),
+        onSuccess: async (response) => {
+            setSubmitResponse(response.data);
+            queryClient.invalidateQueries({ queryKey: ["submissions"] });
+            queryClient.invalidateQueries({ queryKey: ["problems"] });
+            queryClient.invalidateQueries({ queryKey: ["user-ranking"] });
+
+            if (isOnlineMode) {
+                const { testcase_passed, testcase_total, passed } =
+                    response.data;
+                const percentagePassed =
+                    (testcase_passed / testcase_total) * 100;
+
+                const roomKey = getRoomKey();
+                const userId = user?.userId || -1;
+
+                const userPercentage = {
+                    roomKey,
+                    userId,
+                    percentage: percentagePassed,
+                };
+
+                updatePercentage(userPercentage);
+
+                if (passed) {
+                    const playersWithFullScore = room?.players.filter(
+                        (player) => player.percentage === 100
+                    );
+
+                    const isFirstToSolve = playersWithFullScore?.length === 0;
+
+                    if (isFirstToSolve) {
+                        await increaseScoreMutation([userId, 105]);
+                        showSnackbar("🎉 Congratulation, You won!", "success", {
+                            vertical: "top",
+                            horizontal: "center",
+                        });
+                    } else {
+                        await increaseScoreMutation([userId, 100]);
+                        showSnackbar(
+                            "✅ You solved it! But someone else was faster.",
+                            "info",
+                            {
+                                vertical: "top",
+                                horizontal: "center",
+                            }
+                        );
+                    }
+                }
+
+                navigate("/online/summary");
+            }
+        },
+    });
+
+    const { data } = useQuery({
+        queryKey: ["user-ranking"],
         queryFn: async () => {
-            const response = await client.graderService.problems.getProblems();
+            if (!user) {
+                return null;
+            }
+
+            const response =
+                await client.graderService.leaderboard.getUserRanking(
+                    user.userId
+                );
             return response.data;
         },
     });
 
-    const { mutateAsync: submitCodeMutation } = useMutation({
-        mutationFn: client.graderService.submission.submit.mutation,
-        onMutate: () => setIsSubmitting(true),
-        onSuccess: (response) => {
-            setSubmitResponse(response.data);
-            console.log("response", response.data);
-
-            const passedTestCases = response.data.testcase_passed;
-            const totalTestCases = response.data.testcase_total;
-            const percentagePassed = (passedTestCases / totalTestCases) * 100;  
-            
-            const roomKey = getRoomKey();
-
-            const userPercentage = {
-                roomKey: roomKey, 
-                userId: userId || -1,
-                percentage: percentagePassed, 
-            };
-
-            updatePercentage(userPercentage);
-        },
-        onSettled: () => setIsSubmitting(false),
-    });
-
     const handleSubmit = async () => {
-        if (editorInstance && language) {
-            const code = editorInstance.getValue();
-            //change problemid to room.problems if in play online
-            if (
-                location.pathname.startsWith("/play-online") &&
-                room.problems !== null
-            ) {
-                problemId = room.problems.toString();
-            }
+        if (user) {
+            setTestCasePanelView("test_result");
+            setSubmitResponse(null);
 
-            if (code && language && userId && problemId) {
-                setCurrentView("test_result");
+            await submitCodeMutation({
+                code: sourceCode,
+                language: language.toUpperCase(),
+                problemId: isStandardMode
+                    ? Number(problemId)
+                    : Number(room.problems),
+                userId: user.userId,
+                saveSubmission: isStandardMode,
+            });
+        }
+    };
 
-                await submitCodeMutation([
-                    {
-                        code: code,
-                        language: language.toUpperCase(),
-                        // problemId: !location.pathname.startsWith("/play-online") ? Number(problemId) : Number(room.problems),
-                        problemId: Number(problemId),
-                        userId: userId,
-                    },
-                ]);
-            }
+    const handleRunTests = async () => {
+        if (user) {
+            setTestCasePanelView("test_result");
+            setSubmitResponse(null);
+
+            await runTestsMutation({
+                code: sourceCode,
+                language: language.toUpperCase(),
+                problemId: Number(problemId),
+                userId: user.userId,
+            });
+        }
+    };
+
+    const handleRandomProblem = async () => {
+        const response = await client.graderService.problems.getRandomProblem();
+        if (response.data) {
+            navigate(`/problems/${response.data}`);
         }
     };
 
     return (
-        <Box display="flex" flexDirection="row" alignItems="center" p={1}>
-            <Drawer
-                anchor="left"
-                open={drawerOpen}
-                onClose={() => setDrawerOpen(false)}
-            >
-                <Box width={250} p={2}>
-                    <Typography variant="h6">Problem List</Typography>
-                    <List>
-                        {problems?.map((problem: IProblemResponse) => (
-                            <ListItemButton
-                                key={problem.problemId}
-                                onClick={() => {
-                                    navigate(`/problems/${problem.problemId}`);
-                                    setDrawerOpen(false);
-                                }}
-                            >
-                                <ListItemText primary={problem.title} />
-                            </ListItemButton>
-                        ))}
-                    </List>
-                </Box>
-            </Drawer>
+        <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
+            p={1}
+        >
+            {isStandardMode && (
+                <ProblemsDrawer
+                    open={drawerOpen}
+                    onClose={() => setDrawerOpen(false)}
+                />
+            )}
 
-            <Box display="flex" flexGrow={1}>
+            <Box display="flex">
                 <Button onClick={() => navigate("/")}>
                     <Typography variant="h4">SU</Typography>
                 </Button>
 
                 <Divider orientation="vertical" flexItem />
-                <IconButton
-                    color="inherit"
-                    onClick={() => setDrawerOpen(true)}
-                    sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                    }}
-                >
-                    <MenuIcon />
-                    <Typography variant="h6">Problems List</Typography>
-                </IconButton>
+                {isStandardMode && (
+                    <>
+                        <IconButton
+                            color="inherit"
+                            onClick={() => setDrawerOpen(true)}
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                            }}
+                        >
+                            <MenuIcon />
+                            <Typography variant="h6">Problems List</Typography>
+                        </IconButton>
+                        <IconButton
+                            color="inherit"
+                            onClick={handleRandomProblem}
+                        >
+                            <ShuffleIcon />
+                        </IconButton>
+                    </>
+                )}
             </Box>
 
             <Box
                 display="flex"
-                flexGrow={2}
                 alignItems="center"
                 justifyContent="center"
                 gap={1}
@@ -155,9 +228,8 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     color="inherit"
                     variant="contained"
                     startIcon={<PlayArrowIcon />}
-                    onClick={handleSubmit}
+                    onClick={handleRunTests}
                     disabled={isSubmitting}
-                    loading={isSubmitting}
                 >
                     Run
                 </Button>
@@ -167,19 +239,27 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     startIcon={<PublishIcon />}
                     onClick={handleSubmit}
                     disabled={isSubmitting}
-                    loading={isSubmitting}
                 >
                     Submit
                 </Button>
             </Box>
 
-            <UserMenu
-                sx={{
-                    display: "flex",
-                    flexGrow: 2,
-                    justifyContent: "flex-end",
-                }}
-            />
+            <Stack direction="row" spacing={3}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                    <EmojiEventsIcon color="primary" />
+                    <motion.div
+                        key={data?.score}
+                        initial={{ scale: 1 }}
+                        animate={{ scale: [1.1, 0.95, 1] }}
+                        transition={{ duration: 0.4 }}
+                    >
+                        <Typography variant="body2" fontWeight="medium">
+                            <strong>{data?.score}</strong>
+                        </Typography>
+                    </motion.div>
+                </Stack>
+                <UserMenu />
+            </Stack>
         </Box>
     );
 };

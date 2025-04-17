@@ -1,3 +1,4 @@
+import { useWorkspaceMode } from "@/hooks/useRouteMode";
 import { client } from "@/services";
 import { ITestCaseResponse } from "@/services/models/GraderServiceModel";
 import { useSocketStore } from "@/store/SocketStore";
@@ -10,16 +11,21 @@ import TestCaseDetail from "./TestCaseDetail";
 type TestCaseProps = {};
 
 const TestCase: FC<TestCaseProps> = () => {
-    const { id: problemId } = useParams();
+    const { id } = useParams();
     const { room } = useSocketStore();
     const [selectedTestCase, setSelectedTestCase] =
         useState<ITestCaseResponse | null>(null);
+    const { isOnlineMode } = useWorkspaceMode();
+
+    const problemId = Number(isOnlineMode ? room.problems : id);
 
     const { data: testCases } = useQuery({
         queryKey: ["testcases", problemId],
         queryFn: async () => {
             const response = await client.graderService.testCase.getTestCases({
-                problemId: !location.pathname.startsWith("/play-online") ? Number(problemId) : Number(room.problems),
+                problemId: problemId,
+                offset: 1,
+                limit: 3,
             });
             return response.data;
         },
@@ -28,8 +34,14 @@ const TestCase: FC<TestCaseProps> = () => {
     useEffect(() => {
         if (testCases && testCases.length > 0) {
             setSelectedTestCase(testCases[0]);
+        } else {
+            setSelectedTestCase(null);
         }
     }, [problemId, testCases]);
+    
+    if (!testCases) {
+        return null;
+    }
 
     return (
         <Stack direction="column" spacing={2} p={2}>

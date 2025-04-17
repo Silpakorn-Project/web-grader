@@ -1,28 +1,42 @@
 import { client } from "@/services";
+import { queryClient } from "@/services/query/queryClient";
 import { useAuthStore } from "@/store/AuthStore";
-import { Brightness4, Brightness7, Computer } from "@mui/icons-material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import Brightness4 from "@mui/icons-material/Brightness4";
+import Brightness7 from "@mui/icons-material/Brightness7";
+import Computer from "@mui/icons-material/Computer";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PaletteIcon from "@mui/icons-material/Palette";
 import {
+    Avatar,
     Box,
-    IconButton,
+    Button,
+    Chip,
+    Divider,
     ListItemIcon,
     ListItemText,
     Menu,
     MenuItem,
+    Stack,
     SxProps,
+    Typography,
     useColorScheme,
+    useTheme
 } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 type UserMenuProps = {
-    sx?: SxProps
+    sx?: SxProps;
 };
 
-const UserMenu: FC<UserMenuProps> = ({ sx }) => {
+const UserMenu: FC<UserMenuProps> = () => {
     const navigate = useNavigate();
-    const { token } = useAuthStore();
     const { setMode } = useColorScheme();
+    const theme = useTheme();
+
+    const { user, clearCredentials } = useAuthStore();
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [appearanceAnchorEl, setAppearanceAnchorEl] =
@@ -30,6 +44,22 @@ const UserMenu: FC<UserMenuProps> = ({ sx }) => {
 
     const open = Boolean(anchorEl);
     const openAppearanceMenu = Boolean(appearanceAnchorEl);
+
+    const { data } = useQuery({
+        queryKey: ["user-ranking"],
+        queryFn: async () => {
+            if (!user) {
+                return null;
+            }
+
+            const response =
+                await client.graderService.leaderboard.getUserRanking(
+                    user.userId
+                );
+            return response.data;
+        },
+        enabled: !!user,
+    });
 
     const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -50,7 +80,8 @@ const UserMenu: FC<UserMenuProps> = ({ sx }) => {
     const handleLogout = async () => {
         handleCloseMenu();
         await client.graderService.authentication.logout();
-        useAuthStore.getState().clearCredentials();
+        queryClient.clear();
+        clearCredentials();
         navigate("/login");
     };
 
@@ -59,18 +90,130 @@ const UserMenu: FC<UserMenuProps> = ({ sx }) => {
         handleCloseAppearanceMenu();
     };
 
-    if (!token) return null;
+    const isActive = (path: string) =>
+        location.pathname === path ? "primary" : "inherit";
+
+    // Function to determine badge color based on rank
+    const getBadgeColor = (rank?: number) => {
+        if (!rank) return "default";
+        if (rank === 1) return "success";
+        if (rank <= 3) return "primary";
+        if (rank <= 10) return "secondary";
+        return "default";
+    };
+
+    if (!user)
+        return (
+            <Box>
+                <Button
+                    variant="contained"
+                    color={isActive("/login")}
+                    onClick={() => {
+                        navigate("/login");
+                    }}
+                    sx={{ borderRadius: 4, px: 3 }}
+                >
+                    Login
+                </Button>
+            </Box>
+        );
 
     return (
-        <Box sx={sx}>
-            <IconButton color="inherit" onClick={handleMenuClick}>
-                <AccountCircleIcon fontSize="large" />
-            </IconButton>
-            <Menu anchorEl={anchorEl} open={open} onClose={handleCloseMenu}>
-                <MenuItem onClick={handleAppearanceClick}>
+        <Box>
+            <Avatar
+                onClick={handleMenuClick}
+                sx={{
+                    cursor: "pointer",
+                    bgcolor: "primary.main",
+                    width: 40,
+                    height: 40,
+                    transition: "transform 0.2s",
+                    "&:hover": {
+                        transform: "scale(1.1)",
+                        boxShadow: theme.shadows[3],
+                    },
+                }}
+            >
+                {user.username[0].toUpperCase()}
+            </Avatar>
+
+            <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleCloseMenu}
+                sx={{
+                    mt: 1,
+                    "& .MuiPaper-root": {
+                        width: 300,
+                        overflow: "visible",
+                        borderRadius: 2,
+                        mt: 1.5,
+                        boxShadow: theme.shadows[4],
+                    },
+                }}
+                transformOrigin={{ horizontal: "right", vertical: "top" }}
+                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            >
+                <Box position="relative" px={3} py={2}>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <Avatar
+                            sx={{
+                                bgcolor: "primary.main",
+                                width: 50,
+                                height: 50,
+                            }}
+                        >
+                            {user.username[0].toUpperCase()}
+                        </Avatar>
+                        <Stack>
+                            <Typography variant="h6" fontWeight="bold">
+                                {user?.username}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {user?.email}
+                            </Typography>
+                        </Stack>
+                    </Stack>
+
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{ mt: 2 }}
+                        justifyContent="space-between"
+                    >
+                        <Stack direction="row" spacing={1} alignItems="center">
+                            <EmojiEventsIcon color="primary" />
+                            <Typography variant="body2" fontWeight="medium">
+                                Score: <strong>{data?.score || 0}</strong>
+                            </Typography>
+                        </Stack>
+
+                        {data?.rank && (
+                            <Chip
+                                label={`Rank #${data.rank}`}
+                                color={getBadgeColor(data.rank)}
+                                size="small"
+                                sx={{ fontWeight: "bold" }}
+                            />
+                        )}
+                    </Stack>
+                </Box>
+
+                <Divider />
+
+                <MenuItem onClick={handleAppearanceClick} sx={{ py: 1.5 }}>
+                    <ListItemIcon>
+                        <PaletteIcon fontSize="small" />
+                    </ListItemIcon>
                     <ListItemText primary="Appearance" />
                 </MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+
+                <MenuItem onClick={handleLogout} sx={{ py: 1.5 }}>
+                    <ListItemIcon>
+                        <LogoutIcon fontSize="small" color="error" />
+                    </ListItemIcon>
+                    <ListItemText primary="Logout" />
+                </MenuItem>
             </Menu>
 
             <Menu
@@ -85,22 +228,38 @@ const UserMenu: FC<UserMenuProps> = ({ sx }) => {
                     vertical: "top",
                     horizontal: "right",
                 }}
+                sx={{
+                    "& .MuiPaper-root": {
+                        borderRadius: 2,
+                        minWidth: 180,
+                        boxShadow: theme.shadows[4],
+                    },
+                }}
             >
-                <MenuItem onClick={() => handleModeChange("system")}>
+                <MenuItem
+                    onClick={() => handleModeChange("system")}
+                    sx={{ py: 1.5 }}
+                >
                     <ListItemIcon>
-                        <Computer />
+                        <Computer fontSize="small" />
                     </ListItemIcon>
                     <ListItemText primary="System" />
                 </MenuItem>
-                <MenuItem onClick={() => handleModeChange("light")}>
+                <MenuItem
+                    onClick={() => handleModeChange("light")}
+                    sx={{ py: 1.5 }}
+                >
                     <ListItemIcon>
-                        <Brightness7 />
+                        <Brightness7 fontSize="small" />
                     </ListItemIcon>
                     <ListItemText primary="Light" />
                 </MenuItem>
-                <MenuItem onClick={() => handleModeChange("dark")}>
+                <MenuItem
+                    onClick={() => handleModeChange("dark")}
+                    sx={{ py: 1.5 }}
+                >
                     <ListItemIcon>
-                        <Brightness4 />
+                        <Brightness4 fontSize="small" />
                     </ListItemIcon>
                     <ListItemText primary="Dark" />
                 </MenuItem>

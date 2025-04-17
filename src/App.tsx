@@ -3,6 +3,8 @@ import { ThemeProvider } from "@mui/material/styles";
 import { useQuery } from "@tanstack/react-query";
 import { FC } from "react";
 import { RouterProvider } from "react-router-dom";
+import GlobalCountdownWatcher from "./components/GlobalCountdownWatcher";
+import GlobalSnackbar from "./components/GlobalSnackbar";
 import { router } from "./rounter/rounter";
 import { client } from "./services";
 import { useAuthStore } from "./store/AuthStore";
@@ -10,7 +12,7 @@ import GlobalScrollbarStyles from "./styles/GlobalScrollbarStyles";
 import { theme } from "./styles/theme";
 
 const App: FC = () => {
-    const { token, setCredential } = useAuthStore();
+    const { setCredential } = useAuthStore();
 
     const { isLoading } = useQuery({
         queryKey: ["auth-check"],
@@ -24,17 +26,18 @@ const App: FC = () => {
 
             return response;
         },
-        enabled: !token,
     });
 
     if (isLoading) {
         return null;
     }
-    
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <GlobalScrollbarStyles />
+            <GlobalSnackbar />
+            <GlobalCountdownWatcher />
             <RouterProvider router={router} />
         </ThemeProvider>
     );
