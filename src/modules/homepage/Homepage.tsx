@@ -11,8 +11,7 @@ import {
     Grid2,
     Paper,
     Stack,
-    Typography,
-    useTheme,
+    Typography
 } from "@mui/material";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,9 +22,7 @@ type HomePageProps = {};
 const HomePage: FC<HomePageProps> = () => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
-    const theme = useTheme();
 
-    // TODO: REFACTOR
     return (
         <Stack direction="column" spacing={6}>
             {/* Hero Section */}
@@ -48,7 +45,7 @@ const HomePage: FC<HomePageProps> = () => {
                             </Typography>
 
                             <Typography variant="h6" sx={{ mb: 3 }}>
-                                Master algorithms, ace technical interviews, and
+                                Master algorithms, and
                                 compete with each other through interactive
                                 challenges.
                             </Typography>

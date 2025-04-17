@@ -8,6 +8,18 @@ import {
 } from "../models/GraderServiceModel";
 
 export class SubmissionApi extends BaseApi {
+    public async runTests(runTestsRequest: ISubmitRequest) {
+        const response = await this.httpClient.post<
+            ISubmitRequest,
+            BaseResponse<ISubmitResponse>
+        >("/api/submissions/run-tests", {
+            ...runTestsRequest,
+            saveSubmission: false,
+        });
+
+        return response.data;
+    }
+
     public async submit(submitRequest: ISubmitRequest) {
         const response = await this.httpClient.post<
             ISubmitRequest,

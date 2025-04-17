@@ -6,6 +6,7 @@ import { Route, useNavigate } from "react-router-dom";
 
 const OnlinePage = lazy(() => import("./pages/OnlinePage"));
 const PlayOnlinePage = lazy(() => import("./pages/PlayOnlinePage"));
+const SummaryPage = lazy(() => import("./pages/SummaryPage"));
 
 export const OnlineRoutes: FC = () => {
     const navigate = useNavigate();
@@ -14,7 +15,6 @@ export const OnlineRoutes: FC = () => {
     useEffect(() => {
         if (!user) {
             navigate("/login");
-            return;
         }
     }, [user]);
 
@@ -28,6 +28,10 @@ export const OnlineRoutes: FC = () => {
             <Route
                 path="/play"
                 element={<LazyPage element={PlayOnlinePage} />}
+            />
+            <Route
+                path="/summary"
+                element={<LazyPage element={SummaryPage} />}
             />
         </RoutesWithFallback>
     );

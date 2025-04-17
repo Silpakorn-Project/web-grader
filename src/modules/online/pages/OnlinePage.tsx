@@ -30,6 +30,7 @@ const OnlinePage: FC = () => {
         redirectToHome,
         redirectToPlayOnline,
         connectSocket,
+        disconnectSocket,
         handleLeaveGame,
         resetRedirectToHome,
         resetRedirectToPlayOnline,
@@ -39,6 +40,10 @@ const OnlinePage: FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (isConnected && room.gameStarted) {
+            disconnectSocket();
+        }
+
         connectSocket(user?.userId || -1, user?.username || "null");
         return () => {};
     }, []);
@@ -132,7 +137,7 @@ const OnlinePage: FC = () => {
                             onClick={handleLeaveGame}
                             sx={{ borderRadius: 2 }}
                         >
-                            Leave Game
+                            Leave Room
                         </Button>
                     </Box>
                 </Box>

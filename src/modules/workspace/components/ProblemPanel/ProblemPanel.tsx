@@ -14,7 +14,7 @@ import {
     Typography,
 } from "@mui/material"; // Import Table components
 import grey from "@mui/material/colors/grey";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import WorkspaceBox from "../WorkspaceBox/WorkspaceBox";
 import WorkspaceBoxTopBar from "../WorkspaceBox/WorkspaceBoxTopBar";
@@ -31,6 +31,33 @@ const ProblemPanel: React.FC<ProblemDescriptionProps> = () => {
     const { isOnlineMode, isStandardMode } = useWorkspaceMode();
     const { room, handleLeaveGame, redirectToHome, resetRedirectToHome } =
         useSocketStore();
+    const [playerProgressCache, setPlayerProgressCache] = useState<{
+        [userId: number]: {
+            username: string;
+            percentage: number;
+        };
+    }>({});
+
+    const allPlayerIds = useMemo(() => {
+        return new Set([
+            ...room.players.map((p) => p.userId),
+            ...Object.keys(playerProgressCache).map((id) => Number(id)),
+        ]);
+    }, [room.players, playerProgressCache]);
+
+    const allPlayers = useMemo(() => {
+        return Array.from(allPlayerIds).map((userId) => {
+            const livePlayer = room.players.find((p) => p.userId === userId);
+            const cached = playerProgressCache[userId];
+
+            return {
+                userId,
+                username: livePlayer?.username ?? cached?.username ?? "Unknown",
+                percentage: livePlayer?.percentage ?? cached?.percentage ?? 0,
+                isDisconnected: !livePlayer,
+            };
+        });
+    }, [allPlayerIds, room.players, playerProgressCache]);
 
     useEffect(() => {
         if (redirectToHome) {
@@ -38,6 +65,26 @@ const ProblemPanel: React.FC<ProblemDescriptionProps> = () => {
             resetRedirectToHome();
         }
     }, [redirectToHome]);
+
+    useEffect(() => {
+        const newCache = { ...playerProgressCache };
+
+        room.players.forEach((player) => {
+            const { userId, username, percentage } = player;
+
+            const cached = newCache[userId];
+            const shouldUpdate = !cached || cached.percentage < percentage;
+
+            if (shouldUpdate) {
+                newCache[userId] = {
+                    username,
+                    percentage,
+                };
+            }
+        });
+
+        setPlayerProgressCache(newCache);
+    }, [room.players]);
 
     return (
         <WorkspaceBox className="h-[calc(97vh-64px)]">
@@ -141,36 +188,19 @@ const ProblemPanel: React.FC<ProblemDescriptionProps> = () => {
                     </Box>
 
                     <Grid2 container spacing={12} justifyContent="center">
-                        {room.players.map((player, index) => (
-                            <Grid2 key={index}>
+                        {allPlayers.map((player) => (
+                            <Grid2 key={player.userId}>
                                 <Box
                                     sx={{
                                         display: "flex",
                                         flexDirection: "column",
                                         alignItems: "center",
                                         transition: "transform 0.2s ease",
-                                        "&:hover": {
-                                            transform: "translateY(-5px)",
-                                        },
+                                        opacity: player.isDisconnected
+                                            ? 0.5
+                                            : 1,
                                     }}
                                 >
-                                    {/* <Avatar
-                                        src="https://www.svgrepo.com/show/509009/avatar-thinking-3.svg"
-                                        alt={player.username}
-                                        sx={{
-                                            width: 64,
-                                            height: 64,
-                                            mb: 1.5,
-                                            border: 3,
-                                            borderColor:
-                                                player.percentage > 75
-                                                    ? "success.main"
-                                                    : player.percentage > 50
-                                                    ? "warning.main"
-                                                    : "error.main",
-                                        }}
-                                    /> */}
-
                                     <Typography
                                         variant="body1"
                                         fontWeight="medium"
@@ -198,8 +228,7 @@ const ProblemPanel: React.FC<ProblemDescriptionProps> = () => {
                                                 },
                                                 (theme) =>
                                                     theme.applyStyles("dark", {
-                                                        color:
-                                                            grey[800],
+                                                        color: grey[800],
                                                     }),
                                             ]}
                                         />
@@ -232,7 +261,6 @@ const ProblemPanel: React.FC<ProblemDescriptionProps> = () => {
                                         >
                                             <Typography
                                                 variant="h6"
-                                                component="div"
                                                 fontWeight="bold"
                                                 color={
                                                     player.percentage > 75

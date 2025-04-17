@@ -17,4 +17,8 @@ export class UserApi extends BaseApi {
         );
         return response.data;
     }
+
+    public async increaseScore(id: number, score: number) {
+        await this.httpClient.patch(`/api/users/${id}/score`, { score });
+    }
 }

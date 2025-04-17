@@ -88,7 +88,7 @@ const EditProblem: FC = () => {
                 enabled: !!id,
             },
             {
-                queryKey: ["testCases", id],
+                queryKey: ["testcases", id],
                 queryFn: async () => {
                     const response =
                         await client.graderService.testCase.getTestCases({
@@ -104,9 +104,7 @@ const EditProblem: FC = () => {
     const { mutateAsync: createTestCasesMutation } = useMutation({
         mutationFn: client.graderService.testCase.createTestcases,
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["testcases"],
-            });
+            queryClient.invalidateQueries({ queryKey: ["testcases", id] });
         },
     });
 
@@ -125,9 +123,7 @@ const EditProblem: FC = () => {
                 testcaseId
             ),
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["testcases"],
-            });
+            queryClient.invalidateQueries({ queryKey: ["testcases", id] });
         },
     });
 
@@ -135,9 +131,7 @@ const EditProblem: FC = () => {
         mutationFn: (testcaseId: number) =>
             client.graderService.testCase.deleteTestcase(testcaseId),
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["testcases"],
-            });
+            queryClient.invalidateQueries({ queryKey: ["testcases", id] });
         },
     });
 
@@ -256,6 +250,7 @@ const EditProblem: FC = () => {
                 )
             );
 
+            window.scrollTo({ top: 0, behavior: "instant" });
             showSnackbar("Problem updated successfully!", "success");
         } catch (error) {
             showSnackbar("Something went wrong while saving changes.", "error");

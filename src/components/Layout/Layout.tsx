@@ -9,7 +9,7 @@ const Layout: FC = () => {
 
     if (
         location.pathname.startsWith("/problems/") ||
-        location.pathname.startsWith("/online/")
+        location.pathname.startsWith("/online/play")
     ) {
         return (
             <Box

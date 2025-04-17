@@ -4,11 +4,21 @@ import { client } from "@/services";
 import { useAuthStore } from "@/store/AuthStore";
 import { useSnackbarStore } from "@/store/SnackbarStore";
 import { useSocketStore } from "@/store/SocketStore";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import MenuIcon from "@mui/icons-material/Menu";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PublishIcon from "@mui/icons-material/Publish";
-import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import ShuffleIcon from "@mui/icons-material/Shuffle";
+import {
+    Box,
+    Button,
+    Divider,
+    IconButton,
+    Stack,
+    Typography,
+} from "@mui/material";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { FC, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useWorkspace } from "../../context/WorkspaceContext";
@@ -28,77 +38,138 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
         setSubmitResponse,
         setTestCasePanelView,
     } = useWorkspace();
-    let { id: problemId } = useParams();
+    let { id } = useParams();
     const { room, getRoomKey, updatePercentage } = useSocketStore();
     const { isOnlineMode, isStandardMode } = useWorkspaceMode();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const queryClient = useQueryClient();
 
-    const { mutateAsync: submitCodeMutation } = useMutation({
-        mutationFn: client.graderService.submission.submit.mutation,
+    const { mutateAsync: increaseScoreMutation } = useMutation({
+        mutationFn: client.graderService.user.increaseScore.mutation,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["user-ranking"] });
+        },
+    });
+
+    const { mutateAsync: runTestsMutation } = useMutation({
+        mutationFn: client.graderService.submission.runTests,
         onMutate: () => setIsSubmitting(true),
-        onSuccess: (response, variables) => {
+        onSettled: () => setIsSubmitting(false),
+        onSuccess: (response) => {
             setSubmitResponse(response.data);
-            queryClient.invalidateQueries({
-                queryKey: ["submissions"],
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["problems"],
-            });
+        },
+    });
+
+    const problemId = Number(isOnlineMode ? room.problems : id);
+
+    const { mutateAsync: submitCodeMutation } = useMutation({
+        mutationFn: client.graderService.submission.submit,
+        onMutate: () => setIsSubmitting(true),
+        onSettled: () => setIsSubmitting(false),
+        onSuccess: async (response) => {
+            setSubmitResponse(response.data);
+            queryClient.invalidateQueries({ queryKey: ["submissions"] });
+            queryClient.invalidateQueries({ queryKey: ["problems"] });
+            queryClient.invalidateQueries({ queryKey: ["user-ranking"] });
 
             if (isOnlineMode) {
-                const passedTestCases = response.data.testcase_passed;
-                const totalTestCases = response.data.testcase_total;
+                const { testcase_passed, testcase_total, passed } =
+                    response.data;
                 const percentagePassed =
-                    (passedTestCases / totalTestCases) * 100;
+                    (testcase_passed / testcase_total) * 100;
 
                 const roomKey = getRoomKey();
+                const userId = user?.userId || -1;
 
                 const userPercentage = {
-                    roomKey: roomKey,
-                    userId: user?.userId || -1,
+                    roomKey,
+                    userId,
                     percentage: percentagePassed,
                 };
 
-                const isSubmit = variables[0].saveSubmission;
+                updatePercentage(userPercentage);
 
-                if (response.data.passed && isSubmit) {
-                    navigate("/");
-                    showSnackbar("Congratulation, You won!", "success", {
-                        vertical: "top",
-                        horizontal: "center",
-                    });
+                if (passed) {
+                    const playersWithFullScore = room?.players.filter(
+                        (player) => player.percentage === 100
+                    );
+
+                    const isFirstToSolve = playersWithFullScore?.length === 0;
+
+                    if (isFirstToSolve) {
+                        await increaseScoreMutation([userId, 105]);
+                        showSnackbar("🎉 Congratulation, You won!", "success", {
+                            vertical: "top",
+                            horizontal: "center",
+                        });
+                    } else {
+                        await increaseScoreMutation([userId, 100]);
+                        showSnackbar(
+                            "✅ You solved it! But someone else was faster.",
+                            "info",
+                            {
+                                vertical: "top",
+                                horizontal: "center",
+                            }
+                        );
+                    }
                 }
 
-                updatePercentage(userPercentage);
+                navigate("/online/summary");
             }
         },
-        onSettled: () => setIsSubmitting(false),
     });
 
-    const handleSubmit = async (saveSubmission: boolean) => {
-        if (isOnlineMode && room.problems !== null) {
-            problemId = room.problems.toString();
-        }
+    const { data } = useQuery({
+        queryKey: ["user-ranking"],
+        queryFn: async () => {
+            if (!user) {
+                return null;
+            }
 
-        if (sourceCode && language && problemId && user) {
+            const response =
+                await client.graderService.leaderboard.getUserRanking(
+                    user.userId
+                );
+            return response.data;
+        },
+    });
+
+    const handleSubmit = async () => {
+        if (user) {
             setTestCasePanelView("test_result");
             setSubmitResponse(null);
 
-            const response = await submitCodeMutation([
-                {
-                    code: sourceCode,
-                    language: language.toUpperCase(),
-                    problemId: isStandardMode
-                        ? Number(problemId)
-                        : Number(room.problems),
-                    userId: user.userId,
-                    saveSubmission: saveSubmission,
-                },
-            ]);
+            await submitCodeMutation({
+                code: sourceCode,
+                language: language.toUpperCase(),
+                problemId: isStandardMode
+                    ? Number(problemId)
+                    : Number(room.problems),
+                userId: user.userId,
+                saveSubmission: isStandardMode,
+            });
+        }
+    };
 
-            if (response.data) {
-            }
+    const handleRunTests = async () => {
+        if (user) {
+            setTestCasePanelView("test_result");
+            setSubmitResponse(null);
+
+            await runTestsMutation({
+                code: sourceCode,
+                language: language.toUpperCase(),
+                problemId: Number(problemId),
+                userId: user.userId,
+            });
+        }
+    };
+
+    const handleRandomProblem = async () => {
+        const response = await client.graderService.problems.getRandomProblem();
+        if (response.data) {
+            navigate(`/problems/${response.data}`);
         }
     };
 
@@ -124,18 +195,26 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
 
                 <Divider orientation="vertical" flexItem />
                 {isStandardMode && (
-                    <IconButton
-                        color="inherit"
-                        onClick={() => setDrawerOpen(true)}
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                        }}
-                    >
-                        <MenuIcon />
-                        <Typography variant="h6">Problems List</Typography>
-                    </IconButton>
+                    <>
+                        <IconButton
+                            color="inherit"
+                            onClick={() => setDrawerOpen(true)}
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                            }}
+                        >
+                            <MenuIcon />
+                            <Typography variant="h6">Problems List</Typography>
+                        </IconButton>
+                        <IconButton
+                            color="inherit"
+                            onClick={handleRandomProblem}
+                        >
+                            <ShuffleIcon />
+                        </IconButton>
+                    </>
                 )}
             </Box>
 
@@ -149,7 +228,7 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     color="inherit"
                     variant="contained"
                     startIcon={<PlayArrowIcon />}
-                    onClick={() => handleSubmit(false)}
+                    onClick={handleRunTests}
                     disabled={isSubmitting}
                 >
                     Run
@@ -158,14 +237,29 @@ const WorkspaceNavBar: FC<WorkspaceNavBarProps> = () => {
                     variant="contained"
                     color="success"
                     startIcon={<PublishIcon />}
-                    onClick={() => handleSubmit(true)}
+                    onClick={handleSubmit}
                     disabled={isSubmitting}
                 >
                     Submit
                 </Button>
             </Box>
 
-            <UserMenu />
+            <Stack direction="row" spacing={3}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                    <EmojiEventsIcon color="primary" />
+                    <motion.div
+                        key={data?.score}
+                        initial={{ scale: 1 }}
+                        animate={{ scale: [1.1, 0.95, 1] }}
+                        transition={{ duration: 0.4 }}
+                    >
+                        <Typography variant="body2" fontWeight="medium">
+                            <strong>{data?.score}</strong>
+                        </Typography>
+                    </motion.div>
+                </Stack>
+                <UserMenu />
+            </Stack>
         </Box>
     );
 };
